@@ -1,9 +1,9 @@
 <script lang="ts">
-	import '../app.css';
+	import '../../app.css';
 	let { children } = $props();
 </script>
 
-<div class="h-full grid grid-rows-[auto_1fr_auto]">
+<div class="grid h-full grid-rows-[auto_1fr_auto]">
 	<!-- Header -->
 	<header class="bg-red-500 p-4">(header)</header>
 	<!-- Page -->
