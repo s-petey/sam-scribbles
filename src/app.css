@@ -1,0 +1,14 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Resets */
+
+html,
+body {
+	@apply h-full;
+}
+
+body {
+	@apply bg-black;
+}
