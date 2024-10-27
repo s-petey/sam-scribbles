@@ -1,24 +1,33 @@
-<!-- src/routes/login/+page.svelte -->
 <script lang="ts">
-	import type { ActionData } from './$types';
+	import { superForm } from 'sveltekit-superforms';
 
-	const { form } = $props<{ form: ActionData }>();
+	const { data } = $props();
 
-	// function handle_submit(event: SubmitEvent) {
-	// 	console.log('Form submitted');
-	// 	// You can remove this prevent default later, it's just for testing
-	// 	event.preventDefault();
-	// 	const form = event.target as HTMLFormElement;
-	// 	const email = form.email.value;
-	// 	console.log('Email submitted:', email);
-	// }
+	const { form, enhance, errors, constraints } = superForm(data.form);
 </script>
 
 <h1>Login</h1>
-<form method="POST">
-	<input type="email" name="email" placeholder="Email" required />
 
-	<input type="password" name="password" placeholder="Password" required />
+<form method="post" use:enhance>
+	<input
+		type="email"
+		name="email"
+		placeholder="Email"
+		aria-invalid={$errors.email ? 'true' : undefined}
+		bind:value={$form.email}
+		{...$constraints.email}
+	/>
+	{#if $errors.email}<span class="invalid">{$errors.email}</span>{/if}
+
+	<input
+		type="password"
+		name="password"
+		placeholder="Password"
+		aria-invalid={$errors.password ? 'true' : undefined}
+		bind:value={$form.password}
+		{...$constraints.password}
+	/>
+	{#if $errors.password}<span class="invalid">{$errors.password}</span>{/if}
 
 	<button type="submit">Login</button>
 </form>
