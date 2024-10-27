@@ -1,5 +1,5 @@
+import { pgTableCreator, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 import { SHORT_ID_LENGTH, shortId } from '../../shortener';
-import { pgTableCreator, serial, text, integer, varchar, timestamp } from 'drizzle-orm/pg-core';
 
 const pgTable = pgTableCreator((name) => `scribbles_${name}`);
 

@@ -30,7 +30,9 @@ export function verifyAdmin({ cookies }: RequestEvent) {
 	try {
 		const payload = jwt.verify(userToken, JWT_SECRET);
 		return adminSchema.parse(payload);
-	} catch (error) {
+		// eslint-disable-next-line  @typescript-eslint/no-unused-vars
+	} catch (_error) {
+		// TODO: Log error?
 		return null;
 	}
 }
