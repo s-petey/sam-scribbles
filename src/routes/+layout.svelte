@@ -116,7 +116,7 @@
 						<!-- <span class="flex items-center justify-end space-x-4"> -->
 						<p>User: {data.user.username}</p>
 
-						<form action="?/logout" method="POST">
+						<form action="/?/logout" method="POST">
 							<button class="btn preset-tonal-primary" type="submit">Logout</button>
 						</form>
 						<!-- </span> -->
