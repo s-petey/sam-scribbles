@@ -44,5 +44,5 @@ COPY --from=prerelease /usr/src/app/package.json .
 # run the app
 USER bun
 EXPOSE 3000/tcp
-CMD ["ORIGIN=$ORIGIN bun", "run", "./build"]
+RUN ORIGIN=$ORIGIN bun run ./build
 # ENTRYPOINT [ "bun", "run", "./build" ]
