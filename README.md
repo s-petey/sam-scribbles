@@ -1,38 +1,31 @@
-# create-svelte
+# https://sam-peterson.com
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+## Work in progress 30-10-2024
 
-## Creating a project
+A blog and link sharing service made with [SvelteKit], [DrizzleORM], [zod], MDSveX, [Skeleton] (next), and Tailwind.
 
-If you're seeing this, you've probably already done this step. Congrats!
+This site wouldn't exist without the inspiration and insight of [Sergio Xalambrí] and [Scott Spence]. Both had their own work and efforts which influenced how this site has been designed and developed.
 
-```bash
-# create a new project in the current directory
-npx sv create
+## Details
 
-# create a new project in my-app
-npx sv create my-app
-```
+This project leverages [Bun] as its runtime, so some of the scripts may look a little funny with the `--bun` prefix. There are your typical commands for `dev`, `build`, and `preview`. There are a few helpers for the db prefixed with `db`.
 
-## Developing
+This project is intended to be deployed to a [Bun] process using docker / docker compose.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Works in progress
 
-```bash
-npm run dev
+- [ ] Testing
+- [ ] User access (auth / relations / interactions)
+- [ ] View counts, sharing links
+- [ ] Blog posts
+- [ ] And more!
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+<!-- Links -->
 
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+[sergio xalambrí]: https://github.com/sergiodxa
+[scott spence]: https://github.com/spences10
+[bun]: https://bun.sh/
+[sveltekit]: https://svelte.dev/
+[drizzleorm]: https://orm.drizzle.team/
+[zod]: https://zod.dev/
+[skeleton]: https://next.skeleton.dev/

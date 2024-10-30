@@ -1,6 +1,8 @@
 import { ALLOWED_EMAILS } from '$env/static/private';
-import { authorizeAdmin, verifyPassword } from '$lib/auth';
+import { authorizeAdmin, saltAndHashPassword, verifyPassword } from '$lib/auth';
 import { db } from '$lib/server/db';
+import { user as dbUser } from '$lib/server/db/schema';
+import { admin } from '$lib/siteLinks';
 import { redirect } from '@sveltejs/kit';
 import { fail, setError, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -41,7 +43,7 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const user = await db.query.user.findFirst({
+		let user = await db.query.user.findFirst({
 			where: (user, { eq }) => eq(user.email, form.data.email),
 			columns: {
 				email: true,
@@ -52,7 +54,27 @@ export const actions: Actions = {
 		});
 
 		if (user === undefined) {
-			return setError(form, 'email', 'User is not found!');
+			const [insertedUser] = await db
+				.insert(dbUser)
+				.values({
+					email: form.data.email,
+					username: form.data.email,
+					role: 'admin',
+					password: await saltAndHashPassword(form.data.password),
+					createdAt: new Date()
+				})
+				.returning();
+
+			if (!insertedUser) {
+				return setError(form, 'User creation error!!');
+			}
+
+			user = {
+				email: insertedUser.email,
+				username: insertedUser.username,
+				role: insertedUser.role,
+				password: insertedUser.password
+			};
 		}
 
 		const isMatch = await verifyPassword(form.data.password, user.password);
@@ -68,6 +90,6 @@ export const actions: Actions = {
 			return setError(form, '', 'User unauthorized');
 		}
 
-		throw redirect(302, '/admin');
+		throw redirect(302, admin['Admin Panel'].href);
 	}
 };

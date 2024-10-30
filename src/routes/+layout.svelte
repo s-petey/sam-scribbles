@@ -1,0 +1,274 @@
+<script lang="ts">
+	import '../app.css';
+
+	import BackToTop from '$lib/components/BackToTop.svelte';
+	import Lightswitch from '$lib/components/Lightswitch.svelte';
+	import * as SiteLinks from '$lib/siteLinks';
+	import { Avatar } from '@skeletonlabs/skeleton-svelte';
+	import Menu from 'lucide-svelte/icons/menu';
+	import Close from 'lucide-svelte/icons/x';
+
+	let { children, data } = $props();
+	let expanded = $state(false);
+</script>
+
+<div class="grid h-full grid-rows-[auto_1fr_auto]">
+	{@render header()}
+
+	<!-- Page -->
+	<div class="container mx-auto grid grid-cols-1 xl:grid-cols-[200px_minmax(0px,_1fr)_200px]">
+		<!-- Sidebar (Left) -->
+		<!-- NOTE: hidden in smaller screen sizes -->
+		<aside class="sticky top-0 col-span-1 hidden self-start overflow-y-auto p-4 xl:block xl:px-0">
+			<!-- Navigation -->
+			<div class="hidden items-center justify-start gap-6 opacity-60 xl:flex">
+				{@render navigation()}
+			</div>
+		</aside>
+
+		<!-- Main -->
+		<!-- {#key $page.url} -->
+		<!-- TODO: I don't know if I will keep these transitions -->
+		<!-- in:fly={{ x: -200, duration: 300, delay: 400 }}
+			out:fly={{ x: 200, duration: 300 }} -->
+		<main class="col-span-1 space-y-4 p-4">
+			{@render children()}
+			<BackToTop />
+		</main>
+		<!-- {/key} -->
+
+		<!-- TODO: Will I need this? -->
+		<!-- Sidebar (Right) -->
+		<!-- NOTE: hidden in smaller screen sizes -->
+		<!-- <aside class="sticky top-0 col-span-1 hidden bg-yellow-500 p-4 xl:block">
+			(sidebar)
+		</aside> -->
+	</div>
+	<!-- Footer -->
+	<div class="relative">
+		<div
+			class="rounded-box absolute -inset-0 z-0 bg-gradient-to-br from-primary-500 to-secondary-500 font-black blur-sm"
+		></div>
+		<footer
+			class="footer relative grid grid-cols-1 gap-4 bg-surface-500 bg-opacity-20 p-4 md:grid-cols-2 xl:grid-cols-3"
+		>
+			{@render footer()}
+		</footer>
+	</div>
+</div>
+
+{#snippet header()}
+	<!-- Header -->
+	<header class="w-full border-b-[1px] border-surface-500/20 p-4 py-3 bg-surface-50-950 xl:px-10">
+		<div
+			class="container mx-auto grid max-w-screen-2xl grid-cols-[auto_1fr_auto] items-center gap-4 xl:grid-cols-[1fr_auto_1fr]"
+		>
+			<!-- Left -->
+			<div class="flex items-center justify-start gap-6">
+				<!-- Mobile Nav Drawer -->
+				{@render drawer()}
+
+				<!-- Hamburger Menu -->
+				<button class="btn-icon xl:hidden" onclick={() => (expanded = !expanded)}>
+					<Menu />
+				</button>
+
+				<!-- Logo -->
+				<h2 class="h2">
+					<!-- TODO: Have an icon for this instead and a title? -->
+					<a
+						class="hidden bg-gradient-to-b from-primary-500 to-tertiary-500 bg-clip-text font-extrabold text-transparent xl:inline-block"
+						href="/"
+						title="Skeleton"
+					>
+						<!-- TODO: Update this will be the full site not only sam-scribbles... -->
+						<!-- <Icon name="skeleton" size={28} /> -->
+						Sam-Scribbles
+					</a>
+				</h2>
+			</div>
+			<!-- Middle -->
+			<div class="flex items-center gap-2">
+				{#if data.user !== null && data.user.role === 'admin'}
+					<h2 class="h2">Admin</h2>
+				{/if}
+
+				<!-- TODO: Implement search? -->
+				<!-- Search -->
+				<!-- <Search client:load /> -->
+			</div>
+
+			<!-- Right -->
+			<div class="flex items-center justify-end gap-2">
+				<div class="hidden items-center justify-end gap-2 xl:flex">
+					<!-- TODO: Implement lightswitch -->
+					<Lightswitch />
+				</div>
+				<!-- Social -->
+				<nav class="flex flex-row items-center gap-2">
+					{#each SiteLinks.socialLinks as link}
+						<a class="anchor hover:underline" href={link.href} title={link.label} target="_blank">
+							<Avatar name={link.label} />
+						</a>
+					{/each}
+
+					{#if data.user !== null && data.user.role === 'admin'}
+						<!-- <span class="flex items-center justify-end space-x-4"> -->
+						<p>User: {data.user.username}</p>
+
+						<form action="?/logout" method="POST">
+							<button class="btn preset-tonal-primary" type="submit">Logout</button>
+						</form>
+						<!-- </span> -->
+					{/if}
+				</nav>
+			</div>
+		</div>
+	</header>
+{/snippet}
+
+{#snippet navigation()}
+	<aside class="space-y-10 overflow-y-auto type-scale-2">
+		<nav class="flex flex-col gap-2">
+			{#each SiteLinks.coreLinks as link}
+				<a
+					class="anchor"
+					onclick={() => {
+						if (expanded) expanded = !expanded;
+					}}
+					href={link.href}
+					title={link.label}
+				>
+					{link.label}
+				</a>
+			{/each}
+
+			{#if data.user !== null && data.user.role === 'admin'}
+				{#each SiteLinks.adminLinks as link}
+					<a
+						href={link.href}
+						title={link.label}
+						class="anchor"
+						onclick={() => {
+							if (expanded) expanded = !expanded;
+						}}
+					>
+						{link.label}
+					</a>
+				{/each}
+			{/if}
+		</nav>
+	</aside>
+{/snippet}
+
+{#snippet drawer()}
+	<!-- Drawer -->
+	<div
+		class={`fixed bottom-0 left-0 top-0 z-50 w-[320px] space-y-10 overflow-y-auto p-4 pb-24 shadow-xl transition-transform duration-100 preset-filled-surface-100-900 xl:hidden ${expanded ? 'block' : '-translate-x-[320px]'}`}
+	>
+		<!-- Header -->
+		<header class="flex items-center justify-between">
+			<h3
+				class="h3 inline-block bg-gradient-to-b from-primary-500 to-tertiary-500 bg-clip-text font-extrabold text-transparent"
+			>
+				<!-- TODO: Update this will be the full site not only sam-scribbles... -->
+				Sam-Scribbles
+			</h3>
+			<button class="btn-icon" onclick={() => (expanded = !expanded)}>
+				<Close />
+			</button>
+		</header>
+
+		<!-- Navigation -->
+		<nav class="flex flex-col gap-2">
+			<span class="font-bold capitalize">Navigate</span>
+			{@render navigation()}
+		</nav>
+		<!-- Slot -->
+		<!-- <slot /> -->
+	</div>
+{/snippet}
+
+{#snippet footer()}
+	<div class="grid grid-cols-1 justify-items-center md:grid-cols-2 md:justify-items-start">
+		<span class="mb-1 font-bold uppercase lg:col-span-2">PLACEHOLDER</span>
+		<!-- <span class="mb-1 font-bold lg:col-span-2 uppercase">Popular Posts</span> -->
+		<!-- {#each posts as post}
+				<p>
+					<a
+						data-sveltekit-reload
+						class="hover:opacity-50 w-fit"
+						href={$page.url.origin + post.pathname}
+					>
+						{post.title}
+					</a>
+					<span
+						class="tooltip  group relative cursor-pointer font-bold"
+						data-tip={`
+          Visits: ${number_crunch(post.visits)},
+          Pageviews: ${number_crunch(post.pageviews)}
+        `}
+					>
+						<Eye />
+						{number_crunch(post.pageviews)}
+					</span>
+				</p>
+			{/each} -->
+
+		<!-- {#if total_visitors > 0} -->
+		<!-- <span
+					onmouseenter={() => (show_current_visitor_data = true)}
+					onmouseleave={() => (show_current_visitor_data = false)}
+					class="inline-block cursor-pointer"
+				> -->
+		<!-- <p
+						class="rounded-box bg-secondary text-secondary-content mt-2 px-2 py-1 tracking-wide shadow-lg"
+					>
+						There's currently
+						<span class="font-bold">
+							{total_visitors}
+						</span>
+						live {total_visitors === 1 ? 'visitor' : 'visitors'}
+					</p> -->
+		<!-- {#if show_current_visitor_data}
+						<CurrentVisitorsData />
+					{/if} -->
+		<!-- </span>
+			{/if} -->
+	</div>
+	<div class="grid grid-cols-1 justify-items-center md:grid-cols-2 md:justify-items-start">
+		<span class="mb-1 font-bold uppercase lg:col-span-2">Site Links</span>
+		{#each SiteLinks.coreLinks as link}
+			<a href={link.href} title={link.label} class="w-fit hover:opacity-50">
+				{link.label}
+			</a>
+		{/each}
+
+		{#if data.user !== null && data.user.role === 'admin'}
+			{#each SiteLinks.adminLinks as link}
+				<a href={link.href} title={link.label} class="w-fit hover:opacity-50">
+					{link.label}
+				</a>
+			{/each}
+		{/if}
+	</div>
+	<div class="grid grid-cols-1 justify-items-center md:grid-cols-2 md:justify-items-start">
+		<span class="mb-1 font-bold uppercase lg:col-span-2">Socials</span>
+		{#each SiteLinks.socialLinks as social}
+			<a
+				class="w-fit hover:opacity-50"
+				href={social.href}
+				title={social.label}
+				target="_blank"
+				rel="noopener noreferrer"
+			>
+				{social.label}
+			</a>
+		{/each}
+	</div>
+	<div class="md:col-span-2 xl:col-span-3">
+		<p class="py-4 text-center">
+			Copyright &copy; 2024 - {`${new Date().getFullYear()}`} - All rights reserved Sam Peterson
+		</p>
+	</div>
+{/snippet}

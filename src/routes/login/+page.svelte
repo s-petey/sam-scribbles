@@ -8,8 +8,9 @@
 
 <h1>Login</h1>
 
-<form method="post" use:enhance>
+<form method="post" class="grid grid-cols-2 gap-4" use:enhance>
 	<input
+		class="input"
 		type="email"
 		name="email"
 		placeholder="Email"
@@ -20,6 +21,7 @@
 	{#if $errors.email}<span class="invalid">{$errors.email}</span>{/if}
 
 	<input
+		class="input"
 		type="password"
 		name="password"
 		placeholder="Password"
@@ -29,5 +31,7 @@
 	/>
 	{#if $errors.password}<span class="invalid">{$errors.password}</span>{/if}
 
-	<button type="submit">Login</button>
+	<!-- TODO: Instead of just making the user -->
+	<!-- If no user found prompt for more info -->
+	<button type="submit" class="btn preset-tonal-primary">Login</button>
 </form>

@@ -1,9 +1,10 @@
 import { JWT_SECRET, NODE_ENV } from '$env/static/private';
 import type { RequestEvent } from '@sveltejs/kit';
+import Bun from 'bun';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { type User } from './server/db/schema';
-import Bun from 'bun';
+import { core } from './siteLinks';
 
 export const ONE_HOUR = 60 * 60 * 1000;
 
@@ -17,7 +18,7 @@ const adminSchema = z.object({
 export const AUTH_COOKIE_NAME = 'AuthorizationToken';
 
 export function logout({ cookies }: RequestEvent) {
-	cookies.delete(AUTH_COOKIE_NAME, { path: '/' });
+	cookies.delete(AUTH_COOKIE_NAME, { path: core.Home.href });
 }
 
 export function verifyAdmin({ cookies }: RequestEvent) {
@@ -58,7 +59,7 @@ export function authorizeAdmin(
 	cookies.set(AUTH_COOKIE_NAME, token, {
 		httpOnly: true,
 		expires: new Date(expiresSeconds),
-		path: '/',
+		path: core.Home.href,
 		sameSite: 'strict',
 		secure: NODE_ENV === 'production'
 	});
