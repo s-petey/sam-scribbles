@@ -5,7 +5,7 @@ ARG NODE_ENV=production
 ARG DATABASE_URL
 ARG JWT_SECRET
 ARG ALLOWED_EMAILS
-ARG ORIGIN=http://sam-peterson.com
+ARG ORIGIN
 ENV ORIGIN=$ORIGIN
 
 WORKDIR /usr/src/app
@@ -43,5 +43,8 @@ COPY --from=prerelease /usr/src/app/package.json .
 
 # run the app
 USER bun
+RUN echo -------------------------------------------------------
+RUN echo $ORIGIN
+
 EXPOSE 3000/tcp
 ENTRYPOINT [ "bun", "run", "./build" ]
