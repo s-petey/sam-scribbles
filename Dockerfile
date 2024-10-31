@@ -43,8 +43,5 @@ COPY --from=prerelease /usr/src/app/package.json .
 
 # run the app
 USER bun
-RUN echo -------------------------------------------------------
-RUN echo $ORIGIN
-
 EXPOSE 3000/tcp
 ENTRYPOINT ORIGIN=$ORIGIN bun run ./build
