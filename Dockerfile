@@ -34,7 +34,7 @@ ENV NODE_ENV=production
 RUN bun run build
 
 # copy production dependencies and source code into final image
-FROM node:20-alpine AS release
+FROM base AS release
 ENV NODE_ENV=production
 # COPY --from=install /temp/prod/node_modules node_modules
 COPY --from=install /temp/dev/node_modules node_modules
@@ -42,6 +42,6 @@ COPY --from=prerelease /usr/src/app/build build
 COPY --from=prerelease /usr/src/app/package.json .
 
 # run the app
-USER node:node
+USER bun
 EXPOSE 3000/tcp
-ENTRYPOINT ORIGIN=$ORIGIN node ./build
+ENTRYPOINT ORIGIN=$ORIGIN bun run ./build
