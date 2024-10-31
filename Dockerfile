@@ -47,4 +47,4 @@ RUN echo -------------------------------------------------------
 RUN echo $ORIGIN
 
 EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "run", "./build" ]
+ENTRYPOINT ORIGIN=$ORIGIN bun run ./build
