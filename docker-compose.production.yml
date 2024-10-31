@@ -9,4 +9,4 @@ services:
         - ALLOWED_EMAILS=${ALLOWED_EMAILS}
         - ORIGIN=${ORIGIN}
     ports:
-      - 3004:3004
+      - 3000:3000
