@@ -46,5 +46,5 @@ USER bun
 RUN echo -------------------------------------------------------
 RUN echo $ORIGIN
 
-# EXPOSE 3000/tcp
+EXPOSE 3000/tcp
 ENTRYPOINT [ "bun", "run", "./build" ]

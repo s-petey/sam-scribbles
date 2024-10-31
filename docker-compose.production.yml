@@ -8,5 +8,5 @@ services:
         - JWT_SECRET=${JWT_SECRET}
         - ALLOWED_EMAILS=${ALLOWED_EMAILS}
         - ORIGIN=${ORIGIN}
-    ports:
-      - 3000:3000
+    # ports:
+    #   - 3000:3000
