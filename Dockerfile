@@ -42,6 +42,6 @@ COPY --from=prerelease /usr/src/app/build build
 COPY --from=prerelease /usr/src/app/package.json .
 
 # run the app
-USER bun
+USER node:node
 EXPOSE 3000/tcp
 ENTRYPOINT ORIGIN=$ORIGIN node ./build
