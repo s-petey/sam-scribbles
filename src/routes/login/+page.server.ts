@@ -1,4 +1,4 @@
-import { ALLOWED_EMAILS, ORIGIN } from '$env/static/private';
+import { ALLOWED_EMAILS } from '$env/static/private';
 import { authorizeAdmin, saltAndHashPassword, verifyPassword } from '$lib/auth';
 import { db } from '$lib/server/db';
 import { user as dbUser } from '$lib/server/db/schema';
@@ -28,7 +28,6 @@ const signInSchema = object({
 });
 
 export const load = async () => {
-	console.log('ORIGIN: ', ORIGIN);
 	const form = await superValidate(zod(signInSchema));
 
 	return {
@@ -38,8 +37,6 @@ export const load = async () => {
 
 export const actions: Actions = {
 	default: async (event) => {
-		console.log('ORIGIN: ', ORIGIN);
-
 		const form = await superValidate(event, zod(signInSchema));
 
 		if (!form.valid) {
