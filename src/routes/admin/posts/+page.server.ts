@@ -36,7 +36,7 @@ export const load = (async () => {
 export const actions: Actions = {
 	syncPosts: async (event) => {
 		// Validate session
-		const admin = verifyAdmin(event);
+		const admin = await verifyAdmin(event);
 
 		if (admin === null) {
 			throw error(401, 'Unauthorized');
@@ -120,7 +120,7 @@ export const actions: Actions = {
 
 	delete: async (event) => {
 		// Validate session
-		const admin = verifyAdmin(event);
+		const admin = await verifyAdmin(event);
 
 		if (admin === null) {
 			throw error(401, 'Unauthorized');

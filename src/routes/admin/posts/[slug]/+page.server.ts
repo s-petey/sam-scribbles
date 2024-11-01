@@ -32,7 +32,7 @@ export const load = (async ({ params }) => {
 export const actions: Actions = {
 	default: async (event) => {
 		// Validate session
-		const admin = verifyAdmin(event);
+		const admin = await verifyAdmin(event);
 
 		if (admin === null) {
 			throw error(401, 'Unauthorized');

@@ -2,7 +2,7 @@ import { logout, ONE_HOUR, verifyAdmin } from '$lib/auth';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async (event) => {
-	const user = verifyAdmin(event);
+	const user = await verifyAdmin(event);
 
 	if (user !== null && user.expires > Date.now() + ONE_HOUR) {
 		// TODO: Warn the user they need to login again (have a message?)

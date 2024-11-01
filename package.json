@@ -59,7 +59,7 @@
 	},
 	"dependencies": {
 		"drizzle-orm": "^0.35.3",
-		"jsonwebtoken": "^9.0.2",
+		"jose": "^5.9.6",
 		"luxon": "^3.5.0",
 		"postgres": "^3.4.5",
 		"zod": "^3.23.8"

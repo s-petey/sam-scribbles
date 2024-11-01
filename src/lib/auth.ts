@@ -1,10 +1,10 @@
 import { JWT_SECRET, NODE_ENV } from '$env/static/private';
 import type { RequestEvent } from '@sveltejs/kit';
-import jwt from 'jsonwebtoken';
+import { SignJWT, jwtVerify } from 'jose';
+import { randomBytes, scryptSync } from 'node:crypto';
 import { z } from 'zod';
 import { type User } from './server/db/schema';
 import { core } from './siteLinks';
-import { randomBytes, scryptSync } from 'node:crypto';
 
 export const ONE_HOUR = 60 * 60 * 1000;
 
@@ -21,7 +21,7 @@ export function logout({ cookies }: RequestEvent) {
 	cookies.delete(AUTH_COOKIE_NAME, { path: core.Home.href });
 }
 
-export function verifyAdmin({ cookies }: RequestEvent) {
+export async function verifyAdmin({ cookies }: RequestEvent) {
 	const userToken = cookies.get(AUTH_COOKIE_NAME);
 
 	if (userToken === undefined) {
@@ -29,7 +29,7 @@ export function verifyAdmin({ cookies }: RequestEvent) {
 	}
 
 	try {
-		const payload = jwt.verify(userToken, JWT_SECRET);
+		const { payload } = await jwtVerify(userToken, getJwtSecret());
 		return adminSchema.parse(payload);
 		// eslint-disable-next-line  @typescript-eslint/no-unused-vars
 	} catch (_error) {
@@ -38,10 +38,14 @@ export function verifyAdmin({ cookies }: RequestEvent) {
 	}
 }
 
+function getJwtSecret() {
+	return new TextEncoder().encode(JWT_SECRET);
+}
+
 /**
  * @throws If the user is not a valid role.
  */
-export function authorizeAdmin(
+export async function authorizeAdmin(
 	user: Pick<User, 'email' | 'username' | 'role'>,
 	{ cookies }: RequestEvent
 ) {
@@ -54,7 +58,11 @@ export function authorizeAdmin(
 		role: user.role
 	});
 
-	const token = jwt.sign(parsedUser, JWT_SECRET);
+	const token = await new SignJWT(parsedUser)
+		.setProtectedHeader({ alg: 'HS256' })
+		.setIssuedAt()
+		.setExpirationTime(expiresSeconds)
+		.sign(getJwtSecret());
 
 	cookies.set(AUTH_COOKIE_NAME, token, {
 		httpOnly: true,

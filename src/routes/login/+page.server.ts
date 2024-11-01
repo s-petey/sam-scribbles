@@ -85,7 +85,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			authorizeAdmin(user, event);
+			await authorizeAdmin(user, event);
 		} catch {
 			return setError(form, '', 'User unauthorized');
 		}
