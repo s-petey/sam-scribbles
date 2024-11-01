@@ -8,13 +8,11 @@
     "npm:@sveltejs/vite-plugin-svelte@4": "4.0.0_svelte@5.1.9__acorn@8.14.0_vite@5.4.10__@types+node@22.8.6_@types+node@22.8.6",
     "npm:@tailwindcss/forms@~0.5.9": "0.5.9_tailwindcss@3.4.14__postcss@8.4.47",
     "npm:@tailwindcss/typography@~0.5.15": "0.5.15_tailwindcss@3.4.14__postcss@8.4.47",
-    "npm:@types/bcryptjs@^2.4.6": "2.4.6",
     "npm:@types/eslint@^9.6.1": "9.6.1",
     "npm:@types/jsonwebtoken@^9.0.7": "9.0.7",
     "npm:@types/luxon@^3.4.2": "3.4.2",
     "npm:@types/node@^22.8.1": "22.8.6",
     "npm:autoprefixer@^10.4.20": "10.4.20_postcss@8.4.47",
-    "npm:bcryptjs@^2.4.3": "2.4.3",
     "npm:drizzle-kit@~0.26.2": "0.26.2_esbuild@0.19.12",
     "npm:drizzle-orm@~0.35.3": "0.35.3_@libsql+client-wasm@0.14.0_postgres@3.4.5",
     "npm:eslint-config-prettier@^9.1.0": "9.1.0_eslint@9.13.0",
@@ -620,9 +618,6 @@
         "tailwindcss"
       ]
     },
-    "@types/bcryptjs@2.4.6": {
-      "integrity": "sha512-9xlo6R2qDs5uixm0bcIqCeMCE6HiQsIyel9KQySStiyqNl2tnj2mP3DX1Nf56MD6KMenNNlBBsy3LJ7gUEQPXQ=="
-    },
     "@types/cookie@0.6.0": {
       "integrity": "sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA=="
     },
@@ -1127,9 +1122,6 @@
     },
     "balanced-match@1.0.2": {
       "integrity": "sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw=="
-    },
-    "bcryptjs@2.4.3": {
-      "integrity": "sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ=="
     },
     "binary-extensions@2.3.0": {
       "integrity": "sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw=="
@@ -3141,13 +3133,11 @@
         "npm:@sveltejs/vite-plugin-svelte@4",
         "npm:@tailwindcss/forms@~0.5.9",
         "npm:@tailwindcss/typography@~0.5.15",
-        "npm:@types/bcryptjs@^2.4.6",
         "npm:@types/eslint@^9.6.1",
         "npm:@types/jsonwebtoken@^9.0.7",
         "npm:@types/luxon@^3.4.2",
         "npm:@types/node@^22.8.1",
         "npm:autoprefixer@^10.4.20",
-        "npm:bcryptjs@^2.4.3",
         "npm:drizzle-kit@~0.26.2",
         "npm:drizzle-orm@~0.35.3",
         "npm:eslint-config-prettier@^9.1.0",

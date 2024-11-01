@@ -1,10 +1,10 @@
 import { JWT_SECRET, NODE_ENV } from '$env/static/private';
 import type { RequestEvent } from '@sveltejs/kit';
-import * as bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { type User } from './server/db/schema';
 import { core } from './siteLinks';
+import { randomBytes, scryptSync } from 'node:crypto';
 
 export const ONE_HOUR = 60 * 60 * 1000;
 
@@ -66,9 +66,19 @@ export function authorizeAdmin(
 }
 
 export function saltAndHashPassword(password: string) {
-	return bcryptjs.hash(password, 13);
+	const salt = randomBytes(16).toString('hex');
+	return encryptPassword(password, salt) + salt;
 }
 
 export function verifyPassword(password: string, hash: User['password']) {
-	return bcryptjs.compare(password, hash);
+	const salt = hash.slice(64);
+	const originalPassHash = hash.slice(0, 64);
+	const currentPassHash = encryptPassword(password, salt);
+	return originalPassHash === currentPassHash;
+}
+
+// Pass the password string and get hashed password back
+// ( and store only the hashed string in your database)
+function encryptPassword(password: string, salt: string) {
+	return scryptSync(password, salt, 32).toString('hex');
 }
