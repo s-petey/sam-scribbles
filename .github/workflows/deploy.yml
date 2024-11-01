@@ -34,10 +34,10 @@ jobs:
       - name: Build step
         run: "npm run build"
         env: 
-            ALLOWED_EMAILS: {{ secrets.ALLOWED_EMAILS }}
-            DATABASE_URL: {{ secrets.DATABASE_URL }}
-            JWT_SECRET: {{ secrets.JWT_SECRET }}
-            NODE_ENV: {{ secrets.NODE_ENV }}
+            ALLOWED_EMAILS: ${{ secrets.ALLOWED_EMAILS }}
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            JWT_SECRET: ${{ secrets.JWT_SECRET }}
+            NODE_ENV: ${{ secrets.NODE_ENV }}
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
