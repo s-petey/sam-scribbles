@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM oven/bun:1.1.33 AS base
+FROM denoland/deno:alpine AS base
 ARG NODE_ENV=production
 ARG DATABASE_URL
 ARG JWT_SECRET
@@ -14,13 +14,13 @@ WORKDIR /usr/src/app
 # this will cache them and speed up future builds
 FROM base AS install
 RUN mkdir -p /temp/dev
-COPY package.json bun.lockb vite.config.ts svelte.config.js /temp/dev/
-RUN cd /temp/dev && bun install --frozen-lockfile
+COPY package.json deno.lock vite.config.ts svelte.config.js /temp/dev/
+RUN cd /temp/dev && deno install --frozen-lockfile
 
 # install with --production (exclude devDependencies)
 # RUN mkdir -p /temp/prod
-# COPY package.json bun.lockb vite.config.ts svelte.config.js /temp/prod/
-# RUN cd /temp/prod && bun install --frozen-lockfile --production
+# COPY package.json deno.lock vite.config.ts svelte.config.js /temp/prod/
+# RUN cd /temp/prod && deno install --frozen-lockfile --production
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
@@ -30,8 +30,8 @@ COPY . .
 
 # [optional] tests & build
 ENV NODE_ENV=production
-# RUN bun test
-RUN bun run build
+# RUN deno task test
+RUN deno task build
 
 # copy production dependencies and source code into final image
 FROM node:20-alpine AS release
