@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM denoland/deno:alpine AS base
+FROM denoland/deno:2.0.4 AS base
 ARG NODE_ENV=production
 ARG DATABASE_URL
 ARG JWT_SECRET
