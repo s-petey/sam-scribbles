@@ -1,6 +1,7 @@
 import { JWT_SECRET, NODE_ENV } from '$env/static/private';
 import type { RequestEvent } from '@sveltejs/kit';
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT } from 'jose/jwt/sign';
+import { jwtVerify } from 'jose/jwt/verify';
 import { randomBytes, scryptSync } from 'node:crypto';
 import { z } from 'zod';
 import { type User } from './server/db/schema';

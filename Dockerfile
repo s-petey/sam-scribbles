@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM denoland/deno:2.0.4 AS base
+FROM denoland/deno:alpine AS base
 ARG NODE_ENV=production
 ARG DATABASE_URL
 ARG JWT_SECRET
@@ -30,7 +30,7 @@ COPY . .
 
 # [optional] tests & build
 ENV NODE_ENV=production
-# RUN deno task test
+# RUN deno test
 RUN deno task build
 
 # copy production dependencies and source code into final image
