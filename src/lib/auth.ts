@@ -1,6 +1,6 @@
 import { JWT_SECRET, NODE_ENV } from '$env/static/private';
 import type { RequestEvent } from '@sveltejs/kit';
-import { compare, hash } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { type User } from './server/db/schema';
@@ -66,9 +66,9 @@ export function authorizeAdmin(
 }
 
 export function saltAndHashPassword(password: string) {
-	return hash(password, 13);
+	return bcrypt.hash(password, 13);
 }
 
 export function verifyPassword(password: string, hash: User['password']) {
-	return compare(password, hash);
+	return bcrypt.compare(password, hash);
 }
