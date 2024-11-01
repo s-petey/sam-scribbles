@@ -43,7 +43,7 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "sam-scribbles"
-          entrypoint: "build/index.js"
+          entrypoint: "index.js"
           root: "build"
           
           
