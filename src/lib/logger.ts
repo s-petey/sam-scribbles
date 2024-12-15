@@ -1,46 +1,48 @@
 import { browser } from '$app/environment';
 import { env } from '$env/dynamic/private';
+import { BASELIME_API_KEY, NODE_ENV } from '$env/static/private';
 import { pino, type LoggerOptions } from 'pino';
-import pretty from 'pino-pretty';
+import { type PrettyOptions } from 'pino-pretty';
 import { get, readable } from 'svelte/store';
 
 const logLevel = env?.LOG_LEVEL ?? 'info';
 
+const prettyOptions: PrettyOptions = {
+	colorize: true,
+	levelFirst: true
+};
+
 const pinoOptions: LoggerOptions = {
 	level: logLevel,
-	formatters: {
-		level: (label) => {
-			return { level: label.toUpperCase() };
-		}
-	},
 	transport: {
-		target: 'pino-pretty',
-		options: {
-			colorize: true,
-			levelFirst: true
-		}
+		targets: [
+			...(NODE_ENV === 'production'
+				? [
+						{
+							target: '@baselime/pino-transport',
+							options: { baselimeApiKey: BASELIME_API_KEY }
+						}
+					]
+				: []),
+			{
+				target: 'pino-pretty',
+				options: prettyOptions
+			}
+		]
 	},
 	timestamp: pino.stdTimeFunctions.isoTime
 };
 
 function makePinoLogger() {
 	if (browser) {
-		return pino(
-			{
-				browser: {
-					asObject: false
-				}
-			},
-			pretty({
-				...pinoOptions
-			})
-		);
+		return pino({
+			...pinoOptions,
+			browser: {
+				asObject: false
+			}
+		});
 	} else {
-		return pino(
-			pretty({
-				...pinoOptions
-			})
-		);
+		return pino(pinoOptions);
 	}
 }
 
