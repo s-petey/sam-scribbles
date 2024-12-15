@@ -1,5 +1,6 @@
 import { ALLOWED_EMAILS } from '$env/static/private';
 import { authorizeAdmin, saltAndHashPassword, verifyPassword } from '$lib/auth';
+import { logger } from '$lib/logger';
 import { db } from '$lib/server/db';
 import { user as dbUser } from '$lib/server/db/schema';
 import { admin } from '$lib/siteLinks';
@@ -30,6 +31,8 @@ const signInSchema = object({
 export const load = async () => {
 	const form = await superValidate(zod(signInSchema));
 
+	logger.info('Attempt to access login page');
+
 	return {
 		form
 	};
@@ -40,8 +43,11 @@ export const actions: Actions = {
 		const form = await superValidate(event, zod(signInSchema));
 
 		if (!form.valid) {
+			logger.error(`Attempted with email: ${form.data.email}`);
 			return fail(400, { form });
 		}
+
+		logger.info({ msg: 'Logging in', email: form.data.email });
 
 		let user = await db.query.user.findFirst({
 			where: (user, { eq }) => eq(user.email, form.data.email),
