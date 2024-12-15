@@ -1,10 +1,10 @@
 import { browser } from '$app/environment';
-import { LOG_LEVEL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { pino, type LoggerOptions } from 'pino';
 import pretty from 'pino-pretty';
 import { get, readable } from 'svelte/store';
 
-const logLevel = LOG_LEVEL ?? 'info';
+const logLevel = env?.LOG_LEVEL ?? 'info';
 
 const pinoOptions: LoggerOptions = {
 	level: logLevel,
