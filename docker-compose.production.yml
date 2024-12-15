@@ -8,5 +8,6 @@ services:
         - JWT_SECRET=${JWT_SECRET}
         - ALLOWED_EMAILS=${ALLOWED_EMAILS}
         - ORIGIN=${ORIGIN}
+        - BASELIME_API_KEY=${BASELIME_API_KEY}
     ports:
       - 3004:3000
