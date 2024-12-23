@@ -4,13 +4,13 @@ import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 
 export const load: LayoutServerLoad = async (event) => {
-	const user = await verifyAdmin(event);
+  const user = await verifyAdmin(event);
 
-	if (user === null) {
-		throw redirect(302, core.Home.href);
-	}
+  if (user === null) {
+    throw redirect(302, core.Home.href);
+  }
 
-	return {
-		user
-	};
+  return {
+    user,
+  };
 };

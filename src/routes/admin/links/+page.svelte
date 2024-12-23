@@ -18,7 +18,7 @@
   function handleQueryChange(
     event: SubmitEvent & {
       currentTarget: EventTarget & HTMLFormElement;
-    }
+    },
   ) {
     event.preventDefault();
 

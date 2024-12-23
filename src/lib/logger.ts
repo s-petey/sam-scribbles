@@ -8,42 +8,42 @@ import { get, readable } from 'svelte/store';
 const logLevel = env?.LOG_LEVEL ?? 'info';
 
 const prettyOptions: PrettyOptions = {
-	colorize: true,
-	levelFirst: true
+  colorize: true,
+  levelFirst: true,
 };
 
 const pinoOptions: LoggerOptions = {
-	level: logLevel,
-	transport: {
-		targets: [
-			...(NODE_ENV === 'production'
-				? [
-						{
-							target: '@baselime/pino-transport',
-							options: { baselimeApiKey: BASELIME_API_KEY }
-						}
-					]
-				: []),
-			{
-				target: 'pino-pretty',
-				options: prettyOptions
-			}
-		]
-	},
-	timestamp: pino.stdTimeFunctions.isoTime
+  level: logLevel,
+  transport: {
+    targets: [
+      ...(NODE_ENV === 'production'
+        ? [
+            {
+              target: '@baselime/pino-transport',
+              options: { baselimeApiKey: BASELIME_API_KEY },
+            },
+          ]
+        : []),
+      {
+        target: 'pino-pretty',
+        options: prettyOptions,
+      },
+    ],
+  },
+  timestamp: pino.stdTimeFunctions.isoTime,
 };
 
 function makePinoLogger() {
-	if (browser) {
-		return pino({
-			...pinoOptions,
-			browser: {
-				asObject: false
-			}
-		});
-	} else {
-		return pino(pinoOptions);
-	}
+  if (browser) {
+    return pino({
+      ...pinoOptions,
+      browser: {
+        asObject: false,
+      },
+    });
+  } else {
+    return pino(pinoOptions);
+  }
 }
 
 const pinoLogger = readable(makePinoLogger());

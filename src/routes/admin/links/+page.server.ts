@@ -23,7 +23,7 @@ const linkSchema = z.object({
 
       return newLink;
     }),
-  private: z.boolean().default(false)
+  private: z.boolean().default(false),
   // TODO: Add tags
 });
 
@@ -41,7 +41,7 @@ export const load = (async ({ url }) => {
         ? (link, { like }) => like(link.link, `%${q}%`)
         : undefined,
     limit,
-    offset: (page - 1) * limit
+    offset: (page - 1) * limit,
   });
 
   let linkCount = 0;
@@ -60,8 +60,8 @@ export const load = (async ({ url }) => {
       page,
       pages,
       linkCount,
-      limit
-    }
+      limit,
+    },
   };
 }) satisfies PageServerLoad;
 
@@ -86,9 +86,9 @@ export const actions: Actions = {
 
     await db.insert(link).values({
       link: form.data.link,
-      private: form.data.private
+      private: form.data.private,
     });
 
     return message(form, 'Created link');
-  }
+  },
 };
