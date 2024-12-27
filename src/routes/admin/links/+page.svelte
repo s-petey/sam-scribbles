@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page as sveltePage } from '$app/state';
-  import { Pagination } from '@skeletonlabs/skeleton-svelte';
+  import { Pagination, TagsInput, Modal } from '@skeletonlabs/skeleton-svelte';
   import IconArrowLeft from 'lucide-svelte/icons/arrow-left';
   import IconArrowRight from 'lucide-svelte/icons/arrow-right';
   import IconLast from 'lucide-svelte/icons/chevron-right';
@@ -9,9 +9,14 @@
   import IconEllipsis from 'lucide-svelte/icons/ellipsis';
   import Eraser from 'lucide-svelte/icons/eraser';
   import SqurePlus from 'lucide-svelte/icons/square-plus';
+  import PencilIcon from 'lucide-svelte/icons/pencil';
+  import TrashIcon from 'lucide-svelte/icons/trash';
+  import DeleteIcon from 'lucide-svelte/icons/circle-x';
+
   import { superForm } from 'sveltekit-superforms';
 
   let { data } = $props();
+  let selectedId = $state<string | null>(null);
 
   const { form, enhance, constraints, errors, reset, submitting } = superForm(data.form);
 
@@ -37,7 +42,7 @@
   }
 </script>
 
-<form class="grid grid-cols-2 gap-4" action="?/create" method="POST" use:enhance>
+<form class="grid grid-cols-2 items-center gap-4" action="?/create" method="POST" use:enhance>
   <header class="col-span-2">
     <h2 class="h2">Add a link</h2>
   </header>
@@ -76,6 +81,43 @@
     {/if}
   </div>
 
+  <div class="col-span-2">
+    <label class="flex items-center space-x-2" for="tags">Available Tags:</label>
+    <input type="hidden" name="tags" bind:value={$form.tags} {...$constraints.tags} />
+
+    <div class="flex gap-2">
+      {#each data.tags as tag}
+        <button
+          class={`chip ${
+            ($form.tags ?? []).includes(tag)
+              ? 'preset-outlined-secondary-500'
+              : 'preset-outlined-surface-500'
+          }`}
+          type="button"
+          onclick={() => {
+            if ($form.tags?.includes(tag)) {
+              $form.tags = $form.tags.filter((t) => t !== tag);
+            } else {
+              $form.tags = [...($form.tags ?? []), tag];
+            }
+          }}
+        >
+          {tag}
+        </button>
+      {/each}
+    </div>
+
+    {#if $errors.tags}
+      <span class="invalid">{$errors.tags}</span>
+    {/if}
+  </div>
+
+  <div class="col-span-2">
+    <TagsInput bind:value={$form.tags} placeholder="Tags">
+      {#snippet buttonDelete()}<DeleteIcon />{/snippet}
+    </TagsInput>
+  </div>
+
   <button
     type="submit"
     class="btn preset-tonal-success"
@@ -109,13 +151,33 @@
       <tr>
         <th class="whitespace-nowrap">Link</th>
         <th class="whitespace-nowrap">Private</th>
+        <th class="whitespace-nowrap"></th>
       </tr>
     </thead>
     <tbody class="hover:[&>tr]:preset-tonal-primary">
       {#each data.links as link}
         <tr>
           <td>{link.link}</td>
-          <td>{link.private}</td>
+          <td>
+            <span>
+              {link.private}
+            </span>
+          </td>
+          <td class="text-right">
+            <button class="btn-icon" type="button">
+              <a href="/admin/links/{link.shortId}"><PencilIcon class="size-4" /></a>
+            </button>
+
+            <button
+              class="btn-icon text-error-500"
+              type="button"
+              onclick={() => {
+                selectedId = link.shortId;
+              }}
+            >
+              <TrashIcon class="size-4" />
+            </button>
+          </td>
         </tr>
       {/each}
     </tbody>
@@ -151,3 +213,29 @@
     {#snippet labelLast()}<IconLast class="size-4" />{/snippet}
   </Pagination>
 </footer>
+
+<Modal
+  open={selectedId !== null}
+  onOpenChange={() => (selectedId = null)}
+  triggerBase="btn preset-tonal"
+  contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-screen-sm"
+  backdropClasses="backdrop-blur-sm"
+>
+  {#snippet content()}
+    <header class="flex justify-between">
+      <h2 class="h2 text-error-500">Delete Link</h2>
+    </header>
+    <article>
+      <p class="opacity-60">Are you sure you'd like to delete this link?</p>
+    </article>
+    <footer class="flex justify-end gap-4">
+      <form action="?/delete" method="POST">
+        <input type="hidden" name="shortId" value={selectedId} />
+        <button type="button" class="btn preset-tonal" onclick={() => (selectedId = null)}>
+          Cancel
+        </button>
+        <button type="submit" class="btn font-bold preset-filled-error-500">Confirm</button>
+      </form>
+    </footer>
+  {/snippet}
+</Modal>
