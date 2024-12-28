@@ -1,6 +1,8 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { core } from '$lib/siteLinks';
+  import { route } from '$lib/ROUTES';
+
   // import { PopularPosts } from '$lib/components'
 </script>
 
@@ -19,7 +21,7 @@
 
   <p>
     Maybe check out the <a href={core.Posts.href}>posts</a> page? Or go to the
-    <a href="/">home</a> page.
+    <a href={route('/')}>home</a> page.
   </p>
 
   <!-- TODO: Something like this... -->

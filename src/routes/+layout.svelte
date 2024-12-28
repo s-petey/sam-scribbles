@@ -7,6 +7,7 @@
   import { Avatar } from '@skeletonlabs/skeleton-svelte';
   import Menu from 'lucide-svelte/icons/menu';
   import Close from 'lucide-svelte/icons/x';
+  import { route } from '$lib/ROUTES';
 
   let { children, data } = $props();
   let expanded = $state(false);
@@ -78,7 +79,7 @@
           <!-- TODO: Have an icon for this instead and a title? -->
           <a
             class="hidden bg-gradient-to-b from-primary-500 to-tertiary-500 bg-clip-text font-extrabold text-transparent xl:inline-block"
-            href="/"
+            href={route('/')}
             title="Skeleton"
           >
             <!-- TODO: Update this will be the full site not only sam-scribbles... -->

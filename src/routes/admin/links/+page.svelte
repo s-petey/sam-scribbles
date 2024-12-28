@@ -1,18 +1,18 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page as sveltePage } from '$app/state';
-  import { Pagination, TagsInput, Modal } from '@skeletonlabs/skeleton-svelte';
+  import { route } from '$lib/ROUTES';
+  import { Modal, Pagination, TagsInput } from '@skeletonlabs/skeleton-svelte';
   import IconArrowLeft from 'lucide-svelte/icons/arrow-left';
   import IconArrowRight from 'lucide-svelte/icons/arrow-right';
   import IconLast from 'lucide-svelte/icons/chevron-right';
   import IconFirst from 'lucide-svelte/icons/chevrons-left';
+  import DeleteIcon from 'lucide-svelte/icons/circle-x';
   import IconEllipsis from 'lucide-svelte/icons/ellipsis';
   import Eraser from 'lucide-svelte/icons/eraser';
-  import SqurePlus from 'lucide-svelte/icons/square-plus';
   import PencilIcon from 'lucide-svelte/icons/pencil';
+  import SqurePlus from 'lucide-svelte/icons/square-plus';
   import TrashIcon from 'lucide-svelte/icons/trash';
-  import DeleteIcon from 'lucide-svelte/icons/circle-x';
-
   import { superForm } from 'sveltekit-superforms';
 
   let { data } = $props();
@@ -165,7 +165,9 @@
           </td>
           <td class="text-right">
             <button class="btn-icon" type="button">
-              <a href="/admin/links/{link.shortId}"><PencilIcon class="size-4" /></a>
+              <a href={route('/admin/links/[shortId]', { shortId: link.shortId })}>
+                <PencilIcon class="size-4" />
+              </a>
             </button>
 
             <button
