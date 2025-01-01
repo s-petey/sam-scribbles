@@ -12,6 +12,6 @@ export const load = async ({ params: { playerCount } }) => {
 
   return {
     playerCount: countAsInt,
-    startingRows: 10,
+    startingRows: 4,
   };
 };

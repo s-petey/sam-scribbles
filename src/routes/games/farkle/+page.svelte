@@ -1,5 +1,6 @@
 <script lang="ts">
   import { route } from '$lib/ROUTES';
+  import Scoring from './Scoring.svelte';
 </script>
 
 <h1 class="h1">Farkle</h1>
@@ -20,3 +21,5 @@
     {/if}
   {/each}
 </div>
+
+<Scoring />
