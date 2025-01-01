@@ -173,8 +173,6 @@ export const actions: Actions = {
       return fail(500, { message: 'Missing shortId somehow' });
     }
 
-    console.log(form);
-
     await db.delete(link).where(eq(link.shortId, form.data.shortId));
 
     redirect(302, '/admin/links');

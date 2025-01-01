@@ -60,6 +60,7 @@
 	},
 	"dependencies": {
 		"@baselime/pino-transport": "^0.1.5",
+		"dexie": "^4.0.10",
 		"drizzle-orm": "^0.35.3",
 		"jose": "^5.9.6",
 		"luxon": "^3.5.0",

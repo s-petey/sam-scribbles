@@ -2,47 +2,94 @@
   import { Modal } from '@skeletonlabs/skeleton-svelte';
   import Scoring from '../Scoring.svelte';
   import type { PageData } from './$types';
+  import { db } from './farkleDb';
 
   let { data }: { data: PageData } = $props();
 
-  let scores = $state<Record<number, Record<number, number>>>(
-    Object.fromEntries(
-      Array.from({ length: data.playerCount }).map((_, i) => [
-        i,
-        Object.fromEntries(Array.from({ length: data.startingRows }).map((_, j) => [j, 0])),
-      ]),
-    ),
-  );
-
+  let scores = $state<Record<number, Record<number, number>>>(data.scores);
   let rows = $state(data.startingRows);
-  let names = $state(Array.from({ length: data.playerCount }).map((_, i) => `Player ${i + 1}`));
-
+  let names = $state(data.names);
   let openState = $state(false);
+
+  let pendingSavingGame = false;
+
+  async function addGame() {
+    if (pendingSavingGame) {
+      return;
+    }
+
+    pendingSavingGame = true;
+
+    try {
+      // Try to add the game
+      await db.farkle.put({
+        scores: JSON.parse(JSON.stringify(scores)),
+        playerNames: Array.from(names),
+        id: data.playerCount,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      pendingSavingGame = false;
+    }
+  }
+
+  async function handleReset() {
+    if (pendingSavingGame) {
+      // TODO: Alert the user something is already saving.
+      return;
+    }
+
+    pendingSavingGame = true;
+
+    rows = 4;
+    scores = Array.from({ length: data.playerCount }, () => Array.from({ length: rows }, () => 0));
+
+    try {
+      // Try to add the game
+      await db.farkle.put({
+        scores: JSON.parse(JSON.stringify(scores)),
+        playerNames: Array.from(names),
+        id: data.playerCount,
+      });
+    } catch (error) {
+      console.error(error);
+    } finally {
+      pendingSavingGame = false;
+    }
+  }
 </script>
 
 <h1 class="h1">Farkle</h1>
 
-<span>You can rename players, just click into the name and type!</span>
+<p>
+  You can rename players, just click into the name and type! Game data is stored only in your
+  browser session, so refreshing you can keep where you were.
+</p>
 
 <div class="rounded-lg border border-solid text-center border-primary-200-800">
   <div
     class="grid grid-cols-{data.playerCount} rounded-t-lg text-lg font-bold bg-primary-400-600 text-primary-800-200"
   >
-    <!-- class="mb-4 grid grid-cols-subgrid text-lg font-bold col-span-{data.playerCount} rounded-t-lg bg-primary-400-600 text-primary-800-200" -->
-    {#each names as _name, idx}
-      <div class="">
-        <!-- On hover show an edit name button -->
-        <input
-          name="player-{idx + 1}-name"
-          type="text"
-          class={{
-            'input border-none text-center ring-0': true,
-            'rounded-tl-lg': idx === 0,
-            'rounded-tr-lg': idx === data.playerCount - 1,
-          }}
-          bind:value={names[idx]}
-        />
-      </div>
+    {#each names as name, idx}
+      <input
+        name="player-{idx + 1}-name"
+        type="text"
+        class={{
+          'input border-none text-center ring-0 hover:ring-1': true,
+          'rounded-tl-lg': idx === 0,
+          'rounded-tr-lg': idx === data.playerCount - 1,
+        }}
+        onchange={(e) => (names[idx] = e.currentTarget.value)}
+        value={name}
+        onblur={(e) => {
+          if (e.currentTarget.value === '') {
+            names[idx] = `Player ${idx + 1}`;
+          }
+
+          void addGame();
+        }}
+      />
     {/each}
 
     {#each { length: data.playerCount }, count}
@@ -92,6 +139,8 @@
                 if (rows === row + 1) {
                   rows++;
                 }
+
+                void addGame();
               }}
               name="player-{count + 1}"
               type="number"
@@ -102,6 +151,7 @@
               }}
               step="50"
               min="0"
+              value={scores[count][row] || undefined}
             />
           </div>
         {/each}
@@ -110,8 +160,12 @@
   </div>
 </div>
 
-<div class="btn btn-group">
-  <button class="btn preset-tonal-tertiary" type="button" onclick={() => rows++}> Add Row </button>
+<div class="btn-group flex w-full justify-center">
+  <button class="btn preset-tonal-tertiary" type="button" onclick={() => rows++}>Add Row</button>
+
+  <button class="btn preset-filled-warning-400-600" type="button" onclick={handleReset}
+    >Reset Game</button
+  >
 
   <Modal
     bind:open={openState}
@@ -119,16 +173,16 @@
     contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-screen-sm"
   >
     {#snippet trigger()}
-      Show Scoring
+      Scoring Rules
     {/snippet}
 
     {#snippet content()}
       <Scoring />
 
       <footer class="flex justify-end gap-4">
-        <button type="button" class="btn preset-tonal" onclick={() => (openState = false)}
-          >Close</button
-        >
+        <button type="button" class="btn preset-tonal" onclick={() => (openState = false)}>
+          Close
+        </button>
       </footer>
     {/snippet}
   </Modal>

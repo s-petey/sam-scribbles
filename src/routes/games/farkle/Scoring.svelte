@@ -13,7 +13,7 @@
   <li>Four of a kind 1000 points</li>
   <li>Five of a kind 2000 points</li>
   <li>Six of a kind 3000 points</li>
-  <li>1-6 straight 1500 points</li>
+  <li>Straight 1-6 1500 points</li>
   <li>Three pairs 1500 points</li>
   <li>Two triplets 2500 points</li>
   <li>Four of a kind and a pair 1500 points</li>
