@@ -1,7 +1,5 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-
-  let { data }: { data: PageData } = $props();
+  import { route } from '$lib/ROUTES';
 </script>
 
 <h1 class="text-4xl heading-font-weight">Farkle</h1>
@@ -13,8 +11,12 @@
     {#if count > 0}
       <a
         class="btn-icon m-auto rounded-sm p-4 preset-tonal-primary"
-        href="/games/farkle/{count + 1}">{count + 1}</a
+        href={route('/games/farkle/[playerCount]', {
+          playerCount: count + 1,
+        })}
       >
+        {count + 1}
+      </a>
     {/if}
   {/each}
 </div>

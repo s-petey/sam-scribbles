@@ -1,5 +1,6 @@
 <script lang="ts">
   import { DateTime, Duration } from 'luxon';
+  import { route } from '$lib/ROUTES';
 
   let { data } = $props();
 
@@ -25,7 +26,7 @@
         <article
           class="text-secondary-contrast-300-700 hover:text-primary-300-700trast-700 card p-4 transition bg-secondary-300-700 first:pt-0 hover:bg-primary-300-700"
         >
-          <a href={`/posts/${post.slug}`}>
+          <a href={route('/posts/[slug]', { slug: post.slug })}>
             <div>
               <h2 class="pb-1 pt-5 text-3xl font-black">
                 {post.title}

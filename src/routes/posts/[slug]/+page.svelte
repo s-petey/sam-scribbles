@@ -1,4 +1,5 @@
 <script lang="ts">
+  // import { route } from '$lib/ROUTES.js';
   import { DateTime } from 'luxon';
 
   let { data } = $props();
@@ -32,6 +33,7 @@
       <!-- TODO: Implement this page -->
       {#each tags as tag}
         <a href={`/tags/${tag}`}>
+          <!-- <a href={route('/tags/[tag]', { tag: tag.toLowerCase() })}> -->
           <span
             class="badge shadow-md transition preset-filled-surface-500 hover:bg-surface-contrast-500 hover:text-surface-500"
           >
