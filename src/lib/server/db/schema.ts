@@ -1,5 +1,13 @@
 import { relations } from 'drizzle-orm';
-import { boolean, integer, pgTableCreator, text, timestamp, varchar } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  integer,
+  pgTableCreator,
+  primaryKey,
+  text,
+  timestamp,
+  varchar,
+} from 'drizzle-orm/pg-core';
 import { SHORT_ID_LENGTH, shortId } from '../../shortener';
 
 const pgTable = pgTableCreator((name) => `scribbles_${name}`);
@@ -21,20 +29,6 @@ export const post = pgTable('post', {
   // tags,
 });
 
-// TODO: Add users -- currently there will only be me (admin)
-export const user = pgTable('user', {
-  id: varchar({ length: SHORT_ID_LENGTH }).primaryKey().$default(shortId),
-  username: text().notNull().unique(),
-  email: text().notNull(),
-  password: text().notNull(),
-  role: text({ enum: ['admin', 'user', 'creator'] }),
-
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
-});
-
 // TODO: Make the links table, which I can describe
 // check off, share, edit, delete, etc. -- They should be "private" or "shared"
 export const link = pgTable('link', {
@@ -42,6 +36,54 @@ export const link = pgTable('link', {
   // TODO: Trim tailing slashes!
   link: text().notNull().unique(),
   private: boolean().notNull().default(false),
+
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const tags = pgTable('tags', {
+  name: text().primaryKey().notNull(),
+});
+
+export const linksToTags = pgTable(
+  'links_to_tags',
+  {
+    linkId: varchar({ length: SHORT_ID_LENGTH })
+      .notNull()
+      .references(() => link.shortId, { onDelete: 'cascade' }),
+    tag: text()
+      .notNull()
+      .references(() => tags.name),
+  },
+  (t) => ({
+    linkIdTagIndex: primaryKey({ columns: [t.linkId, t.tag] }),
+  }),
+);
+
+export const postsToTags = pgTable(
+  'posts_to_tags',
+  {
+    postId: varchar({ length: SHORT_ID_LENGTH })
+      .notNull()
+      .references(() => post.id, { onDelete: 'cascade' }),
+    tag: text()
+      .notNull()
+      .references(() => tags.name),
+  },
+  (t) => ({
+    postIdTagIndex: primaryKey({ columns: [t.postId, t.tag] }),
+  }),
+);
+
+// TODO: Add users -- currently there will only be me (admin)
+export const user = pgTable('user', {
+  id: varchar({ length: SHORT_ID_LENGTH }).primaryKey().$default(shortId),
+  username: text().notNull().unique(),
+  email: text().notNull(),
+  password: text().notNull(),
+  role: text({ enum: ['admin', 'user', 'creator'] }),
 
   createdAt: timestamp().notNull().defaultNow(),
   updatedAt: timestamp()
@@ -71,12 +113,33 @@ export const userLink = pgTable('user_link', {
     .$onUpdate(() => new Date()),
 });
 
-export const userRelations = relations(user, ({ many }) => ({
-  userToLinks: many(userLink),
+export const linkRelations = relations(link, ({ many }) => ({
+  users: many(userLink),
+  tags: many(linksToTags),
 }));
 
-export const linkRelations = relations(link, ({ many }) => ({
-  linkToUsers: many(userLink),
+export const linksToTagsRelations = relations(linksToTags, ({ one }) => ({
+  link: one(link, {
+    fields: [linksToTags.linkId],
+    references: [link.shortId],
+  }),
+  tag: one(tags, {
+    fields: [linksToTags.tag],
+    references: [tags.name],
+  }),
+}));
+
+export const tagRelations = relations(tags, ({ many }) => ({
+  links: many(linksToTags),
+  posts: many(postsToTags),
+}));
+
+export const postRelations = relations(post, ({ many }) => ({
+  tags: many(postsToTags),
+}));
+
+export const userRelations = relations(user, ({ many }) => ({
+  userToLinks: many(userLink),
 }));
 
 export const usersToLinksRelations = relations(userLink, ({ one }) => ({
