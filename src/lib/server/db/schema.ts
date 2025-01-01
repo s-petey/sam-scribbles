@@ -157,3 +157,7 @@ export type Post = typeof post.$inferSelect;
 export type User = typeof user.$inferSelect;
 
 // TODO: Track views by users
+
+// TODO: Add a feature that is "most interested in"
+// that will corelate the most frequently used tags to show
+// as a list (this could include filters by people)
