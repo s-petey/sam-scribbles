@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { db } from './farkleDb.js';
+import { db, type FarkleGame } from './farkleDb.js';
 
 export const csr = true;
 export const ssr = false;
@@ -27,7 +27,7 @@ export const load = async ({ params: { playerCount } }) => {
 
   const startingRows = 4;
 
-  let scores: Record<number, Record<number, number>> = Object.fromEntries(
+  let scores: FarkleGame['scores'] = Object.fromEntries(
     Array.from({ length: countAsInt }).map((_, i) => [
       i,
       Object.fromEntries(Array.from({ length: startingRows }).map((_, j) => [j, 0])),

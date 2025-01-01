@@ -2,7 +2,7 @@
   import { Modal } from '@skeletonlabs/skeleton-svelte';
   import Scoring from '../Scoring.svelte';
   import type { PageData } from './$types';
-  import { db } from './farkleDb';
+  import { db, type FarkleGame } from './farkleDb';
 
   let { data }: { data: PageData } = $props();
 
@@ -43,10 +43,16 @@
     pendingSavingGame = true;
 
     rows = 4;
-    scores = Array.from({ length: data.playerCount }, () => Array.from({ length: rows }, () => 0));
+    const newScores: FarkleGame['scores'] = Object.fromEntries(
+      Array.from({ length: data.playerCount }).map((_, i) => [
+        i,
+        Object.fromEntries(Array.from({ length: rows }).map((_, j) => [j, 0])),
+      ]),
+    );
+
+    scores = newScores;
 
     try {
-      // Try to add the game
       await db.farkle.put({
         scores: JSON.parse(JSON.stringify(scores)),
         playerNames: Array.from(names),
@@ -120,42 +126,45 @@
     class="grid gap-4 grid-cols-{data.playerCount} max-h-[360px] overflow-y-auto py-4 md:max-h-[600px]"
   >
     {#each { length: rows }, row}
-      <div class="grid grid-cols-subgrid col-span-{data.playerCount}">
-        {#each { length: data.playerCount }, count}
-          <div class="m-auto flex w-2/3 flex-row items-center justify-center gap-2">
-            {#if count === 0}
+      {#each { length: data.playerCount }, count}
+        <div class="m-auto flex flex-row items-center justify-center gap-2">
+          <!-- TODO: Add row numbers -->
+          <!-- {#if count === 0}
+            <span class="ml-4">
               {row + 1}
-            {/if}
-            <input
-              onwheel={(e) => {
-                e.preventDefault();
-                return false;
-              }}
-              oninput={(e) => {
-                const value = e.currentTarget.value;
-                const score = Number.isNaN(Number(value)) ? 0 : Number(value);
-                scores[count][row] = score;
+            </span>
+          {/if} -->
 
-                if (rows === row + 1) {
-                  rows++;
-                }
+          <input
+            id="row-{row}-player-{count + 1}"
+            onwheel={(e) => {
+              e.preventDefault();
+              return false;
+            }}
+            value={scores[count][row] || undefined}
+            name="player-{count + 1}"
+            type="number"
+            class={{
+              'input shadow shadow-secondary-200-800 hover:shadow-secondary-800-200': true,
+              'border border-solid border-error-500 shadow-none':
+                scores[count][row] > 0 && scores[count][row] < 50,
+            }}
+            step="50"
+            min="0"
+            oninput={(e) => {
+              const value = e.currentTarget.value;
+              const score = Number.isNaN(Number(value)) ? 0 : Number(value);
+              scores[count][row] = score;
 
-                void addGame();
-              }}
-              name="player-{count + 1}"
-              type="number"
-              class={{
-                'input shadow shadow-secondary-200-800 hover:shadow-secondary-800-200': true,
-                'border border-solid border-error-500 shadow-none':
-                  scores[count][row] > 0 && scores[count][row] < 50,
-              }}
-              step="50"
-              min="0"
-              value={scores[count][row] || undefined}
-            />
-          </div>
-        {/each}
-      </div>
+              if (rows === row + 1) {
+                rows++;
+              }
+
+              void addGame();
+            }}
+          />
+        </div>
+      {/each}
     {/each}
   </div>
 </div>
