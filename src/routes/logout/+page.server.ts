@@ -10,9 +10,9 @@ export const actions: Actions = {
     const referer = event.request.headers.get('referer');
 
     if (typeof referer === 'string' && referer.length > 0 && !referer.includes('admin')) {
-      throw redirect(302, referer);
+      redirect(302, referer);
     }
 
-    throw redirect(302, core.Home.href);
+    redirect(302, core.Home.href);
   },
 };

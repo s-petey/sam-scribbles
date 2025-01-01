@@ -35,7 +35,7 @@ export const actions: Actions = {
     const admin = await verifyAdmin(event);
 
     if (admin === null) {
-      throw error(401, 'Unauthorized');
+      error(401, 'Unauthorized');
     }
     const form = await superValidate(event.request, zod(schema));
 

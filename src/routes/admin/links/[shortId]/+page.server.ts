@@ -40,7 +40,7 @@ export const load = async ({ params: { shortId } }) => {
   });
 
   if (!foundLink) {
-    throw error(404, 'Link not found');
+    error(404, 'Link not found');
   }
 
   const { tags: linkTags, ...remaining } = foundLink;
@@ -68,7 +68,7 @@ export const actions: Actions = {
     const admin = await verifyAdmin(event);
 
     if (admin === null) {
-      throw error(401, 'Unauthorized');
+      error(401, 'Unauthorized');
     }
 
     logger.debug({
@@ -144,7 +144,7 @@ export const actions: Actions = {
     const admin = await verifyAdmin(event);
 
     if (admin === null) {
-      throw error(401, 'Unauthorized');
+      error(401, 'Unauthorized');
     }
 
     logger.debug({
@@ -160,6 +160,6 @@ export const actions: Actions = {
 
     await db.delete(link).where(eq(link.shortId, validatedShortId.data));
 
-    throw redirect(302, '/admin/links');
+    redirect(302, '/admin/links');
   },
 };

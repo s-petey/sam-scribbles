@@ -7,7 +7,7 @@ export const load: LayoutServerLoad = async (event) => {
   const user = await verifyAdmin(event);
 
   if (user === null) {
-    throw redirect(302, core.Home.href);
+    redirect(302, core.Home.href);
   }
 
   return {
