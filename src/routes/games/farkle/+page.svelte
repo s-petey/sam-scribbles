@@ -2,9 +2,9 @@
   import { route } from '$lib/ROUTES';
 </script>
 
-<h1 class="text-4xl heading-font-weight">Farkle</h1>
+<h1 class="h1">Farkle</h1>
 
-<h2 class="text-3xl heading-font-weight">How many players?</h2>
+<h3 class="h3">How many players?</h3>
 
 <div class="m-auto grid w-1/2 grid-cols-3 gap-4">
   {#each { length: 12 }, count}

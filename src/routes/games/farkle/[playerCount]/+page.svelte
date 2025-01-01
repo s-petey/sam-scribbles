@@ -56,11 +56,17 @@
    show which round number it is counting up
     -->
 
-  <div class="grid gap-4 grid-cols-{data.playerCount} max-h-52 overflow-y-auto py-4">
+  <div
+    class="grid gap-4 grid-cols-{data.playerCount} max-h-[360px] overflow-y-auto py-4 md:max-h-[600px]"
+  >
     {#each { length: rows }, row}
       {#each { length: data.playerCount }, count}
         <div class="m-auto w-2/3 shadow shadow-secondary-200-800 hover:shadow-secondary-800-200">
           <input
+            onwheel={(e) => {
+              e.preventDefault();
+              return false;
+            }}
             oninput={(e) => {
               const value = e.currentTarget.value;
               const score = Number.isNaN(Number(value)) ? 0 : Number(value);
