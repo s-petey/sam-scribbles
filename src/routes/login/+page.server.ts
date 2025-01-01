@@ -96,6 +96,6 @@ export const actions: Actions = {
       return setError(form, '', 'User unauthorized');
     }
 
-    throw redirect(302, admin['Admin Panel'].href);
+    redirect(302, admin['Admin Panel'].href);
   },
 };

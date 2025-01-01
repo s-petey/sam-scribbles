@@ -14,7 +14,7 @@ export const load = async ({
     return { Content: post.default, meta: { ...metadata, slug } };
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
   } catch (_err) {
-    throw error(404, {
+    error(404, {
       message: "Hold on, 🤠 that page doesn't exist!",
     });
   }

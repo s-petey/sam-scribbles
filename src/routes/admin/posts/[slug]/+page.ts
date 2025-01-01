@@ -10,7 +10,7 @@ export const load = async ({
   },
 }) => {
   if (!form || !dbPost) {
-    throw error(400, 'Missing form or post');
+    error(400, 'Missing form or post');
   }
 
   try {
@@ -20,7 +20,7 @@ export const load = async ({
     return { Content: post.default, meta: { ...metadata, slug }, form, post: dbPost };
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
   } catch (err) {
-    throw error(404, {
+    error(404, {
       message: "Hold on, 🤠 that page doesn't exist!",
     });
   }

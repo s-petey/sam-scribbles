@@ -10,7 +10,7 @@ export const load = async (event) => {
     // it is active?
     logout(event);
     // TODO: Add this route to the siteLinks once exposed more clearly...
-    throw redirect(302, '/login');
+    redirect(302, '/login');
   }
 
   return {

@@ -99,7 +99,7 @@ export const actions: Actions = {
     const admin = await verifyAdmin(event);
 
     if (admin === null) {
-      throw error(401, 'Unauthorized');
+      error(401, 'Unauthorized');
     }
 
     logger.debug({ msg: 'Creating link', admin: admin.email });
@@ -163,7 +163,7 @@ export const actions: Actions = {
     const admin = await verifyAdmin(event);
 
     if (admin === null) {
-      throw error(401, 'Unauthorized');
+      error(401, 'Unauthorized');
     }
 
     logger.debug({ msg: 'Deleting link', admin: admin.email });
@@ -173,10 +173,8 @@ export const actions: Actions = {
       return fail(500, { message: 'Missing shortId somehow' });
     }
 
-    console.log(form);
-
     await db.delete(link).where(eq(link.shortId, form.data.shortId));
 
-    throw redirect(302, '/admin/links');
+    redirect(302, '/admin/links');
   },
 };
