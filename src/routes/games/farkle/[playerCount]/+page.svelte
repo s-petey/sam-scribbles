@@ -75,7 +75,20 @@
 
 <div class="rounded-lg border border-solid text-center border-primary-200-800">
   <div
-    class="grid grid-cols-{data.playerCount} rounded-t-lg text-lg font-bold bg-primary-400-600 text-primary-800-200"
+    class={{
+      'grid rounded-t-lg text-lg font-bold bg-primary-400-600 text-primary-800-200': true,
+      'grid-cols-2': data.playerCount === 2,
+      'grid-cols-3': data.playerCount === 3,
+      'grid-cols-4': data.playerCount === 4,
+      'grid-cols-5': data.playerCount === 5,
+      'grid-cols-6': data.playerCount === 6,
+      'grid-cols-7': data.playerCount === 7,
+      'grid-cols-8': data.playerCount === 8,
+      'grid-cols-9': data.playerCount === 9,
+      'grid-cols-10': data.playerCount === 10,
+      'grid-cols-11': data.playerCount === 11,
+      'grid-cols-12': data.playerCount === 12,
+    }}
   >
     {#each names as name, idx}
       <input
@@ -123,7 +136,20 @@
   </div>
 
   <div
-    class="grid gap-4 grid-cols-{data.playerCount} max-h-[360px] overflow-y-auto py-4 md:max-h-[600px]"
+    class={{
+      'grid max-h-[360px] gap-4 overflow-y-auto py-4 md:max-h-[600px]': true,
+      'grid-cols-2': data.playerCount === 2,
+      'grid-cols-3': data.playerCount === 3,
+      'grid-cols-4': data.playerCount === 4,
+      'grid-cols-5': data.playerCount === 5,
+      'grid-cols-6': data.playerCount === 6,
+      'grid-cols-7': data.playerCount === 7,
+      'grid-cols-8': data.playerCount === 8,
+      'grid-cols-9': data.playerCount === 9,
+      'grid-cols-10': data.playerCount === 10,
+      'grid-cols-11': data.playerCount === 11,
+      'grid-cols-12': data.playerCount === 12,
+    }}
   >
     {#each { length: rows }, row}
       {#each { length: data.playerCount }, count}
