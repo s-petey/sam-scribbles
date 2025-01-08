@@ -23,8 +23,8 @@
     try {
       // Try to add the game
       await db.farkle.put({
-        scores: JSON.parse(JSON.stringify(scores)),
-        playerNames: Array.from(names),
+        scores: $state.snapshot(scores),
+        playerNames: $state.snapshot(names),
         id: data.playerCount,
       });
     } catch (error) {
@@ -54,8 +54,8 @@
 
     try {
       await db.farkle.put({
-        scores: JSON.parse(JSON.stringify(scores)),
-        playerNames: Array.from(names),
+        scores: $state.snapshot(scores),
+        playerNames: $state.snapshot(names),
         id: data.playerCount,
       });
     } catch (error) {
