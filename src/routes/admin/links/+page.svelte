@@ -113,8 +113,16 @@
   </div>
 
   <div class="col-span-2">
-    <TagsInput bind:value={$form.tags} placeholder="Tags">
-      {#snippet buttonDelete()}<DeleteIcon />{/snippet}
+    <TagsInput
+      onValueChange={(e) => {
+        $form.tags = e.value;
+      }}
+      value={$form.tags}
+      placeholder="Tags"
+    >
+      {#snippet buttonDelete()}
+        <DeleteIcon />
+      {/snippet}
     </TagsInput>
   </div>
 
@@ -154,9 +162,9 @@
         <th class="whitespace-nowrap"></th>
       </tr>
     </thead>
-    <tbody class="hover:[&>tr]:preset-tonal-primary">
+    <tbody>
       {#each data.links as link}
-        <tr>
+        <tr class="hover:preset-tonal-primary">
           <td>{link.link}</td>
           <td>
             <span>
@@ -220,8 +228,8 @@
   open={selectedId !== null}
   onOpenChange={() => (selectedId = null)}
   triggerBase="btn preset-tonal"
-  contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-screen-sm"
-  backdropClasses="backdrop-blur-sm"
+  contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
+  backdropClasses="backdrop-blur-xs"
 >
   {#snippet content()}
     <header class="flex justify-between">
@@ -236,7 +244,7 @@
         <button type="button" class="btn preset-tonal" onclick={() => (selectedId = null)}>
           Cancel
         </button>
-        <button type="submit" class="btn font-bold preset-filled-error-500">Confirm</button>
+        <button type="submit" class="btn preset-filled-error-500 font-bold">Confirm</button>
       </form>
     </footer>
   {/snippet}

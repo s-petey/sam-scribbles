@@ -17,7 +17,7 @@
   {@render header()}
 
   <!-- Page -->
-  <div class="container mx-auto grid grid-cols-1 xl:grid-cols-[200px_minmax(0px,_1fr)_200px]">
+  <div class="container mx-auto grid grid-cols-1 xl:grid-cols-[200px_minmax(0px,1fr)_200px]">
     <!-- Sidebar (Left) -->
     <!-- NOTE: hidden in smaller screen sizes -->
     <aside class="sticky top-0 col-span-1 hidden self-start overflow-y-auto p-4 xl:block xl:px-0">
@@ -48,7 +48,7 @@
   <!-- Footer -->
   <div class="relative">
     <div
-      class="rounded-box absolute -inset-0 z-0 bg-gradient-to-br from-primary-500 to-secondary-500 font-black blur-sm"
+      class="rounded-box absolute -inset-0 z-0 bg-linear-to-br from-primary-500 to-secondary-500 font-black blur-xs"
     ></div>
     <footer
       class="footer relative grid grid-cols-1 gap-4 bg-surface-500 bg-opacity-20 p-4 md:grid-cols-2 xl:grid-cols-3"
@@ -62,7 +62,7 @@
   <!-- Header -->
   <header class="w-full border-b-[1px] border-surface-500/20 p-4 py-3 bg-surface-50-950 xl:px-10">
     <div
-      class="container mx-auto grid max-w-screen-2xl grid-cols-[auto_1fr_auto] items-center gap-4 xl:grid-cols-[1fr_auto_1fr]"
+      class="container mx-auto grid max-w-(--breakpoint-2xl) grid-cols-[auto_1fr_auto] items-center gap-4 xl:grid-cols-[1fr_auto_1fr]"
     >
       <!-- Left -->
       <div class="flex items-center justify-start gap-6">
@@ -78,7 +78,7 @@
         <h2 class="h2">
           <!-- TODO: Have an icon for this instead and a title? -->
           <a
-            class="hidden bg-gradient-to-b from-primary-500 to-tertiary-500 bg-clip-text font-extrabold text-transparent xl:inline-block"
+            class="hidden bg-linear-to-b from-primary-500 to-tertiary-500 bg-clip-text font-extrabold text-transparent xl:inline-block"
             href={route('/')}
             title="Skeleton"
           >
@@ -170,7 +170,7 @@
     <!-- Header -->
     <header class="flex items-center justify-between">
       <h3
-        class="h3 inline-block bg-gradient-to-b from-primary-500 to-tertiary-500 bg-clip-text font-extrabold text-transparent"
+        class="h3 inline-block bg-linear-to-b from-primary-500 to-tertiary-500 bg-clip-text font-extrabold text-transparent"
       >
         <!-- TODO: Update this will be the full site not only sam-scribbles... -->
         Sam-Scribbles

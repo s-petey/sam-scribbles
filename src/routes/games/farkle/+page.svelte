@@ -11,7 +11,7 @@
   {#each { length: 12 }, count}
     {#if count > 0}
       <a
-        class="btn-icon m-auto rounded-sm p-4 preset-tonal-primary"
+        class="btn-icon m-auto rounded-xs p-4 preset-tonal-primary"
         href={route('/games/farkle/[playerCount]', {
           playerCount: count + 1,
         })}

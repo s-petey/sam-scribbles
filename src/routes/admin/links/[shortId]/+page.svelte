@@ -16,8 +16,16 @@
 <form use:enhance method="post" action="?/update">
   <input class="input" name="link" bind:value={$form.link} {...$constraints.link} />
 
-  <TagsInput bind:value={$form.tags} placeholder="Tags">
-    {#snippet buttonDelete()}<DeleteIcon class="size-4" />{/snippet}
+  <TagsInput
+    onValueChange={(e) => {
+      $form.tags = e.value;
+    }}
+    value={$form.tags}
+    placeholder="Tags"
+  >
+    {#snippet buttonDelete()}
+      <DeleteIcon class="size-4" />
+    {/snippet}
   </TagsInput>
 
   <div class="col-span-2">
@@ -62,7 +70,7 @@
     disabled={$submitting}
     aria-disabled={$submitting}
     type="submit"
-    class="btn mt-4 preset-tonal-primary"
+    class="btn preset-tonal-primary mt-4"
     class:disabled={$submitting}
   >
     Save
@@ -72,7 +80,7 @@
     disabled={$submitting}
     aria-disabled={$submitting}
     type="submit"
-    class="btn mt-4 preset-tonal-error"
+    class="btn preset-tonal-error mt-4"
     class:disabled={$submitting}
     formaction="?/delete"
   >

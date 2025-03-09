@@ -171,7 +171,7 @@
             name="player-{count + 1}"
             type="number"
             class={{
-              'input shadow shadow-secondary-200-800 hover:shadow-secondary-800-200': true,
+              'input shadow-sm shadow-secondary-200-800 hover:shadow-secondary-800-200': true,
               'border border-solid border-error-500 shadow-none':
                 scores[count][row] > 0 && scores[count][row] < 50,
             }}
@@ -205,7 +205,7 @@
   <Modal
     bind:open={openState}
     triggerBase="btn preset-filled-secondary-400-600"
-    contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-screen-sm"
+    contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
   >
     {#snippet trigger()}
       Scoring Rules

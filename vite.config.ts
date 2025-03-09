@@ -1,9 +1,10 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { kitRoutes } from 'vite-plugin-kit-routes';
 import { defineConfig } from 'vitest/config';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [sveltekit(), kitRoutes()],
+  plugins: [tailwindcss(), sveltekit(), kitRoutes()],
 
   server: {
     fs: {
@@ -13,7 +14,5 @@ export default defineConfig({
     },
   },
 
-  test: {
-    include: ['src/**/*.{test,spec}.{js,ts}'],
-  },
+  test: { include: ['src/**/*.{test,spec}.{js,ts}'] },
 });
