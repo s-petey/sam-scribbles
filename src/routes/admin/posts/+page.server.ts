@@ -11,9 +11,7 @@ import type { PageServerLoad } from './$types';
 
 const schema = z.object({});
 
-const deleteSchema = z.object({
-  slug: z.string().min(1, 'Slug is required'),
-});
+const deleteSchema = z.object({ slug: z.string().min(1, 'Slug is required') });
 
 type Message = { updated: number; created: number };
 
@@ -21,14 +19,7 @@ export const load = (async () => {
   const form = await superValidate<Infer<typeof schema>, Message>(zod(schema));
   const deleteForm = await superValidate(zod(deleteSchema));
 
-  const posts = await db.query.post
-    .findMany({
-      columns: {
-        title: true,
-        slug: true,
-      },
-    })
-    .execute();
+  const posts = await db.query.post.findMany({ columns: { title: true, slug: true } }).execute();
 
   return { form, posts, deleteForm };
 }) satisfies PageServerLoad;
@@ -43,6 +34,7 @@ export const actions: Actions = {
     }
     const form = await superValidate(event.request, zod(schema));
 
+    // TODO: This needs to import `*.md` and `svx`?
     const postsImport = Object.entries(import.meta.glob('../../../../posts/*.md'));
     const posts = await Promise.all(
       postsImport.map(async ([path, resolver]) => {
@@ -56,6 +48,7 @@ export const actions: Actions = {
       }),
     );
 
+    // TODO: This doesn't catch if the post has never been created ...
     // Only update posts from the last week
     const postsToUpdate = posts.filter(
       (post) =>
@@ -101,10 +94,7 @@ export const actions: Actions = {
       return (await Promise.all(insertPromises)).flat();
     });
 
-    const returnMessage: Message = {
-      updated: 0,
-      created: postsToUpdate.length,
-    };
+    const returnMessage: Message = { updated: 0, created: postsToUpdate.length };
 
     const startOfToday = DateTime.now().startOf('day');
     for (const { updatedAt } of updatedPosts) {
