@@ -14,24 +14,27 @@ const PAGES = {
   "/admin": `/admin`,
   "/admin/links": `/admin/links`,
   "/admin/links/[shortId]": (params: { shortId: (string | number) }) => {
-    return `/admin/links/${params.shortId}`
+    return `/admin/links/${params['shortId']}`
   },
   "/admin/posts": `/admin/posts`,
   "/admin/posts/[slug]": (params: { slug: (string | number) }) => {
-    return `/admin/posts/${params.slug}`
+    return `/admin/posts/${params['slug']}`
   },
   "/games": `/games`,
   "/games/farkle": `/games/farkle`,
   "/games/farkle/[playerCount]": (params: { playerCount: (string | number) }) => {
-    return `/games/farkle/${params.playerCount}`
+    return `/games/farkle/${params['playerCount']}`
   },
   "/login": `/login`,
   "/posts": `/posts`,
   "/posts/[slug]": (params: { slug: (string | number) }) => {
-    return `/posts/${params.slug}`
+    return `/posts/${params['slug']}`
   },
   "/social": `/social`,
-  "/tags": `/tags`
+  "/tags": `/tags`,
+  "/tags/[slug]": (params: { slug: (string | number) }) => {
+    return `/tags/${params['slug']}`
+  }
 }
 
 /**
@@ -46,18 +49,19 @@ const SERVERS = {
  */
 const ACTIONS = {
   "logout /": `/?/logout`,
+  "setTheme /": `/?/setTheme`,
   "create /admin/links": `/admin/links?/create`,
   "delete /admin/links": `/admin/links?/delete`,
   "update /admin/links/[shortId]": (params: { shortId: (string | number) }) => {
-    return `/admin/links/${params.shortId}?/update`
+    return `/admin/links/${params['shortId']}?/update`
   },
   "delete /admin/links/[shortId]": (params: { shortId: (string | number) }) => {
-    return `/admin/links/${params.shortId}?/delete`
+    return `/admin/links/${params['shortId']}?/delete`
   },
   "syncPosts /admin/posts": `/admin/posts?/syncPosts`,
   "delete /admin/posts": `/admin/posts?/delete`,
   "default /admin/posts/[slug]": (params: { slug: (string | number) }) => {
-    return `/admin/posts/${params.slug}`
+    return `/admin/posts/${params['slug']}`
   },
   "default /login": `/login`,
   "default /logout": `/logout`
@@ -75,7 +79,10 @@ type ParamValue = string | number | undefined
 /**
  * Append search params to a string
  */
-export const appendSp = (sp?: Record<string, ParamValue | ParamValue[]>, prefix: '?' | '&' = '?') => {
+export const appendSp = (
+  sp?: Record<string, ParamValue | ParamValue[]>,
+  prefix: '?' | '&' = '?',
+) => {
   if (sp === undefined) return ''
 
   const params = new URLSearchParams()
@@ -85,7 +92,12 @@ export const appendSp = (sp?: Record<string, ParamValue | ParamValue[]>, prefix:
     }
   }
 
+  let anchor = ''
   for (const [name, val] of Object.entries(sp)) {
+    if (name === '__KIT_ROUTES_ANCHOR__' && val !== undefined) {
+      anchor = `#${val}`
+      continue
+    }
     if (Array.isArray(val)) {
       for (const v of val) {
         append(name, v)
@@ -96,8 +108,8 @@ export const appendSp = (sp?: Record<string, ParamValue | ParamValue[]>, prefix:
   }
 
   const formatted = params.toString()
-  if (formatted) {
-    return `${prefix}${formatted}`
+  if (formatted || anchor) {
+    return `${prefix}${formatted}${anchor}`.replace('?#', '#')
   }
   return ''
 }
@@ -119,7 +131,7 @@ export const currentSp = () => {
   return record
 }
 
-// route function helpers
+/* type helpers for route function */
 type NonFunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? never : K }[keyof T]
 type FunctionKeys<T> = { [K in keyof T]: T[K] extends Function ? K : never }[keyof T]
 type FunctionParams<T> = T extends (...args: infer P) => any ? P : never
@@ -167,9 +179,9 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/about': never, '/admin': never, '/admin/links': never, '/admin/links/[shortId]': 'shortId', '/admin/posts': never, '/admin/posts/[slug]': 'slug', '/games': never, '/games/farkle': never, '/games/farkle/[playerCount]': 'playerCount', '/login': never, '/posts': never, '/posts/[slug]': 'slug', '/social': never, '/tags': never }
+  PAGES: { '/': never, '/about': never, '/admin': never, '/admin/links': never, '/admin/links/[shortId]': 'shortId', '/admin/posts': never, '/admin/posts/[slug]': 'slug', '/games': never, '/games/farkle': never, '/games/farkle/[playerCount]': 'playerCount', '/login': never, '/posts': never, '/posts/[slug]': 'slug', '/social': never, '/tags': never, '/tags/[slug]': 'slug' }
   SERVERS: Record<string, never>
-  ACTIONS: { 'logout /': never, 'create /admin/links': never, 'delete /admin/links': never, 'update /admin/links/[shortId]': 'shortId', 'delete /admin/links/[shortId]': 'shortId', 'syncPosts /admin/posts': never, 'delete /admin/posts': never, 'default /admin/posts/[slug]': 'slug', 'default /login': never, 'default /logout': never }
+  ACTIONS: { 'logout /': never, 'setTheme /': never, 'create /admin/links': never, 'delete /admin/links': never, 'update /admin/links/[shortId]': 'shortId', 'delete /admin/links/[shortId]': 'shortId', 'syncPosts /admin/posts': never, 'delete /admin/posts': never, 'default /admin/posts/[slug]': 'slug', 'default /login': never, 'default /logout': never }
   LINKS: Record<string, never>
-  Params: { shortId: never, slug: never, playerCount: never }
+  Params: { 'shortId': never, 'slug': never, 'playerCount': never }
 }

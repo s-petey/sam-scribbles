@@ -19,9 +19,9 @@
   const dateIso = dateTime.toISO() ?? '';
 </script>
 
-<article class="px-4 bg-surface-800-200">
+<article class="bg-surface-800-200 px-4">
   <h1 class="mb-1 text-5xl font-black">{title}</h1>
-  <div class="mb-3 mt-4 uppercase">
+  <div class="mt-4 mb-3 uppercase">
     <div class="flex justify-center gap-1">
       <time datetime={dateIso}>
         {dateTime.toLocaleString()}
@@ -31,11 +31,11 @@
     </div>
     <div class="flex justify-center gap-2">
       <!-- TODO: Implement this page -->
-      {#each tags as tag}
+      {#each tags as tag (tag)}
         <a href={`/tags/${tag}`}>
           <!-- <a href={route('/tags/[tag]', { tag: tag.toLowerCase() })}> -->
           <span
-            class="badge shadow-md transition preset-filled-surface-500 hover:bg-surface-contrast-500 hover:text-surface-500"
+            class="badge preset-filled-surface-500 hover:bg-surface-contrast-500 hover:text-surface-500 shadow-md transition"
           >
             {tag}
           </span>
@@ -43,7 +43,7 @@
       {/each}
       {#if dateTime.diffNow('days').days < 31}
         <span
-          class="text-primary-content badge cursor-pointer font-bold shadow-md transition preset-filled-success-500 hover:bg-success-contrast-500 hover:text-success-500"
+          class="text-primary-content badge preset-filled-success-500 hover:bg-success-contrast-500 hover:text-success-500 cursor-pointer font-bold shadow-md transition"
         >
           NEW
         </span>
@@ -78,7 +78,9 @@
     <!-- <UpdatedBanner updated={updated === undefined ? date : updated} {date} /> -->
   {/if}
 
-  <div class="all-prose mb-10">
+  <div
+    class="prose prose-lg lg:prose-xl prose-headings:scroll-mt-16 prose-a:text-primary-400 prose-a:transition prose-a:hover:text-secondary-400 mb-10"
+  >
     <Content />
   </div>
 

@@ -1,6 +1,6 @@
 import { verifyAdmin } from '$lib/auth';
 import { db } from '$lib/server/db';
-import { link, linksToTags, tags } from '$lib/server/db/schema';
+import { link, linksToTags, tag } from '$lib/server/db/schema';
 import { error, redirect } from '@sveltejs/kit';
 import { eq, like } from 'drizzle-orm';
 import { fail, message, setError, superValidate } from 'sveltekit-superforms';
@@ -36,9 +36,7 @@ export const load = (async ({ url }) => {
   const { q, page, limit } = routeQueryParams.parse(searchParams);
   const form = await superValidate(zod(linkSchema));
 
-  const rawTags = await db.query.tags.findMany({
-    orderBy: (tag, { asc }) => asc(tag.name),
-  });
+  const rawTags = await db.query.tag.findMany({ orderBy: (tag, { asc }) => asc(tag.name) });
 
   const tags = rawTags.map((tag) => tag.name);
 
@@ -52,20 +50,11 @@ export const load = (async ({ url }) => {
         : undefined,
     limit,
     offset: (page - 1) * limit,
-    with: {
-      tags: {
-        columns: {
-          tag: true,
-        },
-      },
-    },
+    with: { tags: { columns: { tag: true } } },
   });
 
   const links = rawLinks.map(({ tags, ...link }) => {
-    return {
-      ...link,
-      tags: tags.map((tag) => tag.tag),
-    };
+    return { ...link, tags: tags.map((tag) => tag.tag) };
   });
 
   let linkCount = 0;
@@ -77,22 +66,10 @@ export const load = (async ({ url }) => {
   }
   const pages = Math.ceil(linkCount / limit);
 
-  return {
-    form,
-    links,
-    tags,
-    pagination: {
-      page,
-      pages,
-      linkCount,
-      limit,
-    },
-  };
+  return { form, links, tags, pagination: { page, pages, linkCount, limit } };
 }) satisfies PageServerLoad;
 
-const shortIdSchema = z.object({
-  shortId: z.string().min(1),
-});
+const shortIdSchema = z.object({ shortId: z.string().min(1) });
 
 export const actions: Actions = {
   create: async (event) => {
@@ -118,24 +95,15 @@ export const actions: Actions = {
     await db.transaction(async (tx) => {
       if (Array.isArray(form.data.tags) && form.data.tags.length > 0) {
         await tx
-          .insert(tags)
-          .values(
-            form.data.tags.map((tag) => ({
-              name: tag,
-            })),
-          )
+          .insert(tag)
+          .values(form.data.tags.map((tag) => ({ name: tag })))
           .onConflictDoNothing();
       }
 
       const returningLink = await tx
         .insert(link)
-        .values({
-          link: form.data.link,
-          private: form.data.private,
-        })
-        .returning({
-          shortId: link.shortId,
-        });
+        .values({ link: form.data.link, private: form.data.private })
+        .returning({ shortId: link.shortId });
 
       const newLink = returningLink.at(0);
 
@@ -145,12 +113,9 @@ export const actions: Actions = {
       }
 
       if (Array.isArray(form.data.tags) && form.data.tags.length > 0) {
-        await tx.insert(linksToTags).values(
-          form.data.tags.map((id) => ({
-            linkId: newLink.shortId,
-            tag: id,
-          })),
-        );
+        await tx
+          .insert(linksToTags)
+          .values(form.data.tags.map((id) => ({ linkId: newLink.shortId, tag: id })));
       }
     });
 

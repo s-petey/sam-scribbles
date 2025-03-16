@@ -43,9 +43,7 @@ export const link = pgTable('link', {
     .$onUpdate(() => new Date()),
 });
 
-export const tags = pgTable('tags', {
-  name: text().primaryKey().notNull(),
-});
+export const tag = pgTable('tag', { name: text().primaryKey().notNull() });
 
 export const linksToTags = pgTable(
   'links_to_tags',
@@ -55,11 +53,9 @@ export const linksToTags = pgTable(
       .references(() => link.shortId, { onDelete: 'cascade' }),
     tag: text()
       .notNull()
-      .references(() => tags.name),
+      .references(() => tag.name),
   },
-  (t) => ({
-    linkIdTagIndex: primaryKey({ columns: [t.linkId, t.tag] }),
-  }),
+  (t) => ({ linkIdTagIndex: primaryKey({ columns: [t.linkId, t.tag] }) }),
 );
 
 export const postsToTags = pgTable(
@@ -70,11 +66,9 @@ export const postsToTags = pgTable(
       .references(() => post.id, { onDelete: 'cascade' }),
     tag: text()
       .notNull()
-      .references(() => tags.name),
+      .references(() => tag.name),
   },
-  (t) => ({
-    postIdTagIndex: primaryKey({ columns: [t.postId, t.tag] }),
-  }),
+  (t) => ({ postIdTagIndex: primaryKey({ columns: [t.postId, t.tag] }) }),
 );
 
 // TODO: Add users -- currently there will only be me (admin)
@@ -98,9 +92,7 @@ export const userLink = pgTable('user_link', {
   linkId: varchar({ length: SHORT_ID_LENGTH })
     .notNull()
     .references(() => link.shortId),
-  status: text({
-    enum: ['read', 'unread'],
-  })
+  status: text({ enum: ['read', 'unread'] })
     .notNull()
     .default('unread'),
   favorite: boolean().notNull().default(false),
@@ -113,44 +105,33 @@ export const userLink = pgTable('user_link', {
     .$onUpdate(() => new Date()),
 });
 
+export const postsToTagsRelations = relations(postsToTags, ({ one }) => ({
+  post: one(post, { fields: [postsToTags.postId], references: [post.id] }),
+  tag: one(tag, { fields: [postsToTags.tag], references: [tag.name] }),
+}));
+
 export const linkRelations = relations(link, ({ many }) => ({
   users: many(userLink),
   tags: many(linksToTags),
 }));
 
 export const linksToTagsRelations = relations(linksToTags, ({ one }) => ({
-  link: one(link, {
-    fields: [linksToTags.linkId],
-    references: [link.shortId],
-  }),
-  tag: one(tags, {
-    fields: [linksToTags.tag],
-    references: [tags.name],
-  }),
+  link: one(link, { fields: [linksToTags.linkId], references: [link.shortId] }),
+  tag: one(tag, { fields: [linksToTags.tag], references: [tag.name] }),
 }));
 
-export const tagRelations = relations(tags, ({ many }) => ({
+export const tagRelations = relations(tag, ({ many }) => ({
   links: many(linksToTags),
   posts: many(postsToTags),
 }));
 
-export const postRelations = relations(post, ({ many }) => ({
-  tags: many(postsToTags),
-}));
+export const postRelations = relations(post, ({ many }) => ({ tags: many(postsToTags) }));
 
-export const userRelations = relations(user, ({ many }) => ({
-  userToLinks: many(userLink),
-}));
+export const userRelations = relations(user, ({ many }) => ({ userToLinks: many(userLink) }));
 
 export const usersToLinksRelations = relations(userLink, ({ one }) => ({
-  user: one(user, {
-    fields: [userLink.userId],
-    references: [user.id],
-  }),
-  link: one(link, {
-    fields: [userLink.linkId],
-    references: [link.shortId],
-  }),
+  user: one(user, { fields: [userLink.userId], references: [user.id] }),
+  link: one(link, { fields: [userLink.linkId], references: [link.shortId] }),
 }));
 
 export type Post = typeof post.$inferSelect;

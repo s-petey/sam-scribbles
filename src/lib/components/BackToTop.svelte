@@ -18,7 +18,7 @@
 
 <button
   onclick={scrollToTop}
-  class="back-to-top-button btn z-10 preset-filled-surface-500"
+  class="back-to-top-button btn preset-filled-surface-500 z-10"
   class:show-button={showScrollButton}
   class:hide-button={!showScrollButton}
   aria-label="Back to top"

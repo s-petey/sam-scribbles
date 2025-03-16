@@ -15,6 +15,13 @@
       "when": 1735308661790,
       "tag": "0001_exotic_multiple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1741513021490,
+      "tag": "0002_useful_wolfpack",
+      "breakpoints": true
     }
   ]
 }

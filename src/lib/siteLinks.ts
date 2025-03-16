@@ -22,6 +22,7 @@ export const core = {
   About: { href: route('/about'), label: 'About' },
   Socials: { href: route('/social'), label: 'Socials' },
   Tags: { href: route('/tags'), label: 'Tags' },
+  Games: { href: route('/games'), label: 'Games' },
   // { href: 'https://bsky.app/profile/skeletonlabs.bsky.social', label: 'News', target: '_blank' }
   // { href: '/news', label: 'News', target: '_self' },
   // { href: 'https://themes.skeleton.dev/', label: 'Themes', target: '_blank' }

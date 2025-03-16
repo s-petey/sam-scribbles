@@ -1,7 +1,7 @@
 import { verifyAdmin } from '$lib/auth';
 import { logger } from '$lib/logger';
 import { db } from '$lib/server/db/index.js';
-import { link, linksToTags, tags } from '$lib/server/db/schema.js';
+import { link, linksToTags, tag } from '$lib/server/db/schema.js';
 import { error, redirect, type Actions } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { fail, message, superValidate } from 'sveltekit-superforms';
@@ -30,13 +30,7 @@ const linkSchema = z.object({
 export const load = async ({ params: { shortId } }) => {
   const foundLink = await db.query.link.findFirst({
     where: eq(link.shortId, shortId),
-    with: {
-      tags: {
-        columns: {
-          tag: true,
-        },
-      },
-    },
+    with: { tags: { columns: { tag: true } } },
   });
 
   if (!foundLink) {
@@ -44,23 +38,14 @@ export const load = async ({ params: { shortId } }) => {
   }
 
   const { tags: linkTags, ...remaining } = foundLink;
-  const constructedLink = {
-    ...remaining,
-    tags: linkTags.map((tag) => tag.tag),
-  };
+  const constructedLink = { ...remaining, tags: linkTags.map((tag) => tag.tag) };
 
-  const rawTags = await db.query.tags.findMany({
-    orderBy: (tag, { asc }) => asc(tag.name),
-  });
+  const rawTags = await db.query.tag.findMany({ orderBy: (tag, { asc }) => asc(tag.name) });
 
   const tags = rawTags.map((tag) => tag.name);
   const form = await superValidate(constructedLink, zod(linkSchema));
 
-  return {
-    form,
-    link: constructedLink,
-    tags,
-  };
+  return { form, link: constructedLink, tags };
 };
 
 export const actions: Actions = {
@@ -71,10 +56,7 @@ export const actions: Actions = {
       error(401, 'Unauthorized');
     }
 
-    logger.debug({
-      msg: 'Updating link',
-      admin: admin.email,
-    });
+    logger.debug({ msg: 'Updating link', admin: admin.email });
 
     const form = await superValidate(event.request, zod(linkSchema));
 
@@ -91,25 +73,16 @@ export const actions: Actions = {
     await db.transaction(async (tx) => {
       if (Array.isArray(form.data.tags) && form.data.tags.length > 0) {
         await tx
-          .insert(tags)
-          .values(
-            form.data.tags.map((tag) => ({
-              name: tag,
-            })),
-          )
+          .insert(tag)
+          .values(form.data.tags.map((tag) => ({ name: tag })))
           .onConflictDoNothing();
       }
 
       const returningLink = await tx
         .update(link)
-        .set({
-          link: form.data.link,
-          private: form.data.private,
-        })
+        .set({ link: form.data.link, private: form.data.private })
         .where(eq(link.shortId, validatedShortId.data))
-        .returning({
-          shortId: link.shortId,
-        });
+        .returning({ shortId: link.shortId });
 
       const newLink = returningLink.at(0);
 
@@ -122,12 +95,7 @@ export const actions: Actions = {
         if (form.data.tags.length > 0) {
           await tx
             .insert(linksToTags)
-            .values(
-              form.data.tags.map((tag) => ({
-                linkId: newLink.shortId,
-                tag,
-              })),
-            )
+            .values(form.data.tags.map((tag) => ({ linkId: newLink.shortId, tag })))
             .onConflictDoNothing();
         } else {
           await tx.delete(linksToTags).where(eq(linksToTags.linkId, newLink.shortId));
@@ -147,10 +115,7 @@ export const actions: Actions = {
       error(401, 'Unauthorized');
     }
 
-    logger.debug({
-      msg: 'Deleting link',
-      admin: admin.email,
-    });
+    logger.debug({ msg: 'Deleting link', admin: admin.email });
 
     const validatedShortId = shortIdSchema.safeParse(event.params.shortId);
 

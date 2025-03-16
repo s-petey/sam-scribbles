@@ -10,7 +10,7 @@
   <title>Whoops! {page.status}</title>
 </svelte:head>
 
-<main class="all-prose">
+<main>
   <h1>{page.status}</h1>
 
   <p>{page.error?.message}</p>

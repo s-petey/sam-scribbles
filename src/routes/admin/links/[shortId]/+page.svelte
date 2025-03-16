@@ -16,8 +16,16 @@
 <form use:enhance method="post" action="?/update">
   <input class="input" name="link" bind:value={$form.link} {...$constraints.link} />
 
-  <TagsInput bind:value={$form.tags} placeholder="Tags">
-    {#snippet buttonDelete()}<DeleteIcon class="size-4" />{/snippet}
+  <TagsInput
+    onValueChange={(e) => {
+      $form.tags = e.value;
+    }}
+    value={$form.tags}
+    placeholder="Tags"
+  >
+    {#snippet buttonDelete()}
+      <DeleteIcon class="size-4" />
+    {/snippet}
   </TagsInput>
 
   <div class="col-span-2">
@@ -27,12 +35,12 @@
     ---- This is a work-around as the `TagsInput` above doesn't pass 
     ---- `name` properly or render them for a form input.
     --->
-    {#each $form.tags as tag}
+    {#each $form.tags as tag (tag)}
       <input type="hidden" name="tags" value={tag} />
     {/each}
 
     <div class="flex gap-2">
-      {#each data.tags as tag}
+      {#each data.tags as tag (tag)}
         <button
           class={`chip ${
             ($form.tags ?? []).includes(tag)
@@ -62,7 +70,7 @@
     disabled={$submitting}
     aria-disabled={$submitting}
     type="submit"
-    class="btn mt-4 preset-tonal-primary"
+    class="btn preset-tonal-primary mt-4"
     class:disabled={$submitting}
   >
     Save
@@ -72,7 +80,7 @@
     disabled={$submitting}
     aria-disabled={$submitting}
     type="submit"
-    class="btn mt-4 preset-tonal-error"
+    class="btn preset-tonal-error mt-4"
     class:disabled={$submitting}
     formaction="?/delete"
   >

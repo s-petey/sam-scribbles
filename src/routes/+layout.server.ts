@@ -1,4 +1,5 @@
 import { logout, ONE_HOUR, verifyAdmin } from '$lib/auth';
+import { isValidMode, isValidTheme } from '$lib/components/themes';
 import { redirect } from '@sveltejs/kit';
 
 export const load = async (event) => {
@@ -10,10 +11,17 @@ export const load = async (event) => {
     // it is active?
     logout(event);
     // TODO: Add this route to the siteLinks once exposed more clearly...
-    redirect(302, '/login');
+    throw redirect(302, '/login');
   }
 
+  const cookieTheme = event.cookies.get('theme') ?? 'cerberus';
+  const cookieThemeMode = event.cookies.get('themeMode') ?? 'light';
+
+  const theme = isValidTheme(cookieTheme) ? cookieTheme : 'cerberus';
+  const mode = isValidMode(cookieThemeMode) ? cookieThemeMode : 'light';
+
   return {
+    theme: { theme, mode },
     user,
   };
 };

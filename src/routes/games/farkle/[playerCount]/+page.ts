@@ -27,7 +27,7 @@ export const load = async ({ params: { playerCount } }) => {
 
   const startingRows = 4;
 
-  let scores: FarkleGame['scores'] = Object.fromEntries(
+  const scores: FarkleGame['scores'] = Object.fromEntries(
     Array.from({ length: countAsInt }).map((_, i) => [
       i,
       Object.fromEntries(Array.from({ length: startingRows }).map((_, j) => [j, 0])),
