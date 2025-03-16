@@ -73,10 +73,10 @@
   browser session, so refreshing you can keep where you were.
 </p>
 
-<div class="rounded-lg border border-solid text-center border-primary-200-800">
+<div class="border-primary-200-800 rounded-lg border border-solid text-center">
   <div
     class={{
-      'grid rounded-t-lg text-lg font-bold bg-primary-400-600 text-primary-800-200': true,
+      'bg-primary-400-600 text-primary-800-200 grid rounded-t-lg text-lg font-bold': true,
       'grid-cols-2': data.playerCount === 2,
       'grid-cols-3': data.playerCount === 3,
       'grid-cols-4': data.playerCount === 4,
@@ -90,7 +90,7 @@
       'grid-cols-12': data.playerCount === 12,
     }}
   >
-    {#each names as name, idx}
+    {#each names as name, idx (idx)}
       <input
         name="player-{idx + 1}-name"
         type="text"
@@ -111,7 +111,7 @@
       />
     {/each}
 
-    {#each { length: data.playerCount }, count}
+    {#each { length: data.playerCount }, count (count)}
       <div
         class={{
           'text-success-700-300':
@@ -151,8 +151,8 @@
       'grid-cols-12': data.playerCount === 12,
     }}
   >
-    {#each { length: rows }, row}
-      {#each { length: data.playerCount }, count}
+    {#each { length: rows }, row (row)}
+      {#each { length: data.playerCount }, count (count)}
         <div class="m-auto flex flex-row items-center justify-center gap-2">
           <!-- TODO: Add row numbers -->
           <!-- {#if count === 0}
@@ -171,8 +171,8 @@
             name="player-{count + 1}"
             type="number"
             class={{
-              'input shadow-sm shadow-secondary-200-800 hover:shadow-secondary-800-200': true,
-              'border border-solid border-error-500 shadow-none':
+              'input shadow-secondary-200-800 hover:shadow-secondary-800-200 shadow-sm': true,
+              'border-error-500 border border-solid shadow-none':
                 scores[count][row] > 0 && scores[count][row] < 50,
             }}
             step="50"
@@ -203,7 +203,8 @@
   >
 
   <Modal
-    bind:open={openState}
+    open={openState}
+    onOpenChange={({ open }) => (openState = open)}
     triggerBase="btn preset-filled-secondary-400-600"
     contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
   >

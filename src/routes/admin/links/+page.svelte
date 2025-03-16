@@ -86,7 +86,7 @@
     <input type="hidden" name="tags" bind:value={$form.tags} {...$constraints.tags} />
 
     <div class="flex gap-2">
-      {#each data.tags as tag}
+      {#each data.tags as tag (tag)}
         <button
           class={`chip ${
             ($form.tags ?? []).includes(tag)
@@ -163,7 +163,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each data.links as link}
+      {#each data.links as link (link.shortId)}
         <tr class="hover:preset-tonal-primary">
           <td>{link.link}</td>
           <td>

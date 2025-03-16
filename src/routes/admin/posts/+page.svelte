@@ -40,11 +40,11 @@
 <h3 class="h3">Manage posts:</h3>
 
 <form method="post" action="?/delete" class="grid grid-cols-2 gap-2" use:deleteEnhance>
-  {#each data.posts as post}
-    <span class="btn-group grid grid-cols-4 p-2 preset-outlined-surface-200-800">
+  {#each data.posts as post (post.slug)}
+    <span class="btn-group preset-outlined-surface-200-800 grid grid-cols-4 p-2">
       <a
         href={`${admin['Admin Posts'].href}/${post.slug}`}
-        class="btn col-span-3 justify-start truncate preset-tonal-secondary hover:preset-outlined-secondary-500"
+        class="btn preset-tonal-secondary hover:preset-outlined-secondary-500 col-span-3 justify-start truncate"
       >
         {post.title}
       </a>
@@ -60,7 +60,7 @@
         <SquareX />
       </button>
       {#if $errors?.slug?.includes(post.slug)}
-        <span class="col-span-4 font-bold text-error-500">
+        <span class="text-error-500 col-span-4 font-bold">
           There is still a markdown file for this!!!
         </span>
       {/if}

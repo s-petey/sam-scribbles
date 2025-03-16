@@ -31,7 +31,7 @@
     </div>
     <div class="flex justify-center gap-2">
       <!-- TODO: Implement this page -->
-      {#each tags as tag}
+      {#each tags as tag (tag)}
         <a href={`/tags/${tag}`}>
           <!-- <a href={route('/tags/[tag]', { tag: tag.toLowerCase() })}> -->
           <span

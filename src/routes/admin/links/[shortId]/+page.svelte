@@ -35,12 +35,12 @@
     ---- This is a work-around as the `TagsInput` above doesn't pass 
     ---- `name` properly or render them for a form input.
     --->
-    {#each $form.tags as tag}
+    {#each $form.tags as tag (tag)}
       <input type="hidden" name="tags" value={tag} />
     {/each}
 
     <div class="flex gap-2">
-      {#each data.tags as tag}
+      {#each data.tags as tag (tag)}
         <button
           class={`chip ${
             ($form.tags ?? []).includes(tag)

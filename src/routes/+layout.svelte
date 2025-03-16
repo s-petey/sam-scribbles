@@ -106,7 +106,7 @@
         </div>
         <!-- Social -->
         <nav class="flex flex-row items-center gap-2">
-          {#each SiteLinks.socialLinks as link}
+          {#each SiteLinks.socialLinks as link (link.href)}
             <a class="anchor hover:underline" href={link.href} title={link.label} target="_blank">
               <Avatar name={link.label} />
             </a>
@@ -130,7 +130,7 @@
 {#snippet navigation()}
   <aside class="type-scale-2 space-y-10 overflow-y-auto">
     <nav class="flex flex-col gap-2">
-      {#each SiteLinks.coreLinks as link}
+      {#each SiteLinks.coreLinks as link (link.href)}
         <a
           class="anchor"
           onclick={() => {
@@ -144,7 +144,7 @@
       {/each}
 
       {#if data.user !== null && data.user.role === 'admin'}
-        {#each SiteLinks.adminLinks as link}
+        {#each SiteLinks.adminLinks as link (link.href)}
           <a
             href={link.href}
             title={link.label}
@@ -238,14 +238,14 @@
   </div>
   <div class="grid grid-cols-1 justify-items-center md:grid-cols-2 md:justify-items-start">
     <span class="mb-1 font-bold uppercase lg:col-span-2">Site Links</span>
-    {#each SiteLinks.coreLinks as link}
+    {#each SiteLinks.coreLinks as link (link.href)}
       <a href={link.href} title={link.label} class="w-fit hover:opacity-50">
         {link.label}
       </a>
     {/each}
 
     {#if data.user !== null && data.user.role === 'admin'}
-      {#each SiteLinks.adminLinks as link}
+      {#each SiteLinks.adminLinks as link (link.href)}
         <a href={link.href} title={link.label} class="w-fit hover:opacity-50">
           {link.label}
         </a>
@@ -254,7 +254,7 @@
   </div>
   <div class="grid grid-cols-1 justify-items-center md:grid-cols-2 md:justify-items-start">
     <span class="mb-1 font-bold uppercase lg:col-span-2">Socials</span>
-    {#each SiteLinks.socialLinks as social}
+    {#each SiteLinks.socialLinks as social (social.href)}
       <a
         class="w-fit hover:opacity-50"
         href={social.href}

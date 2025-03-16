@@ -8,10 +8,10 @@
 <h3 class="h3">How many players?</h3>
 
 <div class="m-auto grid w-1/2 grid-cols-3 gap-4">
-  {#each { length: 12 }, count}
+  {#each { length: 12 }, count (count)}
     {#if count > 0}
       <a
-        class="btn-icon m-auto rounded-xs p-4 preset-tonal-primary"
+        class="btn-icon preset-tonal-primary m-auto rounded-xs p-4"
         href={route('/games/farkle/[playerCount]', {
           playerCount: count + 1,
         })}

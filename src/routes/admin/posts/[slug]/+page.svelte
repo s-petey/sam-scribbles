@@ -29,7 +29,7 @@
 
 {#if $message}
   <div
-    class="card grid grid-cols-1 items-center p-4 text-center text-lg font-bold preset-filled-success-500"
+    class="card preset-filled-success-500 grid grid-cols-1 items-center p-4 text-center text-lg font-bold"
   >
     {$message}
   </div>
