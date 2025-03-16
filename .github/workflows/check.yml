@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        bun-version: [1.x]
+        bun-version: [1.2.4]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
