@@ -15,12 +15,12 @@ WORKDIR /usr/src/app
 # this will cache them and speed up future builds
 FROM base AS install
 RUN mkdir -p /temp/dev
-COPY package.json bun.lockb vite.config.ts svelte.config.js /temp/dev/
+COPY package.json bun.lock vite.config.ts svelte.config.js /temp/dev/
 RUN cd /temp/dev && bun install --frozen-lockfile
 
 # install with --production (exclude devDependencies)
 # RUN mkdir -p /temp/prod
-# COPY package.json bun.lockb vite.config.ts svelte.config.js /temp/prod/
+# COPY package.json bun.lock vite.config.ts svelte.config.js /temp/prod/
 # RUN cd /temp/prod && bun install --frozen-lockfile --production
 
 # copy node_modules from temp directory
