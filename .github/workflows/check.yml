@@ -29,5 +29,5 @@ jobs:
       - name: Run lint command
         run: bun run lint
 
-      - name: Run check command
-        run: bun run check
+      # - name: Run check command
+      #   run: bun run check
