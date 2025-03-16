@@ -2,7 +2,7 @@
   import '../app.css';
 
   import BackToTop from '$lib/components/BackToTop.svelte';
-  import Lightswitch from '$lib/components/Lightswitch.svelte';
+  import ThemeAndMode from '$lib/components/ThemeAndMode.svelte';
   import * as SiteLinks from '$lib/siteLinks';
   import { Avatar } from '@skeletonlabs/skeleton-svelte';
   import Menu from 'lucide-svelte/icons/menu';
@@ -48,10 +48,10 @@
   <!-- Footer -->
   <div class="relative">
     <div
-      class="rounded-box absolute -inset-0 z-0 bg-linear-to-br from-primary-500 to-secondary-500 font-black blur-xs"
+      class="rounded-box from-primary-500 to-secondary-500 absolute -inset-0 z-0 bg-linear-to-br font-black blur-xs"
     ></div>
     <footer
-      class="footer relative grid grid-cols-1 gap-4 bg-surface-500 bg-opacity-20 p-4 md:grid-cols-2 xl:grid-cols-3"
+      class="footer bg-surface-500 bg-opacity-20 relative grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3"
     >
       {@render footer()}
     </footer>
@@ -60,7 +60,7 @@
 
 {#snippet header()}
   <!-- Header -->
-  <header class="w-full border-b-[1px] border-surface-500/20 p-4 py-3 bg-surface-50-950 xl:px-10">
+  <header class="border-surface-500/20 bg-surface-50-950 w-full border-b-[1px] p-4 py-3 xl:px-10">
     <div
       class="container mx-auto grid max-w-(--breakpoint-2xl) grid-cols-[auto_1fr_auto] items-center gap-4 xl:grid-cols-[1fr_auto_1fr]"
     >
@@ -78,7 +78,7 @@
         <h2 class="h2">
           <!-- TODO: Have an icon for this instead and a title? -->
           <a
-            class="hidden bg-linear-to-b from-primary-500 to-tertiary-500 bg-clip-text font-extrabold text-transparent xl:inline-block"
+            class="from-primary-500 to-tertiary-500 hidden bg-linear-to-b bg-clip-text font-extrabold text-transparent xl:inline-block"
             href={route('/')}
             title="Skeleton"
           >
@@ -102,8 +102,7 @@
       <!-- Right -->
       <div class="flex items-center justify-end gap-2">
         <div class="hidden items-center justify-end gap-2 xl:flex">
-          <!-- TODO: Implement lightswitch -->
-          <Lightswitch />
+          <ThemeAndMode currentTheme={data.theme.theme} currentThemeMode={data.theme.mode} />
         </div>
         <!-- Social -->
         <nav class="flex flex-row items-center gap-2">
@@ -129,7 +128,7 @@
 {/snippet}
 
 {#snippet navigation()}
-  <aside class="space-y-10 overflow-y-auto type-scale-2">
+  <aside class="type-scale-2 space-y-10 overflow-y-auto">
     <nav class="flex flex-col gap-2">
       {#each SiteLinks.coreLinks as link}
         <a
@@ -165,12 +164,12 @@
 {#snippet drawer()}
   <!-- Drawer -->
   <div
-    class={`fixed bottom-0 left-0 top-0 z-50 w-[320px] space-y-10 overflow-y-auto p-4 pb-24 shadow-xl transition-transform duration-100 preset-filled-surface-100-900 xl:hidden ${expanded ? 'block' : '-translate-x-[320px]'}`}
+    class={`preset-filled-surface-100-900 fixed top-0 bottom-0 left-0 z-50 w-[320px] space-y-10 overflow-y-auto p-4 pb-24 shadow-xl transition-transform duration-100 xl:hidden ${expanded ? 'block' : '-translate-x-[320px]'}`}
   >
     <!-- Header -->
     <header class="flex items-center justify-between">
       <h3
-        class="h3 inline-block bg-linear-to-b from-primary-500 to-tertiary-500 bg-clip-text font-extrabold text-transparent"
+        class="h3 from-primary-500 to-tertiary-500 inline-block bg-linear-to-b bg-clip-text font-extrabold text-transparent"
       >
         <!-- TODO: Update this will be the full site not only sam-scribbles... -->
         Sam-Scribbles
