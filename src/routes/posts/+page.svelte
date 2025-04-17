@@ -47,7 +47,7 @@
               class="prose prose-lg lg:prose-xl prose-headings:scroll-mt-16 prose-a:text-primary-400 prose-a:transition prose-a:hover:text-secondary-400 w-full max-w-full!"
             >
               <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-              {@html post.preview}
+              {@html post.excerpt}
               <!-- TODO: Figure out why this previewHtml doesn't work -->
               <!-- {@html post.previewHtml} -->
             </div>

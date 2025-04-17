@@ -7,27 +7,34 @@
   // I know this de-structure isn't responsive
   // however in this case I won't care
   const {
-    Content,
-    meta: { isPrivate, date, title, reading_time, tags },
+    post: {
+      date,
+      title,
+      slug,
+      meta: { keywords: tags },
+      content,
+    },
+    // Content,
+    // meta: { isPrivate, date, title, reading_time, tags },
   } = data;
 
-  const dateTime = DateTime.fromJSDate(date);
-  if (!dateTime.isValid) {
-    throw new Error('Invalid date');
-  }
+  // const dateTime = DateTime.fromJSDate(date);
+  // if (!dateTime.isValid) {
+  //   throw new Error('Invalid date');
+  // }
 
-  const dateIso = dateTime.toISO() ?? '';
+  // const dateIso = dateTime.toISO() ?? '';
 </script>
 
 <article class="bg-surface-800-200 px-4">
   <h1 class="mb-1 text-5xl font-black">{title}</h1>
   <div class="mt-4 mb-3 uppercase">
     <div class="flex justify-center gap-1">
-      <time datetime={dateIso}>
+      <!-- <time datetime={dateIso}>
         {dateTime.toLocaleString()}
-      </time>
+      </time> -->
       &bull;
-      <span>{reading_time.text}</span>
+      <!-- <span>{reading_time.text}</span> -->
     </div>
     <div class="flex justify-center gap-2">
       <!-- TODO: Implement this page -->
@@ -41,13 +48,13 @@
           </span>
         </a>
       {/each}
-      {#if dateTime.diffNow('days').days < 31}
+      <!-- {#if dateTime.diffNow('days').days < 31}
         <span
           class="text-primary-content badge preset-filled-success-500 hover:bg-success-contrast-500 hover:text-success-500 cursor-pointer font-bold shadow-md transition"
         >
           NEW
         </span>
-      {/if}
+      {/if} -->
     </div>
   </div>
   <!-- {#if current_visitor_data} -->
@@ -67,10 +74,10 @@
 		</span> -->
   <!-- {/if} -->
 
-  {#if isPrivate}
-    POST ISN'T PUBLISHED YET!
-    <!-- <IsPrivateBanner /> -->
-  {/if}
+  <!-- {#if isPrivate} -->
+  <!-- POST ISN'T PUBLISHED YET! -->
+  <!-- <IsPrivateBanner /> -->
+  <!-- {/if} -->
 
   <!-- || updated -->
   {#if DateTime.fromJSDate(date).diffNow('years').years >= 1}
@@ -81,7 +88,8 @@
   <div
     class="prose prose-lg lg:prose-xl prose-headings:scroll-mt-16 prose-a:text-primary-400 prose-a:transition prose-a:hover:text-secondary-400 mb-10"
   >
-    <Content />
+    {@html content}
+    <!-- <Content /> -->
   </div>
 
   <!-- <div class="mb-5 mt-10 flex w-full flex-col" bind:this={end_of_copy}>
