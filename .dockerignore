@@ -9,8 +9,29 @@ LICENSE
 .vscode
 Makefile
 helm-charts
-.env
+# .env
 .env.example
 .editorconfig
 .idea
 coverage*
+
+# Mimic gitignore
+
+# Output
+.output
+.vercel
+/.svelte-kit
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+# .env
+.env.*
+# !.env.example
+# !.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
