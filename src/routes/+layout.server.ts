@@ -1,6 +1,7 @@
 import { logout, ONE_HOUR, verifyAdmin } from '$lib/auth';
 import { isValidMode, isValidTheme } from '$lib/components/themes';
 import { redirect } from '@sveltejs/kit';
+import { route } from '$lib/ROUTES.js';
 
 export const load = async (event) => {
   const user = await verifyAdmin(event);
@@ -11,7 +12,7 @@ export const load = async (event) => {
     // it is active?
     logout(event);
     // TODO: Add this route to the siteLinks once exposed more clearly...
-    throw redirect(302, '/login');
+    redirect(302, route('/login'));
   }
 
   const cookieTheme = event.cookies.get('theme') ?? 'cerberus';

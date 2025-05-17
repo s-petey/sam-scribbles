@@ -1,5 +1,6 @@
 import { verifyAdmin } from '$lib/auth';
 import { logger } from '$lib/logger';
+import { route } from '$lib/ROUTES.js';
 import { db } from '$lib/server/db/index.js';
 import { link, linksToTags, tag } from '$lib/server/db/schema.js';
 import { error, redirect, type Actions } from '@sveltejs/kit';
@@ -125,6 +126,6 @@ export const actions: Actions = {
 
     await db.delete(link).where(eq(link.shortId, validatedShortId.data));
 
-    redirect(302, '/admin/links');
+    redirect(302, route('/admin/links'));
   },
 };
