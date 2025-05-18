@@ -32,16 +32,15 @@ export const handle = (async ({ event, resolve }) => {
     themeMode = cookieThemeMode;
   }
 
-  if (theme === null) {
-    theme = 'catppuccin';
-    event.cookies.set('theme', theme, {
+  if (newTheme !== null && cookieTheme !== newTheme && isValidTheme(newTheme)) {
+    event.cookies.set('theme', newTheme, {
       path: '/',
       maxAge: ONE_YEAR,
     });
   }
-  if (themeMode === null) {
-    themeMode = 'light';
-    event.cookies.set('themeMode', themeMode, {
+
+  if (newThemeMode !== null && cookieThemeMode !== newThemeMode && isValidMode(newThemeMode)) {
+    event.cookies.set('themeMode', newThemeMode, {
       path: '/',
       maxAge: ONE_YEAR,
     });
@@ -55,12 +54,12 @@ export const handle = (async ({ event, resolve }) => {
           transformPageChunk: ({ html }) => {
             if (isValidMode(cookieThemeMode) && isValidTheme(cookieTheme)) {
               return html
-                .replace('data-theme=""', `data-theme="${cookieTheme}"`)
+                .replace('data-theme="fennec"', `data-theme="${cookieTheme}"`)
                 .replace('class="dark"', `class="${cookieThemeMode === 'dark' ? 'dark' : ''}"`);
             }
 
             if (isValidTheme(cookieTheme)) {
-              return html.replace('data-theme=""', `data-theme="${cookieTheme}"`);
+              return html.replace('data-theme="fennec"', `data-theme="${cookieTheme}"`);
             }
 
             if (isValidMode(cookieThemeMode)) {

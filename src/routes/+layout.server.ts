@@ -24,11 +24,11 @@ export const load: LayoutServerLoad = async (event) => {
     redirect(302, route('/login'));
   }
 
-  const cookieTheme = event.cookies.get('theme') ?? 'cerberus';
-  const cookieThemeMode = event.cookies.get('themeMode') ?? 'light';
+  const cookieTheme = event.cookies.get('theme') ?? 'fennec';
+  const cookieThemeMode = event.cookies.get('themeMode') ?? 'dark';
 
-  const theme = isValidTheme(cookieTheme) ? cookieTheme : 'cerberus';
-  const mode = isValidMode(cookieThemeMode) ? cookieThemeMode : 'light';
+  const theme = isValidTheme(cookieTheme) ? cookieTheme : 'fennec';
+  const mode = isValidMode(cookieThemeMode) ? cookieThemeMode : 'dark';
 
   return {
     theme: { theme, mode },
