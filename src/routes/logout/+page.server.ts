@@ -1,11 +1,17 @@
-import { logout } from '$lib/auth';
 import { redirect } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { core } from '$lib/siteLinks';
+import { auth } from '$lib/auth';
+import { setServerCookies } from '$lib/auth.server';
 
 export const actions: Actions = {
   default: async (event) => {
-    logout(event);
+    const response = await auth.api.signOut({
+      returnHeaders: true,
+      headers: event.request.headers,
+    });
+
+    setServerCookies(response.headers, event);
 
     const referer = event.request.headers.get('referer');
 

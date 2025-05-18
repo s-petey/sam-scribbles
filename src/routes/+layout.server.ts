@@ -1,16 +1,25 @@
-import { logout, ONE_HOUR, verifyAdmin } from '$lib/auth';
 import { isValidMode, isValidTheme } from '$lib/components/themes';
 import { redirect } from '@sveltejs/kit';
 import { route } from '$lib/ROUTES.js';
+import { auth } from '$lib/auth';
+import { setServerCookies } from '$lib/auth.server';
+import type { LayoutServerLoad } from './$types';
 
-export const load = async (event) => {
-  const user = await verifyAdmin(event);
+export const load: LayoutServerLoad = async (event) => {
+  const session = await auth.api.getSession({
+    headers: event.request.headers,
+  });
 
-  if (user !== null && user.expires > Date.now() + ONE_HOUR) {
+  if (session !== null && session.session.expiresAt.valueOf() < Date.now()) {
     // TODO: Warn the user they need to login again (have a message?)
     // Or have a way to extend the session when it is nearing expiry if
     // it is active?
-    logout(event);
+    const response = await auth.api.signOut({
+      returnHeaders: true,
+      headers: event.request.headers,
+    });
+    setServerCookies(response.headers, event);
+
     // TODO: Add this route to the siteLinks once exposed more clearly...
     redirect(302, route('/login'));
   }
@@ -23,6 +32,6 @@ export const load = async (event) => {
 
   return {
     theme: { theme, mode },
-    user,
+    user: session?.user ?? null,
   };
 };

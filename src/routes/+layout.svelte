@@ -112,9 +112,12 @@
             </a>
           {/each}
 
-          {#if data.user !== null && data.user.role === 'admin'}
+          {#if data.user !== null}
             <!-- <span class="flex items-center justify-end space-x-4"> -->
-            <p>User: {data.user.username}</p>
+
+            {#if data.user.name.length > 0}
+              <p>User: {data.user.name}</p>
+            {/if}
 
             <form action="/logout" method="POST">
               <button class="btn preset-tonal-primary" type="submit">Logout</button>

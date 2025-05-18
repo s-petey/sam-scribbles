@@ -1,10 +1,11 @@
 import { error } from '@sveltejs/kit';
 import { db, type FarkleGame } from './farkleDb.js';
+import type { PageLoad } from './$types.js';
 
 export const csr = true;
 export const ssr = false;
 
-export const load = async ({ params: { playerCount } }) => {
+export const load: PageLoad = async ({ params: { playerCount } }) => {
   const countAsInt = Number(playerCount);
 
   if (Number.isNaN(countAsInt)) {

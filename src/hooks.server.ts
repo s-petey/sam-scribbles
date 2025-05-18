@@ -1,9 +1,16 @@
 import { type Handle } from '@sveltejs/kit';
 import { isValidMode, isValidTheme, type Theme, type ThemeMode } from '$lib/components/themes';
+import { auth } from '$lib/auth'; // path to your auth file
+import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
 export const handle = (async ({ event, resolve }) => {
+  // Suppress well-known Chrome DevTools requests
+  if (event.url.pathname.startsWith('/.well-known/appspecific/com.chrome.devtools')) {
+    return new Response(null, { status: 204 }); // Return empty response with 204 No Content
+  }
+
   let theme: Theme | null = null;
   let themeMode: ThemeMode | null = null;
 
@@ -41,29 +48,63 @@ export const handle = (async ({ event, resolve }) => {
   }
 
   if (theme !== null || themeMode !== null) {
-    return await resolve(event, {
-      transformPageChunk: ({ html }) => {
-        if (isValidMode(cookieThemeMode) && isValidTheme(cookieTheme)) {
-          return html
-            .replace('data-theme=""', `data-theme="${cookieTheme}"`)
-            .replace('class="dark"', `class="${cookieThemeMode === 'dark' ? 'dark' : ''}"`);
-        }
+    return svelteKitHandler({
+      event,
+      resolve: async () =>
+        await resolve(event, {
+          transformPageChunk: ({ html }) => {
+            if (isValidMode(cookieThemeMode) && isValidTheme(cookieTheme)) {
+              return html
+                .replace('data-theme=""', `data-theme="${cookieTheme}"`)
+                .replace('class="dark"', `class="${cookieThemeMode === 'dark' ? 'dark' : ''}"`);
+            }
 
-        if (isValidTheme(cookieTheme)) {
-          return html.replace('data-theme=""', `data-theme="${cookieTheme}"`);
-        }
+            if (isValidTheme(cookieTheme)) {
+              return html.replace('data-theme=""', `data-theme="${cookieTheme}"`);
+            }
 
-        if (isValidMode(cookieThemeMode)) {
-          return html.replace(
-            'class="dark"',
-            `class="${cookieThemeMode === 'dark' ? 'dark' : ''}"`,
-          );
-        }
+            if (isValidMode(cookieThemeMode)) {
+              return html.replace(
+                'class="dark"',
+                `class="${cookieThemeMode === 'dark' ? 'dark' : ''}"`,
+              );
+            }
 
-        return html;
-      },
+            return html;
+          },
+        }),
+
+      auth,
     });
+    // return await resolve(event, {
+    //   transformPageChunk: ({ html }) => {
+    //     if (isValidMode(cookieThemeMode) && isValidTheme(cookieTheme)) {
+    //       return html
+    //         .replace('data-theme=""', `data-theme="${cookieTheme}"`)
+    //         .replace('class="dark"', `class="${cookieThemeMode === 'dark' ? 'dark' : ''}"`);
+    //     }
+
+    //     if (isValidTheme(cookieTheme)) {
+    //       return html.replace('data-theme=""', `data-theme="${cookieTheme}"`);
+    //     }
+
+    //     if (isValidMode(cookieThemeMode)) {
+    //       return html.replace(
+    //         'class="dark"',
+    //         `class="${cookieThemeMode === 'dark' ? 'dark' : ''}"`,
+    //       );
+    //     }
+
+    //     return html;
+    //   },
+    // });
   }
 
-  return await resolve(event);
+  // return await resolve(event);
+
+  return await svelteKitHandler({
+    auth,
+    event,
+    resolve,
+  });
 }) satisfies Handle;

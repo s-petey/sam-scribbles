@@ -1,4 +1,3 @@
-import { verifyAdmin } from '$lib/auth';
 import { db } from '$lib/server/db';
 import { link, linksToTags, tag } from '$lib/server/db/schema';
 import { error, redirect } from '@sveltejs/kit';
@@ -9,6 +8,7 @@ import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
 import { routeQueryParams } from './queryParams';
 import { logger } from '$lib/logger';
+import { auth } from '$lib/auth';
 
 const linkSchema = z.object({
   link: z
@@ -73,9 +73,13 @@ const shortIdSchema = z.object({ shortId: z.string().min(1) });
 
 export const actions: Actions = {
   create: async (event) => {
-    const admin = await verifyAdmin(event);
+    const session = await auth.api.getSession({
+      headers: event.request.headers,
+    });
 
-    if (admin === null) {
+    const admin = session?.user;
+
+    if (admin === undefined || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
 
@@ -125,9 +129,13 @@ export const actions: Actions = {
   },
 
   delete: async (event) => {
-    const admin = await verifyAdmin(event);
+    const session = await auth.api.getSession({
+      headers: event.request.headers,
+    });
 
-    if (admin === null) {
+    const admin = session?.user;
+
+    if (admin === undefined || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
 

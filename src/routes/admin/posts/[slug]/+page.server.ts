@@ -1,4 +1,3 @@
-import { verifyAdmin } from '$lib/auth';
 import { db } from '$lib/server/db';
 import { post } from '$lib/server/db/schema';
 import { postMetadataSchema } from '$lib/zodSchema';
@@ -7,6 +6,7 @@ import { fail, message, superValidate, type Infer } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
+import { auth } from '$lib/auth';
 
 const schema = z.object({
   slug: z.string().min(1, 'Slug is required'),
@@ -31,8 +31,15 @@ export const load = (async ({ params }) => {
 
 export const actions: Actions = {
   default: async (event) => {
-    // Validate session
-    const admin = await verifyAdmin(event);
+    const session = await auth.api.getSession({
+      headers: event.request.headers,
+    });
+
+    const admin = session?.user;
+
+    if (admin === undefined || admin.role !== 'admin') {
+      error(401, 'Unauthorized');
+    }
 
     if (admin === null) {
       error(401, 'Unauthorized');
