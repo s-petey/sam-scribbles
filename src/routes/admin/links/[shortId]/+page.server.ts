@@ -1,4 +1,3 @@
-import { verifyAdmin } from '$lib/auth';
 import { logger } from '$lib/logger';
 import { route } from '$lib/ROUTES.js';
 import { db } from '$lib/server/db/index.js';
@@ -8,6 +7,8 @@ import { eq } from 'drizzle-orm';
 import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
+import { getAndRefreshSession } from '$lib/auth.server';
+import type { PageServerLoad } from './$types';
 
 const shortIdSchema = z.string().min(1);
 const linkSchema = z.object({
@@ -28,7 +29,7 @@ const linkSchema = z.object({
   tags: z.string().array(),
 });
 
-export const load = async ({ params: { shortId } }) => {
+export const load: PageServerLoad = async ({ params: { shortId } }) => {
   const foundLink = await db.query.link.findFirst({
     where: eq(link.shortId, shortId),
     with: { tags: { columns: { tag: true } } },
@@ -51,12 +52,13 @@ export const load = async ({ params: { shortId } }) => {
 
 export const actions: Actions = {
   update: async (event) => {
-    const admin = await verifyAdmin(event);
+    const session = await getAndRefreshSession(event);
 
-    if (admin === null) {
+    const admin = session?.user;
+
+    if (admin === null || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
-
     logger.debug({ msg: 'Updating link', admin: admin.email });
 
     const form = await superValidate(event.request, zod(linkSchema));
@@ -110,9 +112,11 @@ export const actions: Actions = {
   },
 
   delete: async (event) => {
-    const admin = await verifyAdmin(event);
+    const session = await getAndRefreshSession(event);
 
-    if (admin === null) {
+    const admin = session?.user;
+
+    if (admin === null || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
 

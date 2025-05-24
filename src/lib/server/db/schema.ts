@@ -45,6 +45,7 @@ export const link = pgTable('link', {
 
 export const tag = pgTable('tag', { name: text().primaryKey().notNull() });
 
+// TODO: Migrate to new relations...
 export const linksToTags = pgTable(
   'links_to_tags',
   {
@@ -73,11 +74,12 @@ export const postsToTags = pgTable(
 
 // TODO: Add users -- currently there will only be me (admin)
 export const user = pgTable('user', {
-  id: varchar({ length: SHORT_ID_LENGTH }).primaryKey().$default(shortId),
-  username: text().notNull().unique(),
-  email: text().notNull(),
-  password: text().notNull(),
+  id: text().primaryKey(),
+  name: text().notNull(),
+  email: text().notNull().unique(),
+  emailVerified: boolean().default(false).notNull(),
   role: text({ enum: ['admin', 'user', 'creator'] }),
+  image: text(),
 
   createdAt: timestamp().notNull().defaultNow(),
   updatedAt: timestamp()
@@ -85,8 +87,56 @@ export const user = pgTable('user', {
     .$onUpdate(() => new Date()),
 });
 
+export const session = pgTable('session', {
+  id: text().primaryKey(),
+  token: text().notNull().unique(),
+  ipAddress: text(),
+  userAgent: text(),
+  userId: text()
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+
+  expiresAt: timestamp().notNull(),
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp().notNull(),
+});
+
+export const account = pgTable('account', {
+  id: text().primaryKey(),
+  accountId: text().notNull(),
+  providerId: text().notNull(),
+  userId: text()
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  accessToken: text(),
+  refreshToken: text(),
+  idToken: text(),
+  scope: text(),
+  password: text(),
+
+  accessTokenExpiresAt: timestamp(),
+  refreshTokenExpiresAt: timestamp(),
+
+  createdAt: timestamp().notNull(),
+  updatedAt: timestamp()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
+export const verification = pgTable('verification', {
+  id: text().primaryKey(),
+  identifier: text().notNull(),
+  value: text().notNull(),
+
+  expiresAt: timestamp().notNull(),
+  createdAt: timestamp().notNull().defaultNow(),
+  updatedAt: timestamp()
+    .notNull()
+    .$onUpdate(() => new Date()),
+});
+
 export const userLink = pgTable('user_link', {
-  userId: varchar({ length: SHORT_ID_LENGTH })
+  userId: text()
     .notNull()
     .references(() => user.id),
   linkId: varchar({ length: SHORT_ID_LENGTH })

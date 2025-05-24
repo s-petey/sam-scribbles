@@ -1,7 +1,8 @@
 import { postMetadataSchema } from '$lib/zodSchema';
 import { error } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
-export const load = async ({
+export const load: PageLoad = async ({
   data: {
     // Any other server data comes in here...
     slug,
