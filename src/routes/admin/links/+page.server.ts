@@ -8,7 +8,7 @@ import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
 import { routeQueryParams } from './queryParams';
 import { logger } from '$lib/logger';
-import { auth } from '$lib/auth';
+import { getAndRefreshSession } from '$lib/auth.server';
 
 const linkSchema = z.object({
   link: z
@@ -73,9 +73,7 @@ const shortIdSchema = z.object({ shortId: z.string().min(1) });
 
 export const actions: Actions = {
   create: async (event) => {
-    const session = await auth.api.getSession({
-      headers: event.request.headers,
-    });
+    const session = await getAndRefreshSession(event);
 
     const admin = session?.user;
 
@@ -129,9 +127,7 @@ export const actions: Actions = {
   },
 
   delete: async (event) => {
-    const session = await auth.api.getSession({
-      headers: event.request.headers,
-    });
+    const session = await getAndRefreshSession(event);
 
     const admin = session?.user;
 
