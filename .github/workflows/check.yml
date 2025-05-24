@@ -14,6 +14,12 @@ jobs:
     strategy:
       matrix:
         bun-version: [1.2.13]
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      ALLOWED_EMAILS: ${{ secrets.ALLOWED_EMAILS }}
+      NODE_ENV: ${{ secrets.NODE_ENV }}
+      LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+      BASELIME_API_KEY: ${{ secrets.BASELIME_API_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
