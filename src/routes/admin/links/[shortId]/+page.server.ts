@@ -56,7 +56,7 @@ export const actions: Actions = {
 
     const admin = session?.user;
 
-    if (admin === undefined || admin.role !== 'admin') {
+    if (admin === null || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
     logger.debug({ msg: 'Updating link', admin: admin.email });
@@ -116,7 +116,7 @@ export const actions: Actions = {
 
     const admin = session?.user;
 
-    if (admin === undefined || admin.role !== 'admin') {
+    if (admin === null || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
 

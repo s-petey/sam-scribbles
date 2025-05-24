@@ -35,13 +35,10 @@ export const actions: Actions = {
 
     const admin = session?.user;
 
-    if (admin === undefined || admin.role !== 'admin') {
+    if (admin === null || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
 
-    if (admin === null) {
-      error(401, 'Unauthorized');
-    }
     const form = await superValidate(event.request, zod(schema));
 
     if (!form.valid) {

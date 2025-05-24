@@ -77,7 +77,7 @@ export const actions: Actions = {
 
     const admin = session?.user;
 
-    if (admin === undefined || admin.role !== 'admin') {
+    if (admin === null || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
 
@@ -131,7 +131,7 @@ export const actions: Actions = {
 
     const admin = session?.user;
 
-    if (admin === undefined || admin.role !== 'admin') {
+    if (admin === null || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
 
