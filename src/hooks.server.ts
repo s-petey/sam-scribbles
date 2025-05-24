@@ -1,7 +1,10 @@
-import { type Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 import { isValidMode, isValidTheme, type Theme, type ThemeMode } from '$lib/components/themes';
 import { auth } from '$lib/auth'; // path to your auth file
 import { svelteKitHandler } from 'better-auth/svelte-kit';
+import { core } from '$lib/siteLinks';
+import { setServerCookies } from '$lib/auth.server';
+import { route } from '$lib/ROUTES';
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
@@ -46,6 +49,52 @@ export const handle = (async ({ event, resolve }) => {
     });
   }
 
+  // TODO: Handle auth route re-routing / session stuff...
+  // https://svelte.dev/docs/kit/hooks#Server-hooks-handle
+  // Add this user to the `locals` value.
+  // Ex: https://github.com/aakash14goplani/SvelteKitAuth/blob/main/src/hooks.server.ts
+
+  const session = await auth.api.getSession({
+    headers: event.request.headers,
+    query: {
+      disableRefresh: true,
+    },
+  });
+
+  if (event.url.pathname.startsWith('/admin') && session?.user?.role !== 'admin') {
+    if (session !== null && session.session.expiresAt.valueOf() < Date.now()) {
+      console.log('Session expired, logging out...');
+      // TODO: Warn the user they need to login again (have a message?)
+      // Or have a way to extend the session when it is nearing expiry if
+      // it is active?
+      const response = await auth.api.signOut({
+        returnHeaders: true,
+        headers: event.request.headers,
+      });
+      setServerCookies(response.headers, event);
+
+      // TODO: Add this route to the siteLinks once exposed more clearly...
+      redirect(302, route('/login'));
+    }
+
+    console.log('User is not an admin, redirecting to home...');
+    redirect(303, core.Home.href);
+  }
+
+  if (session) {
+    event.locals.session = {
+      user: session.user,
+      session: session.session,
+    };
+  } else {
+    event.locals.session = {
+      user: null,
+      session: null,
+    };
+  }
+
+  event.locals.theme = { theme: theme ?? 'fennec', mode: themeMode };
+
   if (theme !== null || themeMode !== null) {
     return svelteKitHandler({
       event,
@@ -75,35 +124,7 @@ export const handle = (async ({ event, resolve }) => {
 
       auth,
     });
-    // return await resolve(event, {
-    //   transformPageChunk: ({ html }) => {
-    //     if (isValidMode(cookieThemeMode) && isValidTheme(cookieTheme)) {
-    //       return html
-    //         .replace('data-theme=""', `data-theme="${cookieTheme}"`)
-    //         .replace('class="dark"', `class="${cookieThemeMode === 'dark' ? 'dark' : ''}"`);
-    //     }
-
-    //     if (isValidTheme(cookieTheme)) {
-    //       return html.replace('data-theme=""', `data-theme="${cookieTheme}"`);
-    //     }
-
-    //     if (isValidMode(cookieThemeMode)) {
-    //       return html.replace(
-    //         'class="dark"',
-    //         `class="${cookieThemeMode === 'dark' ? 'dark' : ''}"`,
-    //       );
-    //     }
-
-    //     return html;
-    //   },
-    // });
   }
 
-  // return await resolve(event);
-
-  return await svelteKitHandler({
-    auth,
-    event,
-    resolve,
-  });
+  return await svelteKitHandler({ auth, event, resolve });
 }) satisfies Handle;

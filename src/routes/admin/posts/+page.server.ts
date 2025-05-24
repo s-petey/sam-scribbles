@@ -7,7 +7,7 @@ import { fail, message, setError, superValidate, type Infer } from 'sveltekit-su
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import type { PageServerLoad } from './$types';
-import { auth } from '$lib/auth';
+import { getAndRefreshSession } from '$lib/auth.server';
 
 const schema = z.object({});
 
@@ -26,9 +26,7 @@ export const load = (async () => {
 
 export const actions: Actions = {
   syncPosts: async (event) => {
-    const session = await auth.api.getSession({
-      headers: event.request.headers,
-    });
+    const session = await getAndRefreshSession(event);
 
     const admin = session?.user;
 
@@ -113,9 +111,7 @@ export const actions: Actions = {
   },
 
   delete: async (event) => {
-    const session = await auth.api.getSession({
-      headers: event.request.headers,
-    });
+    const session = await getAndRefreshSession(event);
 
     const admin = session?.user;
 

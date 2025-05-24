@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
-import { auth } from '$lib/auth';
+import { getAndRefreshSession } from '$lib/auth.server';
 import type { PageServerLoad } from './$types';
 
 const shortIdSchema = z.string().min(1);
@@ -52,9 +52,7 @@ export const load: PageServerLoad = async ({ params: { shortId } }) => {
 
 export const actions: Actions = {
   update: async (event) => {
-    const session = await auth.api.getSession({
-      headers: event.request.headers,
-    });
+    const session = await getAndRefreshSession(event);
 
     const admin = session?.user;
 
@@ -114,9 +112,7 @@ export const actions: Actions = {
   },
 
   delete: async (event) => {
-    const session = await auth.api.getSession({
-      headers: event.request.headers,
-    });
+    const session = await getAndRefreshSession(event);
 
     const admin = session?.user;
 

@@ -30,7 +30,6 @@
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.7",
     "@types/eslint": "^9.6.1",
-    "@types/jsonwebtoken": "^9.0.9",
     "@types/luxon": "^3.6.2",
     "@types/node": "^22.15.18",
     "@types/pg": "^8.15.2",
