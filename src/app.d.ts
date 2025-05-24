@@ -1,10 +1,10 @@
 // TODO: can I import types here?
-// import type { Session } from './lib/auth';
-// import type { Theme, ThemeMode } from './lib/components/themes';
+import type { Session } from './lib/auth';
+import type { Theme, ThemeMode } from './lib/components/themes';
 
 interface ValidSession {
-  user: import('$lib/auth').Session['user'];
-  session: import('$lib/auth').Session['session'];
+  user: Session['user']; // import('$lib/auth').Session['user'];
+  session: Session['session']; // import('$lib/auth').Session['session'];
 }
 
 interface InvalidSession {
@@ -20,8 +20,8 @@ declare global {
     interface Locals {
       session: ValidSession | InvalidSession;
       theme: {
-        theme: import('$lib/components/themes').Theme;
-        mode: import('$lib/components/theme').ThemeMode;
+        theme: Theme; // import('$lib/components/themes').Theme;
+        mode: ThemeMode; // import('$lib/components/theme').ThemeMode;
       };
     }
     // interface PageData {}

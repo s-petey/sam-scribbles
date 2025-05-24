@@ -8,6 +8,9 @@ import { route } from '$lib/ROUTES';
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
+const DEFAULT_THEME: Theme = 'fennec';
+const DEFAULT_MODE: ThemeMode = 'dark';
+
 export const handle = (async ({ event, resolve }) => {
   // Suppress well-known Chrome DevTools requests
   if (event.url.pathname.startsWith('/.well-known/appspecific/com.chrome.devtools')) {
@@ -93,7 +96,7 @@ export const handle = (async ({ event, resolve }) => {
     };
   }
 
-  event.locals.theme = { theme: theme ?? 'fennec', mode: themeMode };
+  event.locals.theme = { theme: theme ?? DEFAULT_THEME, mode: themeMode ?? DEFAULT_MODE };
 
   if (theme !== null || themeMode !== null) {
     return svelteKitHandler({
