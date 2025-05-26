@@ -1,12 +1,14 @@
-import { redirect, type Handle } from '@sveltejs/kit';
-import { isValidMode, isValidTheme, type Theme, type ThemeMode } from '$lib/components/themes';
-import { auth } from '$lib/auth'; // path to your auth file
-import { svelteKitHandler } from 'better-auth/svelte-kit';
-import { core } from '$lib/siteLinks';
+import { building } from '$app/environment';
+import { auth } from '$lib/auth';
 import { setServerCookies } from '$lib/auth.server';
-import { route } from '$lib/ROUTES';
-import { sequence } from '@sveltejs/kit/hooks';
+import { isValidMode, isValidTheme, type Theme, type ThemeMode } from '$lib/components/themes';
 import { logger } from '$lib/logger';
+import { route } from '$lib/ROUTES';
+import { rejectedFileExtensions, rejectedFilePaths } from '$lib/server/rejectedRequests';
+import { core } from '$lib/siteLinks';
+import { redirect, type Handle } from '@sveltejs/kit';
+import { sequence } from '@sveltejs/kit/hooks';
+import { svelteKitHandler } from 'better-auth/svelte-kit';
 
 const ONE_YEAR = 60 * 60 * 24 * 365;
 
@@ -17,6 +19,33 @@ const handleAnnoyances: Handle = async ({ event, resolve }) => {
   // Suppress well-known Chrome DevTools requests
   if (event.url.pathname.startsWith('/.well-known/appspecific/com.chrome.devtools')) {
     return new Response(null, { status: 204 }); // Return empty response with 204 No Content
+  }
+
+  // Skip during prerendering/building
+  if (building) {
+    return await resolve(event);
+  }
+
+  const pathname = event.url.pathname.toLowerCase();
+
+  // Get the real client IP address from headers
+  const clientIp =
+    event.request.headers.get('x-forwarded-for')?.split(',')[0] ||
+    event.request.headers.get('x-real-ip') ||
+    event.getClientAddress();
+
+  if (rejectedFileExtensions.some((ext) => pathname.endsWith(ext))) {
+    logger.debug({
+      msg: 'Redirecting away suspicious file extension',
+      clientIp,
+      pathname,
+    });
+    throw redirect(302, 'https://www.google.com');
+  }
+
+  if (rejectedFilePaths.some((path) => pathname === path || pathname.startsWith(path + '/'))) {
+    logger.debug({ msg: 'Redirecting away suspicious path', clientIp, pathname });
+    throw redirect(302, 'https://www.google.com');
   }
 
   return await resolve(event);
