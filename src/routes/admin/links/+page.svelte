@@ -165,7 +165,9 @@
     <tbody>
       {#each data.links as link (link.shortId)}
         <tr class="hover:preset-tonal-primary">
-          <td>{link.link}</td>
+          <td>
+            <a class="anchor" href={link.link} target="_blank">{link.link}</a>
+          </td>
           <td>
             <span>
               {link.private}

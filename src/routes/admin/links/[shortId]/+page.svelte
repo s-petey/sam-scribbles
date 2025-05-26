@@ -11,7 +11,7 @@
   });
 </script>
 
-<form use:enhance method="post" action="?/update" class="grid grid-cols-2 gap-4">
+<form use:enhance method="post" action="?/update" class="grid grid-cols-2 items-center gap-4">
   <div>
     <input
       name="link"
