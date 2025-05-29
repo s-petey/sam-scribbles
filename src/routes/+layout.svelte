@@ -7,51 +7,38 @@
   import { Avatar } from '@skeletonlabs/skeleton-svelte';
   import Menu from 'lucide-svelte/icons/menu';
   import Close from 'lucide-svelte/icons/x';
-  import { route } from '$lib/ROUTES';
 
   let { children, data } = $props();
   let expanded = $state(false);
 </script>
 
-<div class="grid h-full grid-rows-[auto_1fr_auto]">
+<div class="grid h-screen grid-rows-[auto_1fr_auto]">
   {@render header()}
 
   <!-- Page -->
-  <div class="container mx-auto grid grid-cols-1 xl:grid-cols-[200px_minmax(0px,1fr)_200px]">
-    <!-- Sidebar (Left) -->
-    <!-- NOTE: hidden in smaller screen sizes -->
-    <aside class="sticky top-0 col-span-1 hidden self-start overflow-y-auto p-4 xl:block xl:px-0">
-      <!-- Navigation -->
-      <div class="hidden items-center justify-start gap-6 opacity-60 xl:flex">
-        {@render navigation()}
-      </div>
-    </aside>
+  <div class="flex flex-row">
+    <div class="hidden p-4 lg:block">
+      {@render navigation()}
+    </div>
 
-    <!-- Main -->
     <!-- {#key $page.url} -->
     <!-- TODO: I don't know if I will keep these transitions -->
     <!-- in:fly={{ x: -200, duration: 300, delay: 400 }}
 			out:fly={{ x: 200, duration: 300 }} -->
-    <main class="col-span-1 space-y-4 p-4">
+    <main class="space-y-4 p-4">
       {@render children()}
       <BackToTop />
     </main>
     <!-- {/key} -->
-
-    <!-- TODO: Will I need this? -->
-    <!-- Sidebar (Right) -->
-    <!-- NOTE: hidden in smaller screen sizes -->
-    <!-- <aside class="sticky top-0 col-span-1 hidden bg-yellow-500 p-4 xl:block">
-			(sidebar)
-		</aside> -->
   </div>
+
   <!-- Footer -->
   <div class="relative">
     <div
       class="rounded-box from-primary-500 to-secondary-500 absolute -inset-0 z-0 bg-linear-to-br font-black blur-xs"
     ></div>
     <footer
-      class="footer bg-surface-500 bg-opacity-20 relative grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3"
+      class="footer bg-surface-500 bg-opacity-20 relative grid grid-cols-1 gap-4 p-4 md:grid-cols-2 lg:grid-cols-3"
     >
       {@render footer()}
     </footer>
@@ -60,9 +47,9 @@
 
 {#snippet header()}
   <!-- Header -->
-  <header class="border-surface-500/20 bg-surface-50-950 w-full border-b-[1px] p-4 py-3 xl:px-10">
+  <header class="border-surface-500/20 bg-surface-50-950 w-full border-b-[1px] p-4 py-3 lg:px-10">
     <div
-      class="container mx-auto grid max-w-(--breakpoint-2xl) grid-cols-[auto_1fr_auto] items-center gap-4 xl:grid-cols-[1fr_auto_1fr]"
+      class="container mx-auto grid max-w-(--breakpoint-2xl) grid-cols-[auto_1fr_auto] items-center gap-4 lg:grid-cols-[1fr_auto_1fr]"
     >
       <!-- Left -->
       <div class="flex items-center justify-start gap-6">
@@ -70,7 +57,7 @@
         {@render drawer()}
 
         <!-- Hamburger Menu -->
-        <button class="btn-icon xl:hidden" onclick={() => (expanded = !expanded)}>
+        <button class="btn-icon lg:hidden" onclick={() => (expanded = !expanded)}>
           <Menu />
         </button>
 
@@ -78,9 +65,9 @@
         <h2 class="h2">
           <!-- TODO: Have an icon for this instead and a title? -->
           <a
-            class="from-primary-500 to-tertiary-500 hidden bg-linear-to-b bg-clip-text font-extrabold text-transparent xl:inline-block"
-            href={route('/')}
-            title="Skeleton"
+            class="from-primary-500 to-tertiary-500 hidden bg-linear-to-b bg-clip-text font-extrabold text-transparent lg:inline-block"
+            href={SiteLinks.core.Home.href}
+            title={SiteLinks.core.Home.label}
           >
             <!-- TODO: Update this will be the full site not only sam-scribbles... -->
             <!-- <Icon name="skeleton" size={28} /> -->
@@ -101,7 +88,7 @@
 
       <!-- Right -->
       <div class="flex items-center justify-end gap-2">
-        <div class="hidden items-center justify-end gap-2 xl:flex">
+        <div class="hidden items-center justify-end gap-2 lg:flex">
           <ThemeAndMode currentTheme={data.theme.theme} currentThemeMode={data.theme.mode} />
         </div>
         <!-- Social -->
@@ -115,8 +102,6 @@
           {/each}
 
           {#if data.user !== null}
-            <!-- <span class="flex items-center justify-end space-x-4"> -->
-
             {#if data.user.name.length > 0}
               <p>User: {data.user.name}</p>
             {/if}
@@ -124,7 +109,6 @@
             <form action="/logout" method="POST">
               <button class="btn preset-tonal-primary" type="submit">Logout</button>
             </form>
-            <!-- </span> -->
           {/if}
         </nav>
       </div>
@@ -169,7 +153,11 @@
 {#snippet drawer()}
   <!-- Drawer -->
   <div
-    class={`preset-filled-surface-100-900 fixed top-0 bottom-0 left-0 z-50 w-[320px] space-y-10 overflow-y-auto p-4 pb-24 shadow-xl transition-transform duration-100 xl:hidden ${expanded ? 'block' : '-translate-x-[320px]'}`}
+    class={{
+      'preset-filled-surface-100-900 fixed top-0 bottom-0 left-0 z-50 w-[320px] space-y-10 overflow-y-auto p-4 pb-24 shadow-xl transition-transform duration-100 lg:hidden': true,
+      block: expanded,
+      '-translate-x-[320px]': !expanded,
+    }}
   >
     <!-- Header -->
     <header class="flex items-center justify-between">
@@ -189,8 +177,6 @@
       <span class="font-bold capitalize">Navigate</span>
       {@render navigation()}
     </nav>
-    <!-- Slot -->
-    <!-- <slot /> -->
   </div>
 {/snippet}
 
@@ -274,7 +260,7 @@
       </span>
     {/each}
   </div>
-  <div class="md:col-span-2 xl:col-span-3">
+  <div class="md:col-span-2 lg:col-span-3">
     <p class="py-4 text-center">
       Copyright &copy; 2024 - {`${new Date().getFullYear()}`} - All rights reserved Sam Peterson
     </p>

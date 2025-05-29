@@ -100,10 +100,12 @@
 </div>
 
 <section
-  class="justify-center gap-2 text-justify text-[550%] font-semibold text-amber-300 perspective-[350px]"
+  class="justify-center gap-2 bg-gray-800/50 text-justify text-2xl font-semibold text-amber-300 perspective-[350px] md:text-8xl"
 >
   <div class="position-relative translate-z-[-100px] rotate-x-[25deg] transform">
-    <h3 class="h3 text-center text-[90%] font-bold uppercase">The long description</h3>
+    <h3 class="h3 text-primary-600-400 text-center text-[90%] font-bold uppercase">
+      The long description
+    </h3>
 
     <p class="text-sm font-light">
       The vision of this website is to be my one stop shop to reference all the fun sources of
@@ -114,7 +116,7 @@
 
     <hr class="hr border-surface-400-600" />
 
-    <h4 class="h4">Link sharing</h4>
+    <h4 class="h4 text-primary-600-400">Link sharing</h4>
     <p class="text-sm font-light">
       A place where I can keep track of all the links I'd like to read, pin, archive, or share with
       others. It is intended to be shared and linkable and written about. The future here is that I
@@ -125,7 +127,7 @@
 
     <hr class="hr border-surface-400-600" />
 
-    <h4 class="h4">Blogging</h4>
+    <h4 class="h4 text-primary-600-400">Blogging</h4>
     <p class="text-sm font-light">
       A place to write about things I'm passionate about. For those that care to read it I hope you
       find some nuggets of inspiration. I'm not writing for any thing specifically, but to better
