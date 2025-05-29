@@ -108,7 +108,9 @@
         <nav class="flex flex-row items-center gap-2">
           {#each SiteLinks.socialLinks as link (link.href)}
             <a class="anchor hover:underline" href={link.href} title={link.label} target="_blank">
-              <Avatar name={link.label} />
+              <Avatar name={link.label}>
+                <link.icon />
+              </Avatar>
             </a>
           {/each}
 
@@ -258,15 +260,18 @@
   <div class="grid grid-cols-1 justify-items-center md:grid-cols-2 md:justify-items-start">
     <span class="mb-1 font-bold uppercase lg:col-span-2">Socials</span>
     {#each SiteLinks.socialLinks as social (social.href)}
-      <a
-        class="w-fit hover:opacity-50"
-        href={social.href}
-        title={social.label}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {social.label}
-      </a>
+      <span class="flex items-center gap-1">
+        <social.icon name={social.label} />
+        <a
+          class="w-fit hover:opacity-50"
+          href={social.href}
+          title={social.label}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {social.label}
+        </a>
+      </span>
     {/each}
   </div>
   <div class="md:col-span-2 xl:col-span-3">

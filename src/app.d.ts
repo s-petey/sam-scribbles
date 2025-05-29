@@ -1,10 +1,12 @@
-// TODO: can I import types here?
+/// <reference types="unplugin-icons/types/svelte" />
+// Search Icons here... https://icon-sets.iconify.design/simple-icons/?keyword=simple-
+
 import type { Session } from './lib/auth';
 import type { Theme, ThemeMode } from './lib/components/themes';
 
 interface ValidSession {
-  user: Session['user']; // import('$lib/auth').Session['user'];
-  session: Session['session']; // import('$lib/auth').Session['session'];
+  user: Session['user'];
+  session: Session['session'];
 }
 
 interface InvalidSession {
@@ -20,8 +22,8 @@ declare global {
     interface Locals {
       session: ValidSession | InvalidSession;
       theme: {
-        theme: Theme; // import('$lib/components/themes').Theme;
-        mode: ThemeMode; // import('$lib/components/theme').ThemeMode;
+        theme: Theme;
+        mode: ThemeMode;
       };
     }
     // interface PageData {}
