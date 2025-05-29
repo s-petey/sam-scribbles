@@ -10,6 +10,11 @@
   });
 </script>
 
+<svelte:head>
+  <title>Sam's Scribbles - Games</title>
+  <meta name="description" content="A collection of games I've re-created a web UI for." />
+</svelte:head>
+
 <h1 class="h1">Games</h1>
 
 <nav class="m-auto w-2/3 text-center">

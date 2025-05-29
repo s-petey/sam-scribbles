@@ -5,6 +5,10 @@
 </script>
 
 <!-- TODO: Finish this (moving from my previous site) -->
+<svelte:head>
+  <title>Sam's Scribbles - About</title>
+  <meta name="description" content="About Sam Peterson, a full stack developer." />
+</svelte:head>
 
 <h1 class="h1">About</h1>
 

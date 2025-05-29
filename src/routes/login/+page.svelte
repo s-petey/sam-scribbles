@@ -6,6 +6,11 @@
   const { form, enhance, errors, constraints } = superForm(data.form);
 </script>
 
+<svelte:head>
+  <title>Sam's Scribbles - Login</title>
+  <meta name="description" content="Login to Sam's Scribbles." />
+</svelte:head>
+
 <h1>Login</h1>
 
 <form method="post" class="grid grid-cols-2 gap-4" use:enhance>

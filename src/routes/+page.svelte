@@ -100,7 +100,7 @@
 </div>
 
 <section
-  class="justify-center gap-2 text-justify text-[500%] font-semibold text-amber-300 perspective-[350px]"
+  class="justify-center gap-2 text-justify text-[550%] font-semibold text-amber-300 perspective-[350px]"
 >
   <div class="position-relative translate-z-[-100px] rotate-x-[25deg] transform">
     <h3 class="h3 text-center text-[90%] font-bold uppercase">The long description</h3>
