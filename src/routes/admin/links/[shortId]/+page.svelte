@@ -33,7 +33,6 @@
         type="checkbox"
         class="checkbox"
         name="private"
-        placeholder="Private"
         aria-label="Private"
         aria-invalid={$errors.private ? 'true' : undefined}
         bind:checked={$form.private}

@@ -166,7 +166,9 @@
       {#each data.links as link (link.shortId)}
         <tr class="hover:preset-tonal-primary">
           <td>
-            <a class="anchor" href={link.link} target="_blank">{link.link}</a>
+            <a class="anchor" href={link.link} target="_blank" rel="noopener noreferrer">
+              {link.link}
+            </a>
           </td>
           <td>
             <span>
