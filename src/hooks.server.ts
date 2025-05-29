@@ -30,7 +30,7 @@ const handleAnnoyances: Handle = async ({ event, resolve }) => {
 
   // Get the real client IP address from headers
   const clientIp =
-    event.request.headers.get('x-forwarded-for')?.split(',')[0] ||
+    event.request.headers.get('x-forwarded-for')?.split(',').at(0) ||
     event.request.headers.get('x-real-ip') ||
     event.getClientAddress();
 
