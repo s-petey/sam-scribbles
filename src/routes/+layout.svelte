@@ -25,7 +25,7 @@
     <!-- TODO: I don't know if I will keep these transitions -->
     <!-- in:fly={{ x: -200, duration: 300, delay: 400 }}
 			out:fly={{ x: 200, duration: 300 }} -->
-    <main class="space-y-4 p-4">
+    <main class="grow space-y-4 p-4">
       {@render children()}
       <BackToTop />
     </main>
