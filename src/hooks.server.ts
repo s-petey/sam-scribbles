@@ -5,7 +5,7 @@ import { isValidMode, isValidTheme, type Theme, type ThemeMode } from '$lib/comp
 import { logger } from '$lib/logger';
 import { route } from '$lib/ROUTES';
 import { rejectedFileExtensions, rejectedFilePaths } from '$lib/server/rejectedRequests';
-import { core } from '$lib/siteLinks';
+import { adminLinks, core } from '$lib/siteLinks';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { svelteKitHandler } from 'better-auth/svelte-kit';
@@ -145,7 +145,11 @@ const handleRouting: Handle = async ({ event, resolve }) => {
 
   logger.debug({ msg: `Handling routing for: ${event.url.pathname}`, session });
 
-  if (event.url.pathname.startsWith('/admin') && session?.user?.role !== 'admin') {
+  const pathname = event.url.pathname.toLowerCase();
+
+  // Here we need to check if the user has access
+  // to the given route(s).
+  if (adminLinks.some((link) => pathname.endsWith(link.href)) && session?.user?.role !== 'admin') {
     if (session?.session !== null && session.session.expiresAt.valueOf() < Date.now()) {
       logger.info('Session expired, logging out...');
       // TODO: Warn the user they need to login again (have a message?)
@@ -157,18 +161,14 @@ const handleRouting: Handle = async ({ event, resolve }) => {
       });
       setServerCookies(response.headers, event);
 
-      // TODO: Add this route to the siteLinks once exposed more clearly...
+      // TODO: Add this route to the `siteLinks.ts`
+      // once exposed more clearly...
       redirect(302, route('/login'));
     }
 
     logger.info('User is not an admin, redirecting to home...');
     redirect(303, core.Home.href);
   }
-
-  // TODO: Handle auth route re-routing / session stuff...
-  // https://svelte.dev/docs/kit/hooks#Server-hooks-handle
-  // Add this user to the `locals` value.
-  // Ex: https://github.com/aakash14goplani/SvelteKitAuth/blob/main/src/hooks.server.ts
 
   return await resolve(event);
 };
