@@ -11,10 +11,39 @@
   });
 </script>
 
-<h2 class="h2">{$form.link}</h2>
+<form use:enhance method="post" action="?/update" class="grid grid-cols-2 items-center gap-4">
+  <div>
+    <input
+      name="link"
+      class="input"
+      placeholder="Link"
+      aria-label="Link"
+      aria-invalid={$errors.link ? 'true' : undefined}
+      bind:value={$form.link}
+      {...$constraints.link}
+    />
+    {#if $errors.link}
+      <span class="invalid">{$errors.link}</span>
+    {/if}
+  </div>
 
-<form use:enhance method="post" action="?/update">
-  <input class="input" name="link" bind:value={$form.link} {...$constraints.link} />
+  <div>
+    <label class="flex items-center space-x-2">
+      <input
+        type="checkbox"
+        class="checkbox"
+        name="private"
+        aria-label="Private"
+        aria-invalid={$errors.private ? 'true' : undefined}
+        bind:checked={$form.private}
+        {...$constraints.private}
+      />
+      <p>Private</p>
+    </label>
+    {#if $errors.private}
+      <span class="invalid">{$errors.private}</span>
+    {/if}
+  </div>
 
   <TagsInput
     onValueChange={(e) => {
