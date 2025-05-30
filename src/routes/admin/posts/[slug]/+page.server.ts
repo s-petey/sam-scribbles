@@ -4,7 +4,6 @@ import { db } from '$lib/server/db';
 import { post, postsToTags, tag } from '$lib/server/db/schema';
 import { postMetadataSchema } from '$lib/zodSchema';
 import { error } from '@sveltejs/kit';
-import { inArray } from 'drizzle-orm';
 import { fail, message, superValidate, type Infer } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
@@ -12,10 +11,6 @@ import type { Actions, PageServerLoad } from './$types';
 
 const schema = z.object({
   slug: z.string().min(1, 'Slug is required'),
-  tags: z
-    .string()
-    .transform((tags) => tags.split(','))
-    .optional(),
 });
 
 export const load = (async ({ params }) => {
@@ -40,7 +35,7 @@ export const load = (async ({ params }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-  syncPost: async (event) => {
+  default: async (event) => {
     const session = await getAndRefreshSession(event);
 
     const admin = session?.user;
@@ -122,48 +117,5 @@ export const actions: Actions = {
     });
 
     return message(form, 'Updated post!');
-  },
-
-  updateTags: async (event) => {
-    const session = await getAndRefreshSession(event);
-
-    const admin = session?.user;
-
-    if (admin === null || admin.role !== 'admin') {
-      error(401, 'Unauthorized');
-    }
-
-    const form = await superValidate(event.request, zod(schema));
-
-    if (!form.valid) {
-      return fail(400, { form });
-    }
-
-    const { slug, tags: newTags } = form.data;
-
-    const existingTags = await db.query.postsToTags.findMany({
-      where: (table, { eq }) => eq(table.postId, slug),
-      columns: {
-        tag: true,
-      },
-    });
-
-    const existingTagSet = new Set(existingTags.map((t) => t.tag));
-    const newTagSet = new Set(newTags);
-
-    const tagsToRemove = [...existingTagSet].filter((tag) => !newTagSet.has(tag));
-    const tagsToAdd = [...newTagSet].filter((tag) => !existingTagSet.has(tag));
-
-    await db.transaction(async (tx) => {
-      if (tagsToRemove.length > 0) {
-        await tx.delete(postsToTags).where(inArray(postsToTags.tag, tagsToRemove));
-      }
-
-      if (tagsToAdd.length > 0) {
-        await tx.insert(postsToTags).values(tagsToAdd.map((tag) => ({ postId: slug, tag })));
-      }
-    });
-
-    return message(form, 'Tags updated successfully!');
   },
 };

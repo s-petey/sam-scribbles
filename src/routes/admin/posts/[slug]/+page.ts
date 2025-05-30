@@ -19,8 +19,6 @@ export const load: PageLoad = async ({
     const post = await import(`../../../../../posts/${slug}.md`);
     const metadata = postMetadataSchema.parse(post.metadata);
 
-    form.data.tags = metadata.tags;
-
     return { Content: post.default, meta: { ...metadata, slug }, form, post: dbPost, tags };
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
   } catch (err) {
