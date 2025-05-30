@@ -1,6 +1,6 @@
 <script lang="ts">
   import { TagsInput } from '@skeletonlabs/skeleton-svelte';
-  import DeleteIcon from 'lucide-svelte/icons/circle-x';
+  import DeleteIcon from '~icons/lucide/circle-x';
   import { superForm } from 'sveltekit-superforms';
 
   let { data } = $props();
@@ -54,7 +54,7 @@
     placeholder="Tags"
   >
     {#snippet buttonDelete()}
-      <DeleteIcon class="size-4" />
+      <DeleteIcon class="text-base" />
     {/snippet}
   </TagsInput>
 

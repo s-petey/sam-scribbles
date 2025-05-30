@@ -39,7 +39,6 @@
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-svelte": "^3.8.1",
     "globals": "^16.1.0",
-    "lucide-svelte": "^0.479.0",
     "mdsvex": "^0.12.6",
     "mdsvex-relative-images": "^1.0.3",
     "prettier": "^3.5.3",

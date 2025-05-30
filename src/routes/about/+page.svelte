@@ -1,8 +1,5 @@
 <script lang="ts">
   import TechInStack from '$lib/components/TechInStack.svelte';
-  import Dices from 'lucide-svelte/icons/dices';
-  import Footprints from 'lucide-svelte/icons/footprints';
-  import Globe from 'lucide-svelte/icons/globe';
 </script>
 
 <!-- TODO: Finish this (moving from my previous site) -->

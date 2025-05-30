@@ -5,8 +5,8 @@
   import ThemeAndMode from '$lib/components/ThemeAndMode.svelte';
   import * as SiteLinks from '$lib/siteLinks';
   import { Avatar } from '@skeletonlabs/skeleton-svelte';
-  import Menu from 'lucide-svelte/icons/menu';
-  import Close from 'lucide-svelte/icons/x';
+  import LucideMenu from '~icons/lucide/menu';
+  import LucideX from '~icons/lucide/x';
 
   let { children, data } = $props();
   let expanded = $state(false);
@@ -57,8 +57,12 @@
         {@render drawer()}
 
         <!-- Hamburger Menu -->
-        <button class="btn-icon lg:hidden" onclick={() => (expanded = !expanded)}>
-          <Menu />
+        <button
+          type="button"
+          class="btn-icon h-6 w-6 text-2xl lg:hidden"
+          onclick={() => (expanded = !expanded)}
+        >
+          <LucideMenu />
         </button>
 
         <!-- Logo -->
@@ -167,8 +171,12 @@
         <!-- TODO: Update this will be the full site not only sam-scribbles... -->
         Sam-Scribbles
       </h3>
-      <button class="btn-icon" onclick={() => (expanded = !expanded)}>
-        <Close />
+      <button
+        type="button"
+        class="btn-icon h-6 w-6 text-2xl"
+        onclick={() => (expanded = !expanded)}
+      >
+        <LucideX />
       </button>
     </header>
 
