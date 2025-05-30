@@ -44,6 +44,7 @@
       defaultValue={[currentTheme]}
       onValueChange={(e) => (currentTheme = (e.value.at(0) as Theme | undefined) ?? 'catppuccin')}
       placeholder="Select a theme"
+      classes="z-10"
     >
       {#snippet item(item)}
         <button
