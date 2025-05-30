@@ -1,6 +1,6 @@
 <script lang="ts">
   import { admin } from '$lib/siteLinks';
-  import SquareX from 'lucide-svelte/icons/square-x';
+  import SquareX from '~icons/lucide/square-x';
   import { superForm } from 'sveltekit-superforms';
 
   let { data } = $props();
@@ -57,7 +57,7 @@
         class="btn preset-tonal-error hover:preset-outlined-error-500"
         class:disabled={$deleteSubmitting}
       >
-        <SquareX />
+        <SquareX class="text-2xl" />
       </button>
       {#if $errors?.slug?.includes(post.slug)}
         <span class="text-error-500 col-span-4 font-bold">

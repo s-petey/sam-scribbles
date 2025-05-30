@@ -3,8 +3,8 @@
   import type { SubmitFunction } from '@sveltejs/kit';
   import { page } from '$app/state';
   import { isValidMode, isValidTheme, themes, type Theme, type ThemeMode } from './themes';
-  import IconMoon from 'lucide-svelte/icons/moon';
-  import IconSun from 'lucide-svelte/icons/sun';
+  import LucideMoon from '~icons/lucide/moon';
+  import LucideSun from '~icons/lucide/sun';
   import { Combobox } from '@skeletonlabs/skeleton-svelte';
 
   let { currentTheme, currentThemeMode }: { currentTheme: Theme; currentThemeMode: ThemeMode } =
@@ -61,7 +61,7 @@
         class="btn"
         formaction="/?/setTheme&redirectTo={page.url.pathname}&themeMode=light"
       >
-        <IconMoon size="24" />
+        <LucideMoon class="text-xl" />
       </button>
     {:else}
       <button
@@ -69,7 +69,7 @@
         class="btn"
         formaction="/?/setTheme&redirectTo={page.url.pathname}&themeMode=dark"
       >
-        <IconSun size="24" />
+        <LucideSun class="text-xl" />
       </button>
     {/if}
   </form>

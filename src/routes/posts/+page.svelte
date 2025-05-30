@@ -11,6 +11,11 @@
   }
 </script>
 
+<svelte:head>
+  <title>Sam's Scribbles - Posts</title>
+  <meta name="description" content="Recent blog posts with details." />
+</svelte:head>
+
 <!-- TODO: Add search / filters -->
 
 <div class="grid grid-cols-1 gap-4">

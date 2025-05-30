@@ -19,6 +19,12 @@
   const dateIso = dateTime.toISO() ?? '';
 </script>
 
+<!-- TODO: Heading...
+<svelte:head>
+  <title>Sam's Scribbles - personal website</title>
+  <meta name="description" content="My blog and link sharing website." />
+</svelte:head> -->
+
 <article class="bg-surface-800-200 px-4">
   <h1 class="mb-1 text-5xl font-black">{title}</h1>
   <div class="mt-4 mb-3 uppercase">

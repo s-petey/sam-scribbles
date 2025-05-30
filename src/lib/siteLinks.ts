@@ -1,4 +1,6 @@
 import { route } from './ROUTES';
+import SimpleIconsGithub from '~icons/simple-icons/github';
+import SimpleIconsBluesky from '~icons/simple-icons/bluesky';
 
 export type Link = {
   href: string;
@@ -32,14 +34,12 @@ export const social = {
   GitHub: {
     href: 'https://github.com/s-petey',
     label: 'GitHub',
-    // TODO: URL / local icon for this?
-    // icon: ''
+    icon: SimpleIconsGithub,
   },
   Bluesky: {
     href: 'https://bsky.app/profile/s-pete.bsky.social',
     label: 'Bluesky',
-    // TODO: URL / local icon for this?
-    // icon: ''
+    icon: SimpleIconsBluesky,
   },
 } as const;
 

@@ -3,16 +3,16 @@
   import { page as sveltePage } from '$app/state';
   import { route } from '$lib/ROUTES';
   import { Modal, Pagination, TagsInput } from '@skeletonlabs/skeleton-svelte';
-  import IconArrowLeft from 'lucide-svelte/icons/arrow-left';
-  import IconArrowRight from 'lucide-svelte/icons/arrow-right';
-  import IconLast from 'lucide-svelte/icons/chevron-right';
-  import IconFirst from 'lucide-svelte/icons/chevrons-left';
-  import DeleteIcon from 'lucide-svelte/icons/circle-x';
-  import IconEllipsis from 'lucide-svelte/icons/ellipsis';
-  import Eraser from 'lucide-svelte/icons/eraser';
-  import PencilIcon from 'lucide-svelte/icons/pencil';
-  import SqurePlus from 'lucide-svelte/icons/square-plus';
-  import TrashIcon from 'lucide-svelte/icons/trash';
+  import LucideArrowLeft from '~icons/lucide/arrow-left';
+  import LucideArrowRight from '~icons/lucide/arrow-right';
+  import LucideChevronRight from '~icons/lucide/chevron-right';
+  import LucideChevronLeft from '~icons/lucide/chevron-left';
+  import LucideCircleX from '~icons/lucide/circle-x';
+  import LucideEllipsis from '~icons/lucide/ellipsis';
+  import LucideEraser from '~icons/lucide/eraser';
+  import LucidePencil from '~icons/lucide/pencil';
+  import LucideSquarePlus from '~icons/lucide/square-plus';
+  import LucideTrashIcon from '~icons/lucide/trash';
   import { superForm } from 'sveltekit-superforms';
 
   let { data } = $props();
@@ -121,28 +121,30 @@
       placeholder="Tags"
     >
       {#snippet buttonDelete()}
-        <DeleteIcon />
+        <LucideCircleX class="text-base" />
       {/snippet}
     </TagsInput>
   </div>
 
-  <button
-    type="submit"
-    class="btn preset-tonal-success"
-    class:disabled={$submitting}
-    disabled={$submitting}
-  >
-    <SqurePlus />
-  </button>
-  <button
-    type="button"
-    class="btn preset-tonal-warning"
-    onclick={() => reset()}
-    class:disabled={$submitting}
-    disabled={$submitting}
-  >
-    <Eraser />
-  </button>
+  <div class="col-span-2 flex justify-evenly">
+    <button
+      type="submit"
+      class="btn preset-tonal-success"
+      class:disabled={$submitting}
+      disabled={$submitting}
+    >
+      <LucideSquarePlus class="text-2xl" />
+    </button>
+    <button
+      type="button"
+      class="btn preset-tonal-warning"
+      onclick={() => reset()}
+      class:disabled={$submitting}
+      disabled={$submitting}
+    >
+      <LucideEraser class="text-2xl" />
+    </button>
+  </div>
 </form>
 
 <div class="grid grid-cols-2">
@@ -178,7 +180,7 @@
           <td class="text-right">
             <button class="btn-icon" type="button">
               <a href={route('/admin/links/[shortId]', { shortId: link.shortId })}>
-                <PencilIcon class="size-4" />
+                <LucidePencil class="text-base" />
               </a>
             </button>
 
@@ -189,7 +191,7 @@
                 selectedId = link.shortId;
               }}
             >
-              <TrashIcon class="size-4" />
+              <LucideTrashIcon class="text-base" />
             </button>
           </td>
         </tr>
@@ -220,11 +222,11 @@
       goto(`?${params.toString()}`, { keepFocus: true });
     }}
   >
-    {#snippet labelEllipsis()}<IconEllipsis class="size-4" />{/snippet}
-    {#snippet labelNext()}<IconArrowRight class="size-4" />{/snippet}
-    {#snippet labelPrevious()}<IconArrowLeft class="size-4" />{/snippet}
-    {#snippet labelFirst()}<IconFirst class="size-4" />{/snippet}
-    {#snippet labelLast()}<IconLast class="size-4" />{/snippet}
+    {#snippet labelEllipsis()}<LucideEllipsis class="text-base" />{/snippet}
+    {#snippet labelNext()}<LucideArrowRight class="text-base" />{/snippet}
+    {#snippet labelPrevious()}<LucideArrowLeft class="text-base" />{/snippet}
+    {#snippet labelFirst()}<LucideChevronLeft class="text-base" />{/snippet}
+    {#snippet labelLast()}<LucideChevronRight class="text-base" />{/snippet}
   </Pagination>
 </footer>
 
