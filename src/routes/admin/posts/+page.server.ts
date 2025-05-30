@@ -8,6 +8,7 @@ import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import type { PageServerLoad } from './$types';
 import { getAndRefreshSession } from '$lib/auth.server';
+import { eq } from 'drizzle-orm';
 
 const schema = z.object({});
 
@@ -134,7 +135,7 @@ export const actions: Actions = {
       // Do nothing...
     }
 
-    // await db.delete(post).where(eq(post.slug, form.data.slug));
+    await db.delete(post).where(eq(post.slug, form.data.slug));
 
     return message(form, 'Removed record');
   },
