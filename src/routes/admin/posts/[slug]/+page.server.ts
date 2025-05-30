@@ -25,13 +25,16 @@ export const load = (async ({ params }) => {
   // TODO: allow adding related?
   const post = await db.query.post.findFirst({
     where: (table, { eq }) => eq(table.slug, slug),
+    with: {
+      tags: {
+        columns: {
+          tag: true,
+        },
+      },
+    },
   });
 
-  const rawTags = await db.query.tag.findMany({ orderBy: (tag, { asc }) => asc(tag.name) });
-
-  const tags = rawTags.map((tag) => tag.name);
-
-  return { slug, post, form, tags };
+  return { slug, post, form };
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
