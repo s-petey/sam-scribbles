@@ -62,10 +62,11 @@
 <section class="flex flex-col items-stretch gap-2 text-center">
   <h3 class="h3">Tech in my stack, current or previous</h3>
 
-  {#each iconGroup as group}
+  {#each iconGroup as group (group.title)}
     <section class="grid grid-cols-3 items-center justify-items-center gap-2 md:grid-cols-4">
       <h3 class="h3 col-span-3 font-bold md:col-span-4">{group.title}</h3>
-      {#each group.icons as Icon}
+
+      {#each group.icons as Icon, idx (idx)}
         <Icon aria-hidden="true" class="text-primary-800-200 text-[2em]" />
       {/each}
     </section>
