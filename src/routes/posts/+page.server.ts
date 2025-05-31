@@ -16,6 +16,7 @@ export const load = async ({ url }) => {
   const { q, tags } = routeQueryParams.parse(searchParams);
 
   // TODO: Load these into some sort of cache?
+  // could just be an in memory thing?
 
   const posts = await db.query.post.findMany({
     orderBy: (post, { desc }) => desc(post.createdAt),
