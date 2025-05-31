@@ -26,6 +26,7 @@
 
 <h1 class="h1">Links worth checking out</h1>
 
+<!-- TODO: Add sort by (date / alphabetical / other?) -->
 <form
   class="grid grid-cols-1 gap-4 md:grid-cols-7"
   onsubmit={(e) => {
@@ -68,6 +69,7 @@
       />
     </label>
   </div>
+
   <label
     class="label border-secondary-300-700 flex items-center rounded-lg border p-2 md:col-span-4"
   >
