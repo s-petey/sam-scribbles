@@ -12,6 +12,7 @@ const routeQueryParams = z.object({
     .optional(),
 });
 
+// TODO: Handle pagination / loading more?
 export const load = (async ({ url }) => {
   const searchParams = Object.fromEntries(url.searchParams.entries());
   const { q, tags } = routeQueryParams.parse(searchParams);
