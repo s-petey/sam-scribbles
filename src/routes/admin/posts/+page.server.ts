@@ -57,13 +57,16 @@ export const actions: Actions = {
         post.updated !== undefined &&
         DateTime.fromJSDate(post.updated).diffNow('weeks').weeks >= -1,
     );
+    const postsToCreate = posts.filter(
+      (post) => DateTime.fromJSDate(post.date).diffNow('weeks').weeks >= -1,
+    );
 
     // TODO: Delete any records in the DB where the post no longer exists!
     // However how do I handle if the record has updated or deleted and
     // there are related records, user, tags, ect.?
 
-    const updatedPosts = await db.transaction(async (tx) => {
-      const insertPromises = postsToUpdate.map((postData) => {
+    await db.transaction(async (tx) => {
+      const updatePromises = postsToUpdate.map((postData) => {
         return tx
           .insert(post)
           .values({
@@ -93,20 +96,30 @@ export const actions: Actions = {
           .returning();
       });
 
+      const insertCreatePromises = postsToCreate.map((postData) => {
+        return tx
+          .insert(post)
+          .values({
+            preview: postData.preview,
+            previewHtml: postData.previewHtml,
+            readingTimeSeconds: postData.reading_time.time / 1000,
+            readingTimeWords: postData.reading_time.words,
+            slug: postData.slug,
+            title: postData.title,
+            createdAt: postData.date,
+            updatedAt: postData.updated ?? postData.date,
+            isPrivate: postData.isPrivate,
+          })
+          .onConflictDoNothing()
+          .returning();
+      });
+
+      const insertPromises = insertCreatePromises.concat(updatePromises);
+
       return (await Promise.all(insertPromises)).flat();
     });
 
-    const returnMessage: Message = { updated: 0, created: postsToUpdate.length };
-
-    const startOfToday = DateTime.now().startOf('day');
-    for (const { updatedAt } of updatedPosts) {
-      const updatedToday = DateTime.fromJSDate(updatedAt).startOf('day') >= startOfToday;
-      if (updatedToday) {
-        returnMessage.updated++;
-        returnMessage.created--;
-        continue;
-      }
-    }
+    const returnMessage: Message = { updated: postsToUpdate.length, created: postsToCreate.length };
 
     return message(form, returnMessage);
   },
