@@ -1,16 +1,15 @@
 <script lang="ts">
-  import { DateTime, Duration } from 'luxon';
-  import { route } from '$lib/ROUTES';
+  import type { PageData } from './$types';
+  import SimpleIconsYoutube from '~icons/simple-icons/youtube';
+  import SimpleIconsVimeo from '~icons/simple-icons/vimeo';
+  import LucideLink from '~icons/lucide/link';
+  // import LucideBookOpen from '~icons/lucide/book-open';
+
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { route } from '$lib/ROUTES';
 
-  let { data } = $props();
-
-  function differenceInDays(date: Date) {
-    const luxonDate = DateTime.fromJSDate(date);
-
-    return luxonDate.diffNow('days').days;
-  }
+  let { data }: { data: PageData } = $props();
 
   let tags = $state<string[]>(page.url.searchParams.get('tags')?.split(',').filter(Boolean) ?? []);
   let searchQuery = $state(page.url.searchParams.get('q') || '');
@@ -21,11 +20,13 @@
 </script>
 
 <svelte:head>
-  <title>Sam's Scribbles - Posts</title>
-  <meta name="description" content="Recent blog posts with details." />
+  <title>Sam's Scribbles - Links</title>
+  <meta name="description" content="A collection of links to various resources." />
 </svelte:head>
 
-<h1 class="h1">Scribbles</h1>
+<h1 class="h1">Links worth checking out</h1>
+
+<!-- TODO: Add sort by (date / alphabetical / other?) -->
 <form
   class="grid grid-cols-1 gap-4 md:grid-cols-7"
   onsubmit={(e) => {
@@ -50,7 +51,7 @@
     if (hasParams) {
       goto(`?${params.toString()}`, { keepFocus: true });
     } else {
-      goto(route('/posts'), { keepFocus: true });
+      goto(route('/links'), { keepFocus: true });
     }
   }}
 >
@@ -68,6 +69,7 @@
       />
     </label>
   </div>
+
   <label
     class="label border-secondary-300-700 flex items-center rounded-lg border p-2 md:col-span-4"
   >
@@ -106,7 +108,7 @@
         onclick={() => {
           tags = [];
           searchQuery = '';
-          goto(route('/posts'), { keepFocus: true });
+          goto(route('/links'), { keepFocus: true });
         }}
       >
         Reset
@@ -118,52 +120,43 @@
   </div>
 </form>
 
-<div class="grid grid-cols-1 gap-4">
-  {#each data.posts as post (post.slug)}
-    <div class="group relative flex h-full w-full">
-      <div
-        class="rounded-box from-primary-500 to-tertiary-500 group-hover:from-tertiary-500 group-hover:to-primary-500 absolute -inset-0 bg-linear-to-r blur-xs"
-      ></div>
-      <div class="relative h-full w-full">
-        <article
-          class="text-secondary-contrast-300-700 hover:text-secondary-contrast-600-400 card bg-secondary-300-700 hover:bg-secondary-400-600 p-4 transition first:pt-0"
+<ul class="space-y-2">
+  {#each data.links as link (link.shortId)}
+    <li>
+      <span class="flex items-center gap-2">
+        {#if link.link.includes('youtube.com')}
+          <SimpleIconsYoutube />
+        {:else if link.link.includes('vimeo.com')}
+          <SimpleIconsVimeo />
+        {:else}
+          <LucideLink />
+        {/if}
+
+        <a
+          class="anchor"
+          href={link.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          title="External link"
         >
-          <a class="flex flex-col gap-2" href={route('/posts/[slug]', { slug: post.slug })}>
-            <div>
-              <h2 class="pt-5 pb-1 text-3xl font-black">
-                {post.title}
-              </h2>
-              <div class="mb-4 flex items-center gap-2 text-sm font-bold uppercase">
-                <time> {DateTime.fromJSDate(post.createdAt).toLocaleString()}</time>
-                &bull;
-                <span>
-                  {Duration.fromObject({ seconds: post.readingTimeSeconds }).rescale().toHuman({})}
-                </span>
-                {#if differenceInDays(post.createdAt) < 31}
-                  &bull;
-                  <span class="badge preset-filled-secondary-500"> new </span>
-                {/if}
-              </div>
+          <span>
+            {link.link}
+          </span>
+        </a>
+        <!-- {#if hasRelatedPost}
+        <a class="anchor" href="link_to_related_post" title="Sam's related post">
+          <LucideBookOpen />
+        </a>
+        {/if} -->
+      </span>
 
-              <!-- TODO: Have icons for tags ? -->
-              <div class="flex flex-wrap gap-2">
-                {#each post.tags as tag (tag.tag)}
-                  <span class="badge preset-tonal-secondary">{tag.tag}</span>
-                {/each}
-              </div>
-            </div>
-
-            <div
-              class="prose prose-lg lg:prose-xl prose-headings:scroll-mt-16 prose-a:text-primary-400 prose-a:transition prose-a:hover:text-secondary-400 w-full max-w-full!"
-            >
-              <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-              {@html post.preview}
-              <!-- TODO: Figure out why this previewHtml doesn't work -->
-              <!-- {@html post.previewHtml} -->
-            </div>
-          </a>
-        </article>
-      </div>
-    </div>
+      <ul class="mt-2 flex flex-wrap gap-2">
+        {#each link.tags as tag (tag.tag)}
+          <li class="chip preset-outlined-surface-500">
+            {tag.tag}
+          </li>
+        {/each}
+      </ul>
+    </li>
   {/each}
-</div>
+</ul>

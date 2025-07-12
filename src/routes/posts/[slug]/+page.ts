@@ -9,10 +9,10 @@ export const load: PageLoad = async ({
   },
 }) => {
   try {
-    const post = await import(`../../../../posts/${slug}.md`);
-    const metadata = postMetadataSchema.parse(post.metadata);
+    const postMarkdown = await import(`../../../../posts/${slug}.md`);
+    const metadata = postMetadataSchema.parse(postMarkdown.metadata);
 
-    return { Content: post.default, meta: { ...metadata, slug } };
+    return { Content: postMarkdown.default, meta: { ...metadata, slug } };
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
   } catch (_err) {
     error(404, {

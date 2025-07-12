@@ -121,7 +121,7 @@
 {/snippet}
 
 {#snippet navigation()}
-  <aside class="type-scale-2 space-y-10 overflow-y-auto">
+  <aside class="space-y-10 overflow-y-auto">
     <nav class="flex flex-col gap-2">
       {#each SiteLinks.coreLinks as link (link.href)}
         <a

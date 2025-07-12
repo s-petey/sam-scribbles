@@ -17,9 +17,9 @@
     signage, financial operations, and canteen or kitchen apps.
   </p>
   <p class="text-base">
-    I have a pass to always learn and a want to enjoy or share any information I gain with others.
-    I'm a member of several meetup groups which help me learn and share information with others. If
-    you'd like to collaborate on a project, contact me!
+    I have a passion to always learn and a want to enjoy or share any information I gain with
+    others. I'm a member of several meetup groups which help me learn and share information with
+    others. If you'd like to collaborate on a project reach out!
   </p>
 </div>
 

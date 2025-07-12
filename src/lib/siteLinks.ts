@@ -21,6 +21,7 @@ export const core = {
   // Warning, order matters in these arrays!
   Home: { href: route('/'), label: 'Home' },
   Posts: { href: route('/posts'), label: 'Posts' },
+  Links: { href: route('/links'), label: 'Links' },
   About: { href: route('/about'), label: 'About' },
   Socials: { href: route('/social'), label: 'Socials' },
   Tags: { href: route('/tags'), label: 'Tags' },

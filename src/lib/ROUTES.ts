@@ -25,6 +25,7 @@ const PAGES = {
   "/games/farkle/[playerCount]": (params: { playerCount: (string | number) }) => {
     return `/games/farkle/${params['playerCount']}`
   },
+  "/links": `/links`,
   "/login": `/login`,
   "/posts": `/posts`,
   "/posts/[slug]": (params: { slug: (string | number) }) => {
@@ -178,7 +179,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/about': never, '/admin': never, '/admin/links': never, '/admin/links/[shortId]': 'shortId', '/admin/posts': never, '/admin/posts/[slug]': 'slug', '/games': never, '/games/farkle': never, '/games/farkle/[playerCount]': 'playerCount', '/login': never, '/posts': never, '/posts/[slug]': 'slug', '/social': never, '/tags': never, '/tags/[slug]': 'slug' }
+  PAGES: { '/': never, '/about': never, '/admin': never, '/admin/links': never, '/admin/links/[shortId]': 'shortId', '/admin/posts': never, '/admin/posts/[slug]': 'slug', '/games': never, '/games/farkle': never, '/games/farkle/[playerCount]': 'playerCount', '/links': never, '/login': never, '/posts': never, '/posts/[slug]': 'slug', '/social': never, '/tags': never, '/tags/[slug]': 'slug' }
   SERVERS: Record<string, never>
   ACTIONS: { 'setTheme /': never, 'create /admin/links': never, 'delete /admin/links': never, 'update /admin/links/[shortId]': 'shortId', 'delete /admin/links/[shortId]': 'shortId', 'syncPosts /admin/posts': never, 'delete /admin/posts': never, 'default /admin/posts/[slug]': 'slug', 'default /login': never, 'default /logout': never }
   LINKS: Record<string, never>
