@@ -6,15 +6,19 @@ import Icons from 'unplugin-icons/vite';
 
 export default defineConfig({
   plugins: [
-    // @ts-expect-error - Ignoring because this is a vite issue?
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     tailwindcss(),
-    // @ts-expect-error - Ignoring because this is a vite issue?
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     sveltekit(),
-    // @ts-expect-error - Ignoring because this is a vite issue?
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     Icons({
       compiler: 'svelte',
     }),
-    // @ts-expect-error - Ignoring because this is a vite issue?
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     kitRoutes(),
   ],
 
