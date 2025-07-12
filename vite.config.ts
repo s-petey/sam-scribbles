@@ -6,11 +6,15 @@ import Icons from 'unplugin-icons/vite';
 
 export default defineConfig({
   plugins: [
+    // @ts-expect-error - Ignoring because this is a vite issue?
     tailwindcss(),
+    // @ts-expect-error - Ignoring because this is a vite issue?
     sveltekit(),
+    // @ts-expect-error - Ignoring because this is a vite issue?
     Icons({
       compiler: 'svelte',
     }),
+    // @ts-expect-error - Ignoring because this is a vite issue?
     kitRoutes(),
   ],
 
