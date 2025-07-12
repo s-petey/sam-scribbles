@@ -103,15 +103,15 @@ export const actions: Actions = {
           });
 
           const existingTags = new Set(existingTagRelations.map((relation) => relation.tag));
+          const formTags = new Set(form.data.tags);
+          const allTags = formTags.union(existingTags);
           const tagsToAdd: { linkId: string; tag: string }[] = [];
           const tagsToRemove: string[] = [];
-          const formTagsSet = new Set(form.data.tags);
-          const allTags = formTagsSet.union(existingTags);
 
           for (const tag of allTags) {
-            if (formTagsSet.has(tag) && !existingTags.has(tag)) {
+            if (formTags.has(tag) && !existingTags.has(tag)) {
               tagsToAdd.push({ linkId: newLink.shortId, tag });
-            } else if (!formTagsSet.has(tag) && existingTags.has(tag)) {
+            } else if (!formTags.has(tag) && existingTags.has(tag)) {
               tagsToRemove.push(tag);
             }
           }

@@ -8,6 +8,7 @@ import { fail, message, superValidate, type Infer } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
+import { and, inArray, eq } from 'drizzle-orm';
 
 const schema = z.object({
   slug: z.string().min(1, 'Slug is required'),
@@ -68,18 +69,6 @@ export const actions: Actions = {
       return fail(400, { form });
     }
 
-    const existingTags = await db.query.postsToTags.findMany({
-      where: (table, { eq }) => eq(table.postId, postWithId.id),
-      columns: {
-        tag: true,
-      },
-    });
-
-    const existingTagSet = new Set(existingTags.map((t) => t.tag));
-    const newTagSet = new Set(parsedMetadata.tags);
-
-    const tagsToAdd = [...newTagSet].filter((tag) => !existingTagSet.has(tag));
-
     await db.transaction(async (tx) => {
       await tx
         .insert(post)
@@ -108,14 +97,41 @@ export const actions: Actions = {
           },
         });
 
+      const existingTagRelations = await tx.query.postsToTags.findMany({
+        where: (table, { eq }) => eq(table.postId, postWithId.id),
+        columns: {
+          tag: true,
+        },
+      });
+
+      const existingTags = new Set(existingTagRelations.map((t) => t.tag));
+      const metadataTags = new Set(parsedMetadata.tags);
+      const allTags = existingTags.union(metadataTags);
+      const tagsToAdd: { postId: string; tag: string }[] = [];
+      const tagsToRemove: string[] = [];
+
+      for (const tag of allTags) {
+        if (metadataTags.has(tag) && !existingTags.has(tag)) {
+          tagsToAdd.push({ postId: postWithId.id, tag });
+        } else if (!metadataTags.has(tag) && existingTags.has(tag)) {
+          tagsToRemove.push(tag);
+        }
+      }
+
+      if (tagsToRemove.length > 0) {
+        await tx
+          .delete(postsToTags)
+          .where(
+            and(eq(postsToTags.postId, postWithId.id), inArray(postsToTags.tag, tagsToRemove)),
+          );
+      }
+
       if (tagsToAdd.length > 0) {
         await tx
           .insert(tag)
-          .values(tagsToAdd.map((tag) => ({ name: tag })))
+          .values(tagsToAdd.map((tag) => ({ name: tag.tag })))
           .onConflictDoNothing();
-        await tx
-          .insert(postsToTags)
-          .values(tagsToAdd.map((tag) => ({ postId: postWithId.id, tag })));
+        await tx.insert(postsToTags).values(tagsToAdd).onConflictDoNothing();
       }
     });
 
