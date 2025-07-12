@@ -45,7 +45,6 @@ export const link = pgTable('link', {
 
 export const tag = pgTable('tag', { name: text().primaryKey().notNull() });
 
-// TODO: Migrate to new relations...
 export const linksToTags = pgTable(
   'links_to_tags',
   {
@@ -56,7 +55,12 @@ export const linksToTags = pgTable(
       .notNull()
       .references(() => tag.name),
   },
-  (t) => ({ linkIdTagIndex: primaryKey({ columns: [t.linkId, t.tag] }) }),
+  (table) => [
+    primaryKey({
+      name: 'linkIdTagIndex',
+      columns: [table.linkId, table.tag],
+    }),
+  ],
 );
 
 export const postsToTags = pgTable(
@@ -69,7 +73,12 @@ export const postsToTags = pgTable(
       .notNull()
       .references(() => tag.name),
   },
-  (t) => ({ postIdTagIndex: primaryKey({ columns: [t.postId, t.tag] }) }),
+  (t) => [
+    primaryKey({
+      name: 'postIdTagIndex',
+      columns: [t.postId, t.tag],
+    }),
+  ],
 );
 
 // TODO: Add users -- currently there will only be me (admin)
@@ -186,5 +195,7 @@ export const usersToLinksRelations = relations(userLink, ({ one }) => ({
 
 export type Post = typeof post.$inferSelect;
 export type User = typeof user.$inferSelect;
+export type Link = typeof link.$inferSelect;
+export type Tag = typeof tag.$inferSelect;
 
 // TODO: Track views by users
