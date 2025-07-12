@@ -6,11 +6,19 @@ import Icons from 'unplugin-icons/vite';
 
 export default defineConfig({
   plugins: [
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     tailwindcss(),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     sveltekit(),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     Icons({
       compiler: 'svelte',
     }),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     kitRoutes(),
   ],
 

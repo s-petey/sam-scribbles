@@ -3,7 +3,7 @@ import { route } from '$lib/ROUTES.js';
 import { db } from '$lib/server/db/index.js';
 import { link, linksToTags, tag } from '$lib/server/db/schema.js';
 import { error, redirect, type Actions } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
@@ -53,7 +53,6 @@ export const load: PageServerLoad = async ({ params: { shortId } }) => {
 export const actions: Actions = {
   update: async (event) => {
     const session = await getAndRefreshSession(event);
-
     const admin = session?.user;
 
     if (admin === null || admin.role !== 'admin') {
@@ -95,13 +94,42 @@ export const actions: Actions = {
       }
 
       if (Array.isArray(form.data.tags)) {
-        if (form.data.tags.length > 0) {
-          await tx
-            .insert(linksToTags)
-            .values(form.data.tags.map((tag) => ({ linkId: newLink.shortId, tag })))
-            .onConflictDoNothing();
-        } else {
+        if (form.data.tags.length === 0) {
           await tx.delete(linksToTags).where(eq(linksToTags.linkId, newLink.shortId));
+        } else {
+          const existingTagRelations = await tx.query.linksToTags.findMany({
+            where: eq(linksToTags.linkId, newLink.shortId),
+            columns: { tag: true },
+          });
+
+          const existingTags = new Set(existingTagRelations.map((relation) => relation.tag));
+          const formTags = new Set(form.data.tags);
+          const allTags = formTags.union(existingTags);
+          const tagsToAdd: { linkId: string; tag: string }[] = [];
+          const tagsToRemove: string[] = [];
+
+          for (const tag of allTags) {
+            if (formTags.has(tag) && !existingTags.has(tag)) {
+              tagsToAdd.push({ linkId: newLink.shortId, tag });
+            } else if (!formTags.has(tag) && existingTags.has(tag)) {
+              tagsToRemove.push(tag);
+            }
+          }
+
+          if (tagsToRemove.length > 0) {
+            await tx
+              .delete(linksToTags)
+              .where(
+                and(
+                  eq(linksToTags.linkId, newLink.shortId),
+                  inArray(linksToTags.tag, tagsToRemove),
+                ),
+              );
+          }
+
+          if (tagsToAdd.length > 0) {
+            await tx.insert(linksToTags).values(tagsToAdd).onConflictDoNothing();
+          }
         }
       }
     });

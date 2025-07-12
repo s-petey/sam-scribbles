@@ -68,7 +68,7 @@
       <input type="hidden" name="tags" value={tag} />
     {/each}
 
-    <div class="flex gap-2">
+    <div class="flex flex-wrap gap-2">
       {#each data.tags as tag (tag)}
         <button
           class={`chip ${
