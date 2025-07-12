@@ -61,10 +61,10 @@
         <time datetime={dateIso}>
           {dateTime.toLocaleString()}
         </time>
-        &bull;
+        <span>&bull;</span>
         <span>{reading_time.text}</span>
         {#if dateTime.diffNow('days').days < 31}
-          &bull;
+          <span>&bull;</span>
           <span class="text-primary-800 font-bold">NEW</span>
         {/if}
       </div>

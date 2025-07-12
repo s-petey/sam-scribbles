@@ -61,9 +61,7 @@ export const actions: Actions = {
           email: form.data.email,
         });
         return setError(form, 'signup', 'Please sign up');
-      }
-
-      if (e instanceof APIError) {
+      } else if (e instanceof APIError) {
         logger.error({
           msg: 'Unable to login',
           email: form.data.email,
@@ -73,6 +71,14 @@ export const actions: Actions = {
         if (e.body?.code === INVALID_EMAIL_OR_PASSWORD) {
           return setError(form, 'email', 'Invalid email or password');
         }
+      } else {
+        logger.error({
+          msg: 'Unexpected error during login',
+          email: form.data.email,
+          error: e,
+        });
+
+        return fail(500, { form, error: 'An unexpected error occurred' });
       }
 
       return fail(400, { form });

@@ -1,10 +1,8 @@
 import { z } from 'zod';
 
-const dateSchema = z.string().transform((date) => new Date(date));
-
 export const postMetadataSchema = z.object({
-  date: dateSchema,
-  updated: dateSchema.optional(),
+  date: z.coerce.date(),
+  updated: z.coerce.date().optional(),
   title: z.string().min(1),
   tags: z.array(z.string()),
   isPrivate: z.boolean(),
@@ -17,3 +15,5 @@ export const postMetadataSchema = z.object({
     words: z.number(),
   }),
 });
+
+export type PostMetadata = z.infer<typeof postMetadataSchema>;
