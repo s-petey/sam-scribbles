@@ -27,6 +27,7 @@
 <h1 class="h1">Links worth checking out</h1>
 
 <!-- TODO: Add sort by (date / alphabetical / other?) -->
+<!-- TODO: Look into adding progressively enhancing -->
 <form
   class="grid grid-cols-1 gap-4 md:grid-cols-7"
   onsubmit={(e) => {
