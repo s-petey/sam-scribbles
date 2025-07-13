@@ -1,6 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { kitRoutes } from 'vite-plugin-kit-routes';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import Icons from 'unplugin-icons/vite';
 
@@ -29,6 +29,4 @@ export default defineConfig({
       allow: ['..'],
     },
   },
-
-  test: { include: ['src/**/*.{test,spec}.{js,ts}'] },
 });
