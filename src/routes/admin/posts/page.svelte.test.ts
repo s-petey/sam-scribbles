@@ -13,16 +13,14 @@ vi.mock('$lib/server/db', () => ({
   db: {
     query: {
       post: {
-        findMany: vi.fn().mockReturnValue({
-          execute: findManyPosts,
-        }),
+        findMany: findManyPosts,
       },
     },
   },
 }));
 
 describe('/+page.svelte', () => {
-  it('should render content', async () => {
+  it('renders sync button', async () => {
     const props = await load();
     render(Page, {
       props: {
@@ -36,7 +34,7 @@ describe('/+page.svelte', () => {
     await expect.element(syncButton).toBeInTheDocument();
   });
 
-  it('should render message if it exists', async () => {
+  it('renders error message if it exists', async () => {
     const props = await load();
     render(Page, {
       props: {
@@ -61,7 +59,7 @@ describe('/+page.svelte', () => {
     await expect.element(updatedMessage).toBeInTheDocument();
   });
 
-  it('should render a link to the post if a post exists', async () => {
+  it('renders a link to the post if a post exists', async () => {
     const mockPost = {
       id: '1',
       title: 'Test Post',
@@ -83,7 +81,7 @@ describe('/+page.svelte', () => {
     await expect(postLink).toHaveAttribute('href', `/admin/posts/${mockPost.slug}`);
   });
 
-  it('should display an error message if errors?.slug contains the post slug', async () => {
+  it('renders error message if errors?.slug contains the post slug', async () => {
     const mockPost = {
       id: '1',
       title: 'Test Post',
