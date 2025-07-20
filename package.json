@@ -16,7 +16,7 @@
     "test:server": "vitest --project=server",
     "test:client": "vitest --project=client",
     "test:ssr": "vitest --project=ssr",
-    "test:unit": "vitest",
+    "test:watch": "vitest",
     "test": "vitest --run",
     "lint": "eslint ./src && prettier --check ./src",
     "fix": "eslint ./ --fix && prettier --write ./src",
