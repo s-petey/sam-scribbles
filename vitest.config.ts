@@ -24,7 +24,7 @@ export default defineConfig({
           },
           include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
           exclude: ['src/lib/server/**', 'src/**/*.ssr.{test,spec}.{js,ts}'],
-          setupFiles: ['./src/vitest-setup-client.ts'],
+          setupFiles: ['./src/vitest-setup.ts', './src/vitest-setup-client.ts'],
         },
       },
       {
@@ -34,6 +34,7 @@ export default defineConfig({
           name: 'ssr',
           environment: 'node',
           include: ['src/**/*.ssr.{test,spec}.{js,ts}'],
+          setupFiles: ['./src/vitest-setup.ts'],
         },
       },
       {
@@ -44,6 +45,7 @@ export default defineConfig({
           environment: 'node',
           include: ['src/**/*.{test,spec}.{js,ts}'],
           exclude: ['src/**/*.svelte.{test,spec}.{js,ts}', 'src/**/*.ssr.{test,spec}.{js,ts}'],
+          setupFiles: ['./src/vitest-setup.ts'],
         },
       },
     ],
