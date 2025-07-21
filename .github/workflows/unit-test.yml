@@ -15,9 +15,6 @@ jobs:
     strategy:
       matrix:
         bun-version: [1.2.18]
-    container:
-      image: mcr.microsoft.com/playwright:v1.52.0-noble
-      options: --user 1001
 
     steps:
       - name: Checkout code
@@ -30,6 +27,9 @@ jobs:
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
+
+      - name: Install playwright
+        run: bunx playwright install --with-deps
 
       - name: Run tests
         run: bun run test
