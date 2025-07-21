@@ -52,9 +52,10 @@ function getFakeUrl(q: string, tags: string[]) {
 
 describe('/links/+page.svelte', () => {
   it('renders the page heading', async () => {
-    const props = await load({
-      url: getFakeUrl('', []),
-    });
+    const props = await load(
+      // @ts-expect-error Partial data props
+      { url: getFakeUrl('', []) },
+    );
 
     render(Page, {
       props: {
@@ -68,9 +69,10 @@ describe('/links/+page.svelte', () => {
   });
 
   it('renders post links', async () => {
-    const props = await load({
-      url: getFakeUrl('', []),
-    });
+    const props = await load(
+      // @ts-expect-error Partial data props
+      { url: getFakeUrl('', []) },
+    );
 
     render(Page, {
       target: document.body,

@@ -30,7 +30,7 @@ function getFakeUrl(q: string, page: number, limit: number) {
   params.set('page', String(page));
   params.set('limit', String(limit));
 
-  return new URL(`http://localhost/admin/posts?${params.toString()}`);
+  return new URL(`http://localhost/admin/links?${params.toString()}`);
 }
 
 describe('/+page.svelte', () => {
