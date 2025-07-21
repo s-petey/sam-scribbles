@@ -61,6 +61,7 @@
         type="submit"
         class="btn"
         formaction="/?/setTheme&redirectTo={page.url.pathname}&themeMode=light"
+        aria-label="Light mode toggle"
       >
         <LucideMoon class="text-xl" />
       </button>
@@ -69,6 +70,7 @@
         type="submit"
         class="btn"
         formaction="/?/setTheme&redirectTo={page.url.pathname}&themeMode=dark"
+        aria-label="Dark mode toggle"
       >
         <LucideSun class="text-xl" />
       </button>

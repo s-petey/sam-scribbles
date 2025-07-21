@@ -48,6 +48,10 @@ const handleAnnoyances: Handle = async ({ event, resolve }) => {
     throw redirect(302, 'https://www.google.com');
   }
 
+  if (pathname !== '/' && pathname.endsWith('/')) {
+    return redirect(301, pathname.slice(0, -1));
+  }
+
   return await resolve(event);
 };
 
@@ -147,27 +151,28 @@ const handleRouting: Handle = async ({ event, resolve }) => {
 
   const pathname = event.url.pathname.toLowerCase();
 
+  // Handle session refreshes
+  if (session?.session !== null && session.session.expiresAt.valueOf() < Date.now()) {
+    logger.info('Session expired, logging out...');
+    // TODO: Warn the user they need to login again (have a message?)
+    // Or have a way to extend the session when it is nearing expiry if
+    // it is active?
+    const response = await auth.api.signOut({
+      returnHeaders: true,
+      headers: event.request.headers,
+    });
+    setServerCookies(response.headers, event);
+
+    // TODO: Add this route to the `siteLinks.ts`
+    // once exposed more clearly...
+    return redirect(302, route('/login'));
+  }
+
   // Here we need to check if the user has access
   // to the given route(s).
   if (adminLinks.some((link) => pathname.endsWith(link.href)) && session?.user?.role !== 'admin') {
-    if (session?.session !== null && session.session.expiresAt.valueOf() < Date.now()) {
-      logger.info('Session expired, logging out...');
-      // TODO: Warn the user they need to login again (have a message?)
-      // Or have a way to extend the session when it is nearing expiry if
-      // it is active?
-      const response = await auth.api.signOut({
-        returnHeaders: true,
-        headers: event.request.headers,
-      });
-      setServerCookies(response.headers, event);
-
-      // TODO: Add this route to the `siteLinks.ts`
-      // once exposed more clearly...
-      redirect(302, route('/login'));
-    }
-
     logger.info('User is not an admin, redirecting to home...');
-    redirect(303, core.Home.href);
+    return redirect(303, core.Home.href);
   }
 
   return await resolve(event);

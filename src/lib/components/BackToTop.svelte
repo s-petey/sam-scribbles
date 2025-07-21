@@ -22,6 +22,7 @@
   class:show-button={showScrollButton}
   class:hide-button={!showScrollButton}
   aria-label="Back to top"
+  disabled={!showScrollButton}
 >
   Back to top
 </button>

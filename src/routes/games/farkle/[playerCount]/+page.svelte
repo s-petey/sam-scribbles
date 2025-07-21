@@ -168,7 +168,8 @@
               return false;
             }}
             value={scores[count][row] || undefined}
-            name="player-{count + 1}"
+            name="row-{row}-player-{count + 1}"
+            aria-label="row-{row}-player-{count + 1}"
             type="number"
             class={{
               'input shadow-secondary-200-800 hover:shadow-secondary-800-200 shadow-sm': true,
@@ -198,9 +199,9 @@
 <div class="btn-group flex w-full justify-center">
   <button class="btn preset-tonal-tertiary" type="button" onclick={() => rows++}>Add Row</button>
 
-  <button class="btn preset-filled-warning-400-600" type="button" onclick={handleReset}
-    >Reset Game</button
-  >
+  <button class="btn preset-filled-warning-400-600" type="button" onclick={handleReset}>
+    Reset Game
+  </button>
 
   <Modal
     open={openState}
