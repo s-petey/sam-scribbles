@@ -169,7 +169,7 @@ describe('BackToTop', () => {
     expect(button).toHaveAttribute('aria-label', 'Back to top');
   });
 
-  it('does allow interaction when hidden', async () => {
+  it('does not allow interaction when hidden', async () => {
     await render(BackToTop);
     const button = page.getByLabelText('Back to top');
 
