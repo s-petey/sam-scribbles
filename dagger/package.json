@@ -1,0 +1,16 @@
+{
+  "name": "dagger",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "typescript": "^5"
+  },
+  "packageManager": "bun@1.2.13"
+}

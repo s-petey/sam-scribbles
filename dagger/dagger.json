@@ -1,0 +1,8 @@
+{
+  "$schema": "https://docs.dagger.io/reference/dagger.schema.json",
+  "name": "dagger",
+  "engineVersion": "v0.18.14",
+  "sdk": {
+    "source": "typescript"
+  }
+}

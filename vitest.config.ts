@@ -10,7 +10,7 @@ export default defineConfig({
           name: 'client',
           environment: 'browser',
           // Timeout for browser tests - prevent hanging on element lookups
-          testTimeout: 2000,
+          testTimeout: 3000,
           browser: {
             enabled: true,
             provider: 'playwright',

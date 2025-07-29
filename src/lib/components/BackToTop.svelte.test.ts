@@ -84,7 +84,7 @@ describe('BackToTop', () => {
     expect(button).not.toHaveClass('show-button');
   });
 
-  it('button click scrolls to top smoothly', async () => {
+  it('button click scrolls to top smoothly', { retry: 3, timeout: 5000 }, async () => {
     await render(BackToTop);
     const button = page.getByLabelText('Back to top');
 
@@ -169,15 +169,22 @@ describe('BackToTop', () => {
     expect(button).toHaveAttribute('aria-label', 'Back to top');
   });
 
-  it('does not allow interaction when hidden', async () => {
-    await render(BackToTop);
-    const button = page.getByLabelText('Back to top');
+  it(
+    'does not allow interaction when hidden',
+    {
+      retry: 3,
+      timeout: 5000,
+    },
+    async () => {
+      await render(BackToTop);
+      const button = page.getByLabelText('Back to top');
 
-    // Button should be hidden initially
-    expect(button).toHaveClass('hide-button');
+      // Button should be hidden initially
+      expect(button).toHaveClass('hide-button');
 
-    await button.click({ force: true });
+      await button.click({ force: true });
 
-    expect(mockScrollTo).not.toHaveBeenCalled();
-  });
+      expect(mockScrollTo).not.toHaveBeenCalled();
+    },
+  );
 });

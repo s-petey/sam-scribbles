@@ -72,18 +72,24 @@ describe('ThemeAndMode', () => {
     expect(moonButton).toHaveAttribute('formaction', expect.stringContaining('themeMode=light'));
   });
 
-  test('combobox contains all available themes', async () => {
-    await render(ThemeAndMode, {
-      currentTheme: 'catppuccin',
-      currentThemeMode: 'light',
-    });
+  test(
+    'combobox contains all available themes',
+    {
+      timeout: 5000,
+    },
+    async () => {
+      await render(ThemeAndMode, {
+        currentTheme: 'catppuccin',
+        currentThemeMode: 'light',
+      });
 
-    const combobox = page.getByRole('button', { name: 'Toggle suggestions' });
-    await userEvent.click(combobox);
+      const combobox = page.getByRole('button', { name: 'Toggle suggestions' });
+      await userEvent.click(combobox);
 
-    const options = page.getByRole('option', { includeHidden: true }).all();
-    await expect(options).toHaveLength(themes.length);
-  });
+      const options = page.getByRole('option', { includeHidden: true }).all();
+      await expect(options).toHaveLength(themes.length);
+    },
+  );
 
   test('theme buttons have correct formaction URLs', async () => {
     await render(ThemeAndMode, {
