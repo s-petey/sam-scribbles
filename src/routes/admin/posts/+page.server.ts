@@ -20,7 +20,7 @@ export const load = (async () => {
   const form = await superValidate<Infer<typeof schema>, Message>(zod(schema));
   const deleteForm = await superValidate(zod(deleteSchema));
 
-  const posts = await db.query.post.findMany({ columns: { title: true, slug: true } }).execute();
+  const posts = await db.query.post.findMany({ columns: { title: true, slug: true } });
 
   return { form, posts, deleteForm };
 }) satisfies PageServerLoad;
