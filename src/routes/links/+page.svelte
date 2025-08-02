@@ -7,7 +7,7 @@
 
   import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import { route } from '$lib/ROUTES';
+  import { resolve } from '$app/paths';
 
   let { data }: { data: PageData } = $props();
 
@@ -52,7 +52,7 @@
     if (hasParams) {
       goto(`?${params.toString()}`, { keepFocus: true });
     } else {
-      goto(route('/links'), { keepFocus: true });
+      goto(resolve('/links'), { keepFocus: true });
     }
   }}
 >
@@ -109,7 +109,7 @@
         onclick={() => {
           tags = [];
           searchQuery = '';
-          goto(route('/links'), { keepFocus: true });
+          goto(resolve('/links'), { keepFocus: true });
         }}
       >
         Reset

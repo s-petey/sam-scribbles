@@ -1,13 +1,5 @@
 <script lang="ts">
-  import { routes } from '$lib/ROUTES';
-
-  const filteredRoutes = routes.filter((route) => {
-    return (
-      route.startsWith('/games/') &&
-      // There is only one segment after `/games`
-      route.split('/').length === 3
-    );
-  });
+  import { gamesLinks } from '$lib/siteLinks';
 </script>
 
 <svelte:head>
@@ -19,9 +11,9 @@
 
 <nav class="m-auto w-2/3 text-center">
   <ul class="grid grid-cols-3 gap-2">
-    {#each filteredRoutes as path (path)}
+    {#each gamesLinks as { href, label } (href)}
       <li>
-        <a class="anchor capitalize" href={path}>{path.replace('/games/', '')}</a>
+        <a class="anchor capitalize" {href}>{label}</a>
       </li>
     {/each}
   </ul>

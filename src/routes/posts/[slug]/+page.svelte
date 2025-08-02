@@ -73,7 +73,7 @@
         {#each tags as tag (tag)}
           <a class="anchor" href={`/tags/${tag}`}>
             <!-- TODO: Replace when route is created -->
-            <!-- <a href={route('/tags/[tag]', { tag: tag.toLowerCase() })}> -->
+            <!-- <a href={resolve('/tags/[tag]', { tag: tag.toLowerCase() })}> -->
             <span
               class="badge preset-filled-surface-500 hover:bg-surface-contrast-500 hover:text-surface-500 shadow-md transition"
             >

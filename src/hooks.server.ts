@@ -1,9 +1,9 @@
 import { building } from '$app/environment';
+import { resolve } from '$app/paths';
 import { auth } from '$lib/auth';
 import { setServerCookies } from '$lib/auth.server';
 import { isValidMode, isValidTheme, type Theme, type ThemeMode } from '$lib/components/themes';
 import { logger } from '$lib/logger';
-import { route } from '$lib/ROUTES';
 import { rejectedFileExtensions, rejectedFilePaths } from '$lib/server/rejectedRequests';
 import { adminLinks, core } from '$lib/siteLinks';
 import { redirect, type Handle } from '@sveltejs/kit';
@@ -56,7 +56,7 @@ const handleAnnoyances: Handle = async ({ event, resolve }) => {
 };
 
 const handleAuth: Handle = async ({ event, resolve }) => {
-  return await svelteKitHandler({ auth, event, resolve });
+  return await svelteKitHandler({ auth, event, resolve, building });
 };
 
 export const handleLocals: Handle = async ({ event, resolve }) => {
@@ -144,7 +144,7 @@ export const handleLocals: Handle = async ({ event, resolve }) => {
   return await resolve(event);
 };
 
-const handleRouting: Handle = async ({ event, resolve }) => {
+const handleRouting: Handle = async ({ event, resolve: handleResolve }) => {
   const { session } = event.locals;
 
   logger.debug({ msg: `Handling routing for: ${event.url.pathname}`, session });
@@ -165,7 +165,7 @@ const handleRouting: Handle = async ({ event, resolve }) => {
 
     // TODO: Add this route to the `siteLinks.ts`
     // once exposed more clearly...
-    return redirect(302, route('/login'));
+    return redirect(302, resolve('/login'));
   }
 
   // Here we need to check if the user has access
@@ -175,7 +175,7 @@ const handleRouting: Handle = async ({ event, resolve }) => {
     return redirect(303, core.Home.href);
   }
 
-  return await resolve(event);
+  return await handleResolve(event);
 };
 
 export const handle: Handle = sequence(

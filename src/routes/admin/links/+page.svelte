@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page as sveltePage } from '$app/state';
-  import { route } from '$lib/ROUTES';
+  import { resolve } from '$app/paths';
   import { Modal, Pagination, TagsInput } from '@skeletonlabs/skeleton-svelte';
   import LucideArrowLeft from '~icons/lucide/arrow-left';
   import LucideArrowRight from '~icons/lucide/arrow-right';
@@ -179,7 +179,7 @@
           </td>
           <td class="text-right">
             <button class="btn-icon" type="button">
-              <a href={route('/admin/links/[shortId]', { shortId: link.shortId })}>
+              <a href={resolve('/admin/links/[shortId]', { shortId: link.shortId })}>
                 <LucidePencil class="text-base" />
               </a>
             </button>
