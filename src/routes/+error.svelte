@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import { route } from '$lib/ROUTES';
   import { core } from '$lib/siteLinks';
 
   // import { PopularPosts } from '$lib/components'
@@ -21,7 +21,7 @@
 
   <p>
     Maybe check out the <a href={core.Posts.href}>posts</a> page? Or go to the
-    <a href={route('/')}>home</a> page.
+    <a href={resolve('/')}>home</a> page.
   </p>
 
   <!-- TODO: Something like this... -->

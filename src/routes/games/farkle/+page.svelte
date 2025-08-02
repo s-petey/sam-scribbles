@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { route } from '$lib/ROUTES';
+  import { resolve } from '$app/paths';
   import Scoring from './Scoring.svelte';
 </script>
 
@@ -12,8 +12,8 @@
     {#if count > 0}
       <a
         class="btn-icon preset-tonal-primary m-auto rounded-xs p-4"
-        href={route('/games/farkle/[playerCount]', {
-          playerCount: count + 1,
+        href={resolve('/games/farkle/[playerCount]', {
+          playerCount: (count + 1).toString(),
         })}
       >
         {count + 1}

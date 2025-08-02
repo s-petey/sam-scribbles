@@ -298,11 +298,12 @@ function createMockEvent(
     params: {},
     platform: '',
     route: {
-      id: '',
+      id: '/',
     },
     isDataRequest: false,
     isSubRequest: false,
     setHeaders: vi.fn(),
+    isRemoteRequest: false,
   };
 }
 

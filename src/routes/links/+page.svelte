@@ -1,13 +1,13 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  import SimpleIconsYoutube from '~icons/simple-icons/youtube';
-  import SimpleIconsVimeo from '~icons/simple-icons/vimeo';
-  import LucideLink from '~icons/lucide/link';
-  // import LucideBookOpen from '~icons/lucide/book-open';
-
-  import { page } from '$app/state';
   import { goto } from '$app/navigation';
-  import { route } from '$lib/ROUTES';
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+  import { SvelteURLSearchParams } from 'svelte/reactivity';
+  import LucideLink from '~icons/lucide/link';
+  import SimpleIconsVimeo from '~icons/simple-icons/vimeo';
+  import SimpleIconsYoutube from '~icons/simple-icons/youtube';
+  import type { PageData } from './$types';
+  // import LucideBookOpen from '~icons/lucide/book-open';
 
   let { data }: { data: PageData } = $props();
 
@@ -34,7 +34,8 @@
     e.preventDefault();
 
     let hasParams = false;
-    const params = new URLSearchParams(page.url.searchParams);
+    const params = new SvelteURLSearchParams(page.url.searchParams);
+
     if (tags.length > 0) {
       params.set('tags', tags.join(','));
       hasParams = true;
@@ -52,7 +53,7 @@
     if (hasParams) {
       goto(`?${params.toString()}`, { keepFocus: true });
     } else {
-      goto(route('/links'), { keepFocus: true });
+      goto(resolve('/links'), { keepFocus: true });
     }
   }}
 >
@@ -109,7 +110,7 @@
         onclick={() => {
           tags = [];
           searchQuery = '';
-          goto(route('/links'), { keepFocus: true });
+          goto(resolve('/links'), { keepFocus: true });
         }}
       >
         Reset

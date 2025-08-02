@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { DateTime, Duration } from 'luxon';
-  import { route } from '$lib/ROUTES';
-  import { page } from '$app/state';
   import { goto } from '$app/navigation';
+  import { resolve } from '$app/paths';
+  import { page } from '$app/state';
+  import { DateTime, Duration } from 'luxon';
+  import { SvelteURLSearchParams } from 'svelte/reactivity';
 
   let { data } = $props();
 
@@ -34,7 +35,7 @@
     e.preventDefault();
 
     let hasParams = false;
-    const params = new URLSearchParams(page.url.searchParams);
+    const params = new SvelteURLSearchParams(page.url.searchParams);
     if (tags.length > 0) {
       params.set('tags', tags.join(','));
       hasParams = true;
@@ -52,7 +53,7 @@
     if (hasParams) {
       goto(`?${params.toString()}`, { keepFocus: true });
     } else {
-      goto(route('/posts'), { keepFocus: true });
+      goto(resolve('/posts'), { keepFocus: true });
     }
   }}
 >
@@ -108,7 +109,7 @@
         onclick={() => {
           tags = [];
           searchQuery = '';
-          goto(route('/posts'), { keepFocus: true });
+          goto(resolve('/posts'), { keepFocus: true });
         }}
       >
         Reset
@@ -130,7 +131,7 @@
         <article
           class="text-secondary-contrast-300-700 hover:text-secondary-contrast-600-400 card bg-secondary-300-700 hover:bg-secondary-400-600 p-4 transition first:pt-0"
         >
-          <a class="flex flex-col gap-2" href={route('/posts/[slug]', { slug: post.slug })}>
+          <a class="flex flex-col gap-2" href={resolve('/posts/[slug]', { slug: post.slug })}>
             <div>
               <h2 class="pt-5 pb-1 text-3xl font-black">
                 {post.title}

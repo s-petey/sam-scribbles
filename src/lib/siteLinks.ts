@@ -1,9 +1,9 @@
-import { route } from './ROUTES';
-import SimpleIconsGithub from '~icons/simple-icons/github';
+import type { RouteId } from '$app/types';
 import SimpleIconsBluesky from '~icons/simple-icons/bluesky';
+import SimpleIconsGithub from '~icons/simple-icons/github';
 
 export type Link = {
-  href: string;
+  href: RouteId;
   label: string;
   icon?: string; // TODO: Icon string / url / Component?
 };
@@ -12,24 +12,24 @@ export type Link = {
 
 // TODO: Update links
 export const admin = {
-  'Admin Panel': { href: route('/admin'), label: 'Admin panel' },
-  'Admin Links': { href: route('/admin/links'), label: 'Admin Links' },
-  'Admin Posts': { href: route('/admin/posts'), label: 'Admin Posts' },
-} as const;
+  'Admin Panel': { href: '/admin', label: 'Admin panel' },
+  'Admin Links': { href: '/admin/links', label: 'Admin Links' },
+  'Admin Posts': { href: '/admin/posts', label: 'Admin Posts' },
+} as const satisfies Record<string, Link>;
 
 export const core = {
   // Warning, order matters in these arrays!
-  Home: { href: route('/'), label: 'Home' },
-  Posts: { href: route('/posts'), label: 'Posts' },
-  Links: { href: route('/links'), label: 'Links' },
-  About: { href: route('/about'), label: 'About' },
-  Socials: { href: route('/social'), label: 'Socials' },
-  Tags: { href: route('/tags'), label: 'Tags' },
-  Games: { href: route('/games'), label: 'Games' },
+  Home: { href: '/', label: 'Home' },
+  Posts: { href: '/posts', label: 'Posts' },
+  Links: { href: '/links', label: 'Links' },
+  About: { href: '/about', label: 'About' },
+  Socials: { href: '/social', label: 'Socials' },
+  Tags: { href: '/tags', label: 'Tags' },
+  Games: { href: '/games', label: 'Games' },
   // { href: 'https://bsky.app/profile/skeletonlabs.bsky.social', label: 'News', target: '_blank' }
   // { href: '/news', label: 'News', target: '_self' },
   // { href: 'https://themes.skeleton.dev/', label: 'Themes', target: '_blank' }
-} as const;
+} as const satisfies Record<string, Link>;
 
 export const social = {
   GitHub: {
@@ -44,6 +44,11 @@ export const social = {
   },
 } as const;
 
+export const games = {
+  Farkle: { href: '/games/farkle', label: 'Farkle' },
+} as const satisfies Record<string, Link>;
+
 export const adminLinks = Object.values(admin);
 export const coreLinks = Object.values(core);
 export const socialLinks = Object.values(social);
+export const gamesLinks = Object.values(games);
