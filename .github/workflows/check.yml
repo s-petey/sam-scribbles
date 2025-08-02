@@ -1,4 +1,4 @@
-name: ⚔️ `check` before merge to main
+name: ⚔️ Check (Lint & Types)
 
 on:
   pull_request:
@@ -7,9 +7,11 @@ on:
     types:
       - opened
       - synchronize
+      - reopened
 
 jobs:
   check:
+    name: Lint and Type Check
     runs-on: ubuntu-latest
     strategy:
       matrix:
