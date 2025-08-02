@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { DateTime, Duration } from 'luxon';
+  import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import { goto } from '$app/navigation';
+  import { DateTime, Duration } from 'luxon';
+  import { SvelteURLSearchParams } from 'svelte/reactivity';
 
   let { data } = $props();
 
@@ -34,7 +35,7 @@
     e.preventDefault();
 
     let hasParams = false;
-    const params = new URLSearchParams(page.url.searchParams);
+    const params = new SvelteURLSearchParams(page.url.searchParams);
     if (tags.length > 0) {
       params.set('tags', tags.join(','));
       hasParams = true;

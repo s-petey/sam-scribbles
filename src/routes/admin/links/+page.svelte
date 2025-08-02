@@ -1,19 +1,20 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { page as sveltePage } from '$app/state';
   import { resolve } from '$app/paths';
+  import { page as sveltePage } from '$app/state';
   import { Modal, Pagination, TagsInput } from '@skeletonlabs/skeleton-svelte';
+  import { SvelteURLSearchParams } from 'svelte/reactivity';
+  import { superForm } from 'sveltekit-superforms';
   import LucideArrowLeft from '~icons/lucide/arrow-left';
   import LucideArrowRight from '~icons/lucide/arrow-right';
-  import LucideChevronRight from '~icons/lucide/chevron-right';
   import LucideChevronLeft from '~icons/lucide/chevron-left';
+  import LucideChevronRight from '~icons/lucide/chevron-right';
   import LucideCircleX from '~icons/lucide/circle-x';
   import LucideEllipsis from '~icons/lucide/ellipsis';
   import LucideEraser from '~icons/lucide/eraser';
   import LucidePencil from '~icons/lucide/pencil';
   import LucideSquarePlus from '~icons/lucide/square-plus';
   import LucideTrashIcon from '~icons/lucide/trash';
-  import { superForm } from 'sveltekit-superforms';
 
   let { data } = $props();
   let selectedId = $state<string | null>(null);
@@ -28,7 +29,7 @@
     event.preventDefault();
 
     const q = event.currentTarget.q.value;
-    const params = new URLSearchParams(sveltePage.url.searchParams);
+    const params = new SvelteURLSearchParams(sveltePage.url.searchParams);
 
     if (q) {
       params.set('q', q);
@@ -216,7 +217,7 @@
     page={data.pagination.page}
     pageSize={data.pagination.limit}
     onPageChange={(value) => {
-      const params = new URLSearchParams(sveltePage.url.searchParams);
+      const params = new SvelteURLSearchParams(sveltePage.url.searchParams);
 
       params.set('page', value.page.toString());
       goto(`?${params.toString()}`, { keepFocus: true });
