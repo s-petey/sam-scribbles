@@ -1,4 +1,4 @@
-import { page, userEvent } from '@vitest/browser/context';
+import { page } from '@vitest/browser/context';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ThemeAndMode from './ThemeAndMode.svelte';
@@ -79,7 +79,7 @@ describe('ThemeAndMode', () => {
     });
 
     const combobox = page.getByRole('button', { name: 'Toggle suggestions' });
-    await userEvent.click(combobox);
+    await combobox.click();
 
     const options = page.getByRole('option', { includeHidden: true }).all();
     await expect(options).toHaveLength(themes.length);
@@ -92,7 +92,7 @@ describe('ThemeAndMode', () => {
     });
 
     const combobox = page.getByRole('button', { name: 'Toggle suggestions' });
-    await userEvent.click(combobox);
+    await combobox.click();
 
     const themeButton = page.getByRole('button', { includeHidden: true, name: 'modern' });
     expect(themeButton).toHaveAttribute('formaction', expect.stringContaining('theme=modern'));
@@ -107,7 +107,7 @@ describe('ThemeAndMode', () => {
     const darkButton = page.getByRole('button', { name: 'Dark mode toggle' });
     await expect(darkButton).toHaveAttribute('aria-label', 'Dark mode toggle');
 
-    await userEvent.click(darkButton);
+    await darkButton.click();
 
     const lightButton = page.getByRole('button', { name: 'Light mode toggle' });
     await expect(lightButton).toBeInTheDocument();
