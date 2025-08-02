@@ -1,6 +1,6 @@
 import { parseSetCookieHeader } from 'better-auth/cookies';
 import type { RequestEvent } from '@sveltejs/kit';
-import { auth } from './auth';
+import { auth } from '$lib/auth';
 import { z } from 'zod';
 
 // WARNING -- this is likely not a great thing, but trying to get

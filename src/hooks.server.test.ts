@@ -2,12 +2,13 @@ import { expect, test, vi } from 'vitest';
 import { handle } from './hooks.server';
 import type { RequestEvent } from '@sveltejs/kit';
 import { describe } from 'node:test';
+import * as AUTH from '$lib/auth';
 
-const { getSession } = vi.hoisted(() => {
-  return {
-    getSession: vi.fn().mockResolvedValue(null),
-  };
-});
+// const { getSession } = vi.hoisted(() => {
+//   return {
+//     getSession: vi.fn().mockResolvedValue(null),
+//   };
+// });
 
 vi.mock('@sveltejs/kit', async () => {
   const actual = await vi.importActual('@sveltejs/kit');
@@ -19,27 +20,28 @@ vi.mock('@sveltejs/kit', async () => {
   };
 });
 
-vi.mock('$lib/auth', async (importOriginal) => {
-  const original = await importOriginal();
-  return {
-    // @ts-expect-error Mocking the auth module
-    ...original,
-    auth: {
-      // @ts-expect-error Mocking the auth module
-      ...original.auth,
-      api: {
-        // @ts-expect-error Mocking the auth module
-        ...original.auth.api,
-        getSession: getSession,
-        signOut: vi.fn().mockResolvedValue({
-          headers: new Headers({
-            'set-cookie': 'session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
-          }),
-        }),
-      },
-    },
-  };
-});
+vi.mock('$lib/auth');
+// , async (importOriginal) => {
+//   const original = await importOriginal();
+//   return {
+//     // @ts-expect-error Mocking the auth module
+//     ...original,
+//     auth: {
+//       // @ts-expect-error Mocking the auth module
+//       ...original.auth,
+//       api: {
+//         // @ts-expect-error Mocking the auth module
+//         ...original.auth.api,
+//         getSession: getSession,
+//         signOut: vi.fn().mockResolvedValue({
+//           headers: new Headers({
+//             'set-cookie': 'session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
+//           }),
+//         }),
+//       },
+//     },
+//   };
+// });
 
 describe('handle -- suspicious routing', () => {
   test('removes trailing slash', async () => {
@@ -211,9 +213,14 @@ describe('handle -- routing rules', () => {
   });
 
   test('redirects to login if session expired', async () => {
-    getSession.mockResolvedValue({
+    vi.mocked(AUTH.auth.api.getSession).mockResolvedValue({
+      // @ts-expect-error Partially matching user
       user: { role: 'admin' },
+      // @ts-expect-error Partially matching session
       session: { expiresAt: new Date(Date.now() - 1000) },
+    });
+    vi.mocked(AUTH.auth.api.signOut).mockResolvedValue({
+      success: true,
     });
 
     const mockEvent = createMockEvent('/admin');
@@ -230,8 +237,10 @@ describe('handle -- routing rules', () => {
   });
 
   test('redirects to home if session is not admin', async () => {
-    getSession.mockResolvedValue({
+    vi.mocked(AUTH.auth.api.getSession).mockResolvedValue({
+      // @ts-expect-error Partially matching user
       user: { role: 'user' },
+      // @ts-expect-error Partially matching session
       session: { expiresAt: new Date(Date.now() + 1000) },
     });
 

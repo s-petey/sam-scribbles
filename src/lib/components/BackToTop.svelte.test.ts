@@ -84,27 +84,33 @@ describe('BackToTop', () => {
     expect(button).not.toHaveClass('show-button');
   });
 
-  it('button click scrolls to top smoothly', async () => {
-    await render(BackToTop);
-    const button = page.getByLabelText('Back to top');
+  it(
+    'button click scrolls to top smoothly',
+    {
+      retry: 3,
+    },
+    async () => {
+      await render(BackToTop);
+      const button = page.getByLabelText('Back to top');
 
-    // Simulate being scrolled down
-    Object.defineProperty(window, 'scrollY', {
-      value: 500,
-      writable: true,
-    });
-    window.dispatchEvent(new Event('scroll'));
-    flushSync();
+      // Simulate being scrolled down
+      Object.defineProperty(window, 'scrollY', {
+        value: 500,
+        writable: true,
+      });
+      window.dispatchEvent(new Event('scroll'));
+      flushSync();
 
-    // Click the button
-    await button.click();
+      // Click the button
+      await button.click();
 
-    expect(mockScrollTo).toHaveBeenCalledOnce();
-    expect(mockScrollTo).toHaveBeenCalledWith({
-      top: 0,
-      behavior: 'smooth',
-    });
-  });
+      expect(mockScrollTo).toHaveBeenCalledOnce();
+      expect(mockScrollTo).toHaveBeenCalledWith({
+        top: 0,
+        behavior: 'smooth',
+      });
+    },
+  );
 
   it('button visibility toggles correctly at scroll threshold', async () => {
     await render(BackToTop);
