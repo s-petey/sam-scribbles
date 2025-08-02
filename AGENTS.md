@@ -20,6 +20,19 @@
 - File naming: kebab-case for routes, PascalCase for components
 - Imports: `~icons/` for icons, `$lib/` for internal modules
 
+## Component System - Skeleton UI
+
+- Uses Skeleton v3.1.5 design system with Tailwind CSS v4.1.11
+- Framework: Utility-first, semantic HTML with native browser APIs
+- Additional Tailwind plugins: @tailwindcss/forms, @tailwindcss/typography
+- Component categories:
+  - **Tailwind Components**: Badges, Buttons, Cards, Chips, Dividers, Forms/Inputs, Tables
+  - **Functional Components**: Accordion, App Bar, Avatar, Navigation, Pagination, Progress, Tabs, Toast, etc.
+  - **Headless Components**: Integration with Bits UI, Melt UI, Radix UI
+- Theme system: Adaptive themes via [Skeleton theme generator](https://themes.skeleton.dev/)
+- Philosophy: Native-first, opt-in by default, framework agnostic core
+- Documentation: https://www.skeleton.dev/docs/get-started/introduction
+
 ## Error Handling
 
 - Use Zod schemas for validation
