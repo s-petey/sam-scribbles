@@ -3,10 +3,8 @@
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
-  import LucideLink from '~icons/lucide/link';
-  import SimpleIconsVimeo from '~icons/simple-icons/vimeo';
-  import SimpleIconsYoutube from '~icons/simple-icons/youtube';
   import type { PageData } from './$types';
+  import LinkWithIcon from '$lib/components/LinkWithIcon.svelte';
   // import LucideBookOpen from '~icons/lucide/book-open';
 
   let { data }: { data: PageData } = $props();
@@ -125,32 +123,7 @@
 <ul class="space-y-2">
   {#each data.links as link (link.shortId)}
     <li>
-      <span class="flex items-center gap-2">
-        {#if link.link.includes('youtube.com')}
-          <SimpleIconsYoutube />
-        {:else if link.link.includes('vimeo.com')}
-          <SimpleIconsVimeo />
-        {:else}
-          <LucideLink />
-        {/if}
-
-        <a
-          class="anchor"
-          href={link.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="External link"
-        >
-          <span>
-            {link.link}
-          </span>
-        </a>
-        <!-- {#if hasRelatedPost}
-        <a class="anchor" href="link_to_related_post" title="Sam's related post">
-          <LucideBookOpen />
-        </a>
-        {/if} -->
-      </span>
+      <LinkWithIcon {link} />
 
       <ul class="mt-2 flex flex-wrap gap-2">
         {#each link.tags as tag (tag.tag)}
