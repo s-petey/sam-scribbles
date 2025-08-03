@@ -34,6 +34,8 @@ vi.mock('$lib/server/db', () => ({
 
 describe('/tags/[slug]/+page.svelte', () => {
   test('renders the tag heading', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Partial data props
     const props = await load({ params: { slug: 'tag1' } });
     render(Page, {
       props: {
@@ -46,6 +48,8 @@ describe('/tags/[slug]/+page.svelte', () => {
   });
 
   test('renders posts and links for the tag', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Partial data props
     const props = await load({ params: { slug: 'tag1' } });
     render(Page, {
       props: {
@@ -58,6 +62,8 @@ describe('/tags/[slug]/+page.svelte', () => {
   });
 
   test('renders tag chips for posts and links', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore Partial data props
     const props = await load({
       params: { slug: 'tag1' },
     });
