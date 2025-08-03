@@ -12,6 +12,13 @@ This project leverages [Bun] as its runtime, so some of the scripts may look a l
 
 This project is intended to be deployed to a [Bun] process using docker / docker compose.
 
+## Git Hooks (Husky + lint-staged)
+
+This repo uses [Husky](https://typicode.github.io/husky) for Git hooks and [lint-staged](https://github.com/okonet/lint-staged) to run linters on pre-committed files.
+
+- **Pre-commit:** Runs strict linting and prettier.
+- **Pre-push:** Runs check and test.
+
 ## Works in progress
 
 - [ ] Testing

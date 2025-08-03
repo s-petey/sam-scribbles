@@ -2,5 +2,15 @@
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+bun.lock
+node_modules/**
 
-src/lib/ROUTES.ts
+drizzle/**
+.vscode/**
+.github/**
+
+build/**
+.svelte-kit/**
+
+static/site.webmanifest
+static/robots.txt
