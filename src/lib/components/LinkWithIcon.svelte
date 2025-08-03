@@ -9,11 +9,11 @@
 
 <span class="flex items-center gap-2">
   {#if link.link.includes('youtube.com')}
-    <SimpleIconsYoutube />
+    <SimpleIconsYoutube aria-label="YouTube" />
   {:else if link.link.includes('vimeo.com')}
-    <SimpleIconsVimeo />
+    <SimpleIconsVimeo aria-label="Vimeo" />
   {:else}
-    <LucideLink />
+    <LucideLink aria-label="External link" />
   {/if}
 
   <a
