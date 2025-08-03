@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { PageData } from './$types';
   import { goto } from '$app/navigation';
-  import { SvelteURLSearchParams } from 'svelte/reactivity';
-  import { page } from '$app/state';
   import { resolve } from '$app/paths';
+  import { page } from '$app/state';
   import LinkWithIcon from '$lib/components/LinkWithIcon.svelte';
+  import { SvelteURLSearchParams } from 'svelte/reactivity';
+  import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
 

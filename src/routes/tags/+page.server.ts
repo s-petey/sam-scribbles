@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db';
-import { postsToTags, linksToTags, type Link, type Post } from '$lib/server/db/schema';
-import { inArray } from 'drizzle-orm';
+import { linksToTags, postsToTags, type Link, type Post } from '$lib/server/db/schema';
 import type { ServerLoadEvent } from '@sveltejs/kit';
+import { inArray } from 'drizzle-orm';
 import { z } from 'zod';
 
 const routeQueryParams = z.object({
