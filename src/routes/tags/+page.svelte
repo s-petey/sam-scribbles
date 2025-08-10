@@ -3,7 +3,13 @@
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import LinkWithIcon from '$lib/components/LinkWithIcon.svelte';
+  import { Pagination } from '@skeletonlabs/skeleton-svelte';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
+  import LucideArrowLeft from '~icons/lucide/arrow-left';
+  import LucideArrowRight from '~icons/lucide/arrow-right';
+  import LucideChevronLeft from '~icons/lucide/chevron-left';
+  import LucideChevronRight from '~icons/lucide/chevron-right';
+  import LucideEllipsis from '~icons/lucide/ellipsis';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
@@ -112,95 +118,90 @@
       .pagination.totalLinks} links total)
   </div>
 
-  <h2 class="h2 mb-2">Posts</h2>
-  {#if data.posts.length > 0}
-    <ul class="mb-6">
-      {#each data.posts as post (post.slug)}
-        <li class="mb-4 rounded border p-2">
-          <a href={resolve('/posts/[slug]', { slug: post.slug })} class="text-lg font-bold">
-            {post.title}
-          </a>
-          <div class="text-secondary-500 text-sm">{post.preview}</div>
-
-          <ul class="mt-2 flex flex-wrap gap-2">
-            {#each post.tags as tag (tag)}
-              <li class="chip preset-outlined-surface-500">
-                <a
-                  href={resolve('/tags/[slug]', { slug: tag })}
-                  class="cursor-pointer"
-                  title="Show items by {tag}"
-                >
-                  {tag}
-                </a>
-              </li>
-            {/each}
-          </ul>
-        </li>
-      {/each}
-    </ul>
-  {:else}
-    <p class="text-warning-500">No posts found for selected tags.</p>
-  {/if}
-
-  <h2 class="h2 mb-2">Links</h2>
-  {#if data.links.length > 0}
-    <ul class="mb-6">
-      {#each data.links as link (link.shortId)}
-        <li class="mb-4 rounded border p-2">
-          <LinkWithIcon {link} />
-
-          <ul class="mt-2 flex flex-wrap gap-2">
-            {#each link.tags as tag (tag)}
-              <li class="chip preset-outlined-surface-500">
-                <a
-                  href={resolve('/tags/[slug]', { slug: tag })}
-                  class="cursor-pointer"
-                  title="Show items by {tag}"
-                >
-                  {tag}
-                </a>
-              </li>
-            {/each}
-          </ul>
-        </li>
-      {/each}
-    </ul>
-  {:else}
-    <p class="text-warning-500">No links found for selected tags.</p>
-  {/if}
+  <div class="table-wrap max-h-96">
+    <table class="table table-auto">
+      <thead>
+        <tr>
+          <th class="whitespace-nowrap">Type</th>
+          <th class="whitespace-nowrap">Title/Link</th>
+          <th class="whitespace-nowrap">Tags</th>
+          <th class="whitespace-nowrap">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each data.posts as post (post.slug)}
+          <tr class="hover:preset-tonal-primary">
+            <td>
+              <span class="chip preset-filled-primary-500">Post</span>
+            </td>
+            <td>
+              <a href={resolve('/posts/[slug]', { slug: post.slug })} class="anchor">
+                {post.title}
+              </a>
+              <div class="text-secondary-500 text-sm">{post.preview}</div>
+            </td>
+            <td>
+              <div class="flex flex-wrap gap-1">
+                {#each post.tags as tag (tag)}
+                  <span class="chip preset-outlined-surface-500 text-xs">
+                    <a href={resolve('/tags/[slug]', { slug: tag })} class="cursor-pointer">
+                      {tag}
+                    </a>
+                  </span>
+                {/each}
+              </div>
+            </td>
+            <td class="text-sm">
+              {new Date(post.createdAt).toLocaleDateString()}
+            </td>
+          </tr>
+        {/each}
+        {#each data.links as link (link.shortId)}
+          <tr class="hover:preset-tonal-primary">
+            <td>
+              <span class="chip preset-filled-secondary-500">Link</span>
+            </td>
+            <td>
+              <LinkWithIcon {link} />
+            </td>
+            <td>
+              <div class="flex flex-wrap gap-1">
+                {#each link.tags as tag (tag)}
+                  <span class="chip preset-outlined-surface-500 text-xs">
+                    <a href={resolve('/tags/[slug]', { slug: tag })} class="cursor-pointer">
+                      {tag}
+                    </a>
+                  </span>
+                {/each}
+              </div>
+            </td>
+            <td class="text-sm">
+              {new Date(link.createdAt).toLocaleDateString()}
+            </td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+  </div>
 
   <!-- Pagination Controls -->
   {#if data.pagination.totalPages > 1}
-    <div class="mt-6 flex items-center justify-center gap-2">
-      <button
-        class="btn preset-outlined-surface-500"
-        disabled={data.pagination.page <= 1}
-        onclick={() => goToPage(data.pagination.page - 1)}
+    <footer class="mt-6 flex justify-center">
+      <Pagination
+        data={[...data.posts, ...data.links]}
+        count={data.pagination.totalPosts + data.pagination.totalLinks}
+        page={data.pagination.page}
+        pageSize={data.pagination.limit}
+        onPageChange={(value) => {
+          goToPage(value.page);
+        }}
       >
-        Previous
-      </button>
-
-      {#each Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1) as pageNum (pageNum)}
-        {#if pageNum === data.pagination.page}
-          <button class="btn preset-filled-primary-500" disabled>
-            {pageNum}
-          </button>
-        {:else if Math.abs(pageNum - data.pagination.page) <= 2 || pageNum === 1 || pageNum === data.pagination.totalPages}
-          <button class="btn preset-outlined-surface-500" onclick={() => goToPage(pageNum)}>
-            {pageNum}
-          </button>
-        {:else if Math.abs(pageNum - data.pagination.page) === 3}
-          <span class="text-secondary-500">...</span>
-        {/if}
-      {/each}
-
-      <button
-        class="btn preset-outlined-surface-500"
-        disabled={data.pagination.page >= data.pagination.totalPages}
-        onclick={() => goToPage(data.pagination.page + 1)}
-      >
-        Next
-      </button>
-    </div>
+        {#snippet labelEllipsis()}<LucideEllipsis class="text-base" />{/snippet}
+        {#snippet labelNext()}<LucideArrowRight class="text-base" />{/snippet}
+        {#snippet labelPrevious()}<LucideArrowLeft class="text-base" />{/snippet}
+        {#snippet labelFirst()}<LucideChevronLeft class="text-base" />{/snippet}
+        {#snippet labelLast()}<LucideChevronRight class="text-base" />{/snippet}
+      </Pagination>
+    </footer>
   {/if}
 {/if}

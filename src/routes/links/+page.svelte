@@ -2,9 +2,15 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import { SvelteURLSearchParams } from 'svelte/reactivity';
-  import type { PageData } from './$types';
   import LinkWithIcon from '$lib/components/LinkWithIcon.svelte';
+  import { Pagination } from '@skeletonlabs/skeleton-svelte';
+  import { SvelteURLSearchParams } from 'svelte/reactivity';
+  import LucideArrowLeft from '~icons/lucide/arrow-left';
+  import LucideArrowRight from '~icons/lucide/arrow-right';
+  import LucideChevronLeft from '~icons/lucide/chevron-left';
+  import LucideChevronRight from '~icons/lucide/chevron-right';
+  import LucideEllipsis from '~icons/lucide/ellipsis';
+  import type { PageData } from './$types';
   // import LucideBookOpen from '~icons/lucide/book-open';
 
   let { data }: { data: PageData } = $props();
@@ -132,53 +138,58 @@
   Showing {data.links.length} of {data.pagination.totalLinks} links
 </div>
 
-<ul class="mb-6 space-y-2">
-  {#each data.links as link (link.shortId)}
-    <li>
-      <LinkWithIcon {link} />
-
-      <ul class="mt-2 flex flex-wrap gap-2">
-        {#each link.tags as tag (tag.tag)}
-          <li class="chip preset-outlined-surface-500">
-            {tag.tag}
-          </li>
-        {/each}
-      </ul>
-    </li>
-  {/each}
-</ul>
+<div class="table-wrap max-h-96">
+  <table class="table table-auto">
+    <thead>
+      <tr>
+        <th class="whitespace-nowrap">Link</th>
+        <th class="whitespace-nowrap">Tags</th>
+        <th class="whitespace-nowrap">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each data.links as link (link.shortId)}
+        <tr class="hover:preset-tonal-primary">
+          <td>
+            <LinkWithIcon {link} />
+          </td>
+          <td>
+            <div class="flex flex-wrap gap-1">
+              {#each link.tags as tag (tag.tag)}
+                <a href={resolve('/tags/[slug]', { slug: tag.tag })} class="cursor-pointer">
+                  <span class="chip preset-outlined-surface-500 text-xs">
+                    {tag.tag}
+                  </span>
+                </a>
+              {/each}
+            </div>
+          </td>
+          <td class="text-sm">
+            {new Date(link.createdAt).toLocaleDateString()}
+          </td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+</div>
 
 <!-- Pagination Controls -->
 {#if data.pagination.totalPages > 1}
-  <div class="mt-6 flex items-center justify-center gap-2">
-    <button
-      class="btn preset-outlined-surface-500"
-      disabled={data.pagination.page <= 1}
-      onclick={() => goToPage(data.pagination.page - 1)}
+  <footer class="mt-6 flex justify-center">
+    <Pagination
+      data={data.links}
+      count={data.pagination.totalLinks}
+      page={data.pagination.page}
+      pageSize={data.pagination.limit}
+      onPageChange={(value) => {
+        goToPage(value.page);
+      }}
     >
-      Previous
-    </button>
-
-    {#each Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1) as pageNum (pageNum)}
-      {#if pageNum === data.pagination.page}
-        <button class="btn preset-filled-primary-500" disabled>
-          {pageNum}
-        </button>
-      {:else if Math.abs(pageNum - data.pagination.page) <= 2 || pageNum === 1 || pageNum === data.pagination.totalPages}
-        <button class="btn preset-outlined-surface-500" onclick={() => goToPage(pageNum)}>
-          {pageNum}
-        </button>
-      {:else if Math.abs(pageNum - data.pagination.page) === 3}
-        <span class="text-secondary-500">...</span>
-      {/if}
-    {/each}
-
-    <button
-      class="btn preset-outlined-surface-500"
-      disabled={data.pagination.page >= data.pagination.totalPages}
-      onclick={() => goToPage(data.pagination.page + 1)}
-    >
-      Next
-    </button>
-  </div>
+      {#snippet labelEllipsis()}<LucideEllipsis class="text-base" />{/snippet}
+      {#snippet labelNext()}<LucideArrowRight class="text-base" />{/snippet}
+      {#snippet labelPrevious()}<LucideArrowLeft class="text-base" />{/snippet}
+      {#snippet labelFirst()}<LucideChevronLeft class="text-base" />{/snippet}
+      {#snippet labelLast()}<LucideChevronRight class="text-base" />{/snippet}
+    </Pagination>
+  </footer>
 {/if}
