@@ -15,6 +15,36 @@
   const sortedTags = $derived(
     data.tags.slice().sort((a, b) => (tags.includes(a) ? -1 : 1) - (tags.includes(b) ? -1 : 1)),
   );
+
+  function updateUrl(newPage?: number) {
+    const params = new SvelteURLSearchParams(page.url.searchParams);
+
+    if (tags.length > 0) {
+      params.set('tags', tags.join(','));
+    } else {
+      params.delete('tags');
+    }
+
+    if (searchQuery.trim().length > 0) {
+      params.set('q', searchQuery.trim());
+    } else {
+      params.delete('q');
+    }
+
+    if (newPage && newPage > 1) {
+      params.set('page', newPage.toString());
+    } else {
+      params.delete('page');
+    }
+
+    const queryString = params.toString();
+    const url = queryString ? `?${queryString}` : resolve('/links');
+    goto(url, { keepFocus: true });
+  }
+
+  function goToPage(pageNum: number) {
+    updateUrl(pageNum);
+  }
 </script>
 
 <svelte:head>
@@ -30,29 +60,7 @@
   class="grid grid-cols-1 gap-4 md:grid-cols-7"
   onsubmit={(e) => {
     e.preventDefault();
-
-    let hasParams = false;
-    const params = new SvelteURLSearchParams(page.url.searchParams);
-
-    if (tags.length > 0) {
-      params.set('tags', tags.join(','));
-      hasParams = true;
-    } else {
-      params.delete('tags');
-    }
-
-    if (searchQuery.trim().length > 0) {
-      params.set('q', searchQuery.trim());
-      hasParams = true;
-    } else {
-      params.delete('q');
-    }
-
-    if (hasParams) {
-      goto(`?${params.toString()}`, { keepFocus: true });
-    } else {
-      goto(resolve('/links'), { keepFocus: true });
-    }
+    updateUrl(1);
   }}
 >
   <!-- Search / filter -->
@@ -120,7 +128,11 @@
   </div>
 </form>
 
-<ul class="space-y-2">
+<div class="text-secondary-500 mb-4 text-sm">
+  Showing {data.links.length} of {data.pagination.totalLinks} links
+</div>
+
+<ul class="mb-6 space-y-2">
   {#each data.links as link (link.shortId)}
     <li>
       <LinkWithIcon {link} />
@@ -135,3 +147,38 @@
     </li>
   {/each}
 </ul>
+
+<!-- Pagination Controls -->
+{#if data.pagination.totalPages > 1}
+  <div class="mt-6 flex items-center justify-center gap-2">
+    <button
+      class="btn preset-outlined-surface-500"
+      disabled={data.pagination.page <= 1}
+      onclick={() => goToPage(data.pagination.page - 1)}
+    >
+      Previous
+    </button>
+
+    {#each Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1) as pageNum (pageNum)}
+      {#if pageNum === data.pagination.page}
+        <button class="btn preset-filled-primary-500" disabled>
+          {pageNum}
+        </button>
+      {:else if Math.abs(pageNum - data.pagination.page) <= 2 || pageNum === 1 || pageNum === data.pagination.totalPages}
+        <button class="btn preset-outlined-surface-500" onclick={() => goToPage(pageNum)}>
+          {pageNum}
+        </button>
+      {:else if Math.abs(pageNum - data.pagination.page) === 3}
+        <span class="text-secondary-500">...</span>
+      {/if}
+    {/each}
+
+    <button
+      class="btn preset-outlined-surface-500"
+      disabled={data.pagination.page >= data.pagination.totalPages}
+      onclick={() => goToPage(data.pagination.page + 1)}
+    >
+      Next
+    </button>
+  </div>
+{/if}
