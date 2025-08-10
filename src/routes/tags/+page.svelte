@@ -13,6 +13,30 @@
   const sortedTags = $derived(
     data.tags.slice().sort((a, b) => (tags.includes(a) ? -1 : 1) - (tags.includes(b) ? -1 : 1)),
   );
+
+  function updateUrl(newPage?: number) {
+    const params = new SvelteURLSearchParams(page.url.searchParams);
+
+    if (tags.length > 0) {
+      params.set('tags', tags.join(','));
+    } else {
+      params.delete('tags');
+    }
+
+    if (newPage && newPage > 1) {
+      params.set('page', newPage.toString());
+    } else {
+      params.delete('page');
+    }
+
+    const queryString = params.toString();
+    const url = queryString ? `?${queryString}` : resolve('/tags');
+    goto(url, { keepFocus: true });
+  }
+
+  function goToPage(pageNum: number) {
+    updateUrl(pageNum);
+  }
 </script>
 
 <svelte:head>
@@ -26,23 +50,7 @@
   class="flex flex-row content-evenly gap-4"
   onsubmit={(e) => {
     e.preventDefault();
-
-    let hasParams = false;
-    const params = new SvelteURLSearchParams(page.url.searchParams);
-    if (tags.length > 0) {
-      params.set('tags', tags.join(','));
-      hasParams = true;
-    } else {
-      params.delete('tags');
-    }
-
-    console.log('params', hasParams, params.toString());
-
-    if (hasParams) {
-      goto(`?${params.toString()}`, { keepFocus: true });
-    } else {
-      goto(resolve('/tags'), { keepFocus: true });
-    }
+    updateUrl(1);
   }}
 >
   <div class="flex items-center md:col-span-2">
@@ -99,6 +107,11 @@
 {#if data.posts.length === 0 && data.links.length === 0}
   <p class="text-warning-500">Select one or more tags to filter posts and links.</p>
 {:else}
+  <div class="text-secondary-500 mb-4 text-sm">
+    Showing {data.posts.length + data.links.length} items ({data.pagination.totalPosts} posts, {data
+      .pagination.totalLinks} links total)
+  </div>
+
   <h2 class="h2 mb-2">Posts</h2>
   {#if data.posts.length > 0}
     <ul class="mb-6">
@@ -131,7 +144,7 @@
 
   <h2 class="h2 mb-2">Links</h2>
   {#if data.links.length > 0}
-    <ul>
+    <ul class="mb-6">
       {#each data.links as link (link.shortId)}
         <li class="mb-4 rounded border p-2">
           <LinkWithIcon {link} />
@@ -154,5 +167,40 @@
     </ul>
   {:else}
     <p class="text-warning-500">No links found for selected tags.</p>
+  {/if}
+
+  <!-- Pagination Controls -->
+  {#if data.pagination.totalPages > 1}
+    <div class="mt-6 flex items-center justify-center gap-2">
+      <button
+        class="btn preset-outlined-surface-500"
+        disabled={data.pagination.page <= 1}
+        onclick={() => goToPage(data.pagination.page - 1)}
+      >
+        Previous
+      </button>
+
+      {#each Array.from({ length: data.pagination.totalPages }, (_, i) => i + 1) as pageNum (pageNum)}
+        {#if pageNum === data.pagination.page}
+          <button class="btn preset-filled-primary-500" disabled>
+            {pageNum}
+          </button>
+        {:else if Math.abs(pageNum - data.pagination.page) <= 2 || pageNum === 1 || pageNum === data.pagination.totalPages}
+          <button class="btn preset-outlined-surface-500" onclick={() => goToPage(pageNum)}>
+            {pageNum}
+          </button>
+        {:else if Math.abs(pageNum - data.pagination.page) === 3}
+          <span class="text-secondary-500">...</span>
+        {/if}
+      {/each}
+
+      <button
+        class="btn preset-outlined-surface-500"
+        disabled={data.pagination.page >= data.pagination.totalPages}
+        onclick={() => goToPage(data.pagination.page + 1)}
+      >
+        Next
+      </button>
+    </div>
   {/if}
 {/if}
