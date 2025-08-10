@@ -8,6 +8,11 @@ export const load: PageLoad = async ({
     slug,
     form,
     post: dbPost,
+    relatedPostsForm,
+    relatedPosts,
+    searchQuery,
+    availablePosts,
+    pagination,
   },
 }) => {
   if (!form || !dbPost) {
@@ -18,7 +23,17 @@ export const load: PageLoad = async ({
     const post = await import(`../../../../../posts/${slug}.md`);
     const metadata = postMetadataSchema.parse(post.metadata);
 
-    return { Content: post.default, meta: { ...metadata, slug }, form, post: dbPost };
+    return {
+      Content: post.default,
+      meta: { ...metadata, slug },
+      form,
+      post: dbPost,
+      relatedPostsForm,
+      relatedPosts,
+      searchQuery,
+      availablePosts,
+      pagination,
+    };
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
   } catch (err) {
     error(404, {

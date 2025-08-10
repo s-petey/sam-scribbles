@@ -1,4 +1,6 @@
 import { db } from '$lib/server/db';
+import { post, postsToRelatedPosts } from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ params, locals }) => {
@@ -8,22 +10,38 @@ export const load = (async ({ params, locals }) => {
     return { status: 404, error: `Page not found by: ${slug}` };
   }
 
-  // TODO: Get related posts / info about this post?
-  const post = await db.query.post.findFirst({
+  const currentPost = await db.query.post.findFirst({
     where: (table, { eq }) => eq(table.slug, slug),
     columns: {
+      id: true,
       slug: true,
       isPrivate: true,
     },
   });
 
-  if (!post) {
+  if (!currentPost) {
     throw new Error(`Post not found by slug: ${slug}`);
   }
 
-  if (post.isPrivate && locals.session?.user?.role !== 'admin') {
+  if (currentPost.isPrivate && locals.session?.user?.role !== 'admin') {
     return { status: 403, error: 'We are still prepping this one, sorry for hiding it away.' };
   }
 
-  return { slug };
+  // Get related posts
+  const relatedPosts = await db
+    .select({
+      id: post.id,
+      slug: post.slug,
+      title: post.title,
+      preview: post.preview,
+      readingTimeSeconds: post.readingTimeSeconds,
+      readingTimeWords: post.readingTimeWords,
+    })
+    .from(postsToRelatedPosts)
+    .innerJoin(post, eq(postsToRelatedPosts.relatedPostId, post.id))
+    .where(eq(postsToRelatedPosts.postId, currentPost.id))
+    // TODO: Order by something?
+    .limit(5); // Limit to 5 related posts
+
+  return { slug, relatedPosts };
 }) satisfies PageServerLoad;
