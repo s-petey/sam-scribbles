@@ -32,6 +32,12 @@ vi.mock('$lib/server/db', () => ({
         findMany: vi.fn().mockResolvedValue([{ name: 'tag1' }, { name: 'tag2' }]),
       },
     },
+    $count: vi.fn().mockResolvedValue(10),
+    select: vi.fn(() => ({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue([{ id: '1' }, { id: '2' }]),
+      }),
+    })),
   },
 }));
 
@@ -45,7 +51,7 @@ function getFakeUrl(q: string, tags: string[]) {
 
 describe('/links/+page.svelte', () => {
   it('renders the page heading', async () => {
-    // @ts-expect-error Partial data props
+    // @ts-expect-error Partial event object for testing
     const props = await load({
       url: getFakeUrl('', []),
     });
@@ -62,7 +68,7 @@ describe('/links/+page.svelte', () => {
   });
 
   it('renders links and tags', async () => {
-    // @ts-expect-error Partial data props
+    // @ts-expect-error Partial event object for testing
     const props = await load({
       url: getFakeUrl('', []),
     });

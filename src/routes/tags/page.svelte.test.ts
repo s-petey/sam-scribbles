@@ -32,22 +32,29 @@ vi.mock('$lib/server/db', () => ({
         findMany: vi.fn().mockResolvedValue([{ name: 'tag1' }, { name: 'tag2' }, { name: 'tag3' }]),
       },
     },
+    $count: vi.fn().mockResolvedValue(5),
+    select: vi.fn(() => ({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue([{ id: '1' }, { id: '2' }]),
+      }),
+    })),
   },
 }));
 
 describe('/tags/+page.svelte', () => {
   test('renders the page heading', async () => {
-    // @ts-expect-error Partial data props
+    // @ts-expect-error Partial event object for testing
     const props = await load({
       url: new URL('http://localhost/tags?tags=tag1,tag2,tag3'),
     });
     render(Page, {
       props: {
-        // @ts-expect-error Partial data props
+        // @ts-expect-error Partial event object for testing
         data: {
           links: props.links,
           posts: props.posts,
           tags: props.tags,
+          pagination: props.pagination,
         },
       },
     });
@@ -56,17 +63,18 @@ describe('/tags/+page.svelte', () => {
   });
 
   test('renders tag chips, posts, and links', async () => {
-    // @ts-expect-error Partial data props
+    // @ts-expect-error Partial event object for testing
     const props = await load({
       url: new URL('http://localhost/tags?tags=tag1,tag2,tag3'),
     });
     render(Page, {
       props: {
-        // @ts-expect-error Partial data props
+        // @ts-expect-error Partial event object for testing
         data: {
           links: props.links,
           posts: props.posts,
           tags: props.tags,
+          pagination: props.pagination,
         },
       },
     });

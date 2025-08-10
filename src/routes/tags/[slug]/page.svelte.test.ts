@@ -29,17 +29,25 @@ vi.mock('$lib/server/db', () => ({
         ]),
       },
     },
+    $count: vi.fn().mockResolvedValue(5),
+    select: vi.fn().mockReturnValue({
+      from: vi.fn().mockReturnValue({
+        where: vi.fn().mockResolvedValue([{ id: '1' }, { id: '2' }]),
+      }),
+    }),
   },
 }));
 
 describe('/tags/[slug]/+page.svelte', () => {
   test('renders the tag heading', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore Partial data props
-    const props = await load({ params: { slug: 'tag1' } });
+    // @ts-expect-error Partial event object for testing
+    const props = await load({
+      params: { slug: 'tag1' },
+      url: new URL('http://localhost/tags/tag1'),
+    });
     render(Page, {
       props: {
-        // @ts-expect-error Partial data props
+        // @ts-expect-error Partial event object for testing
         data: props,
       },
     });
@@ -48,12 +56,14 @@ describe('/tags/[slug]/+page.svelte', () => {
   });
 
   test('renders posts and links for the tag', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore Partial data props
-    const props = await load({ params: { slug: 'tag1' } });
+    // @ts-expect-error Partial event object for testing
+    const props = await load({
+      params: { slug: 'tag1' },
+      url: new URL('http://localhost/tags/tag1'),
+    });
     render(Page, {
       props: {
-        // @ts-expect-error Partial data props
+        // @ts-expect-error Partial event object for testing
         data: props,
       },
     });
@@ -62,14 +72,14 @@ describe('/tags/[slug]/+page.svelte', () => {
   });
 
   test('renders tag chips for posts and links', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore Partial data props
+    // @ts-expect-error Partial event object for testing
     const props = await load({
       params: { slug: 'tag1' },
+      url: new URL('http://localhost/tags/tag1'),
     });
     render(Page, {
       props: {
-        // @ts-expect-error Partial data props
+        // @ts-expect-error Partial event object for testing
         data: props,
       },
     });
