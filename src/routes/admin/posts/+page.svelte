@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { admin } from '$lib/siteLinks';
   import SquareX from '~icons/lucide/square-x';
   import { superForm } from 'sveltekit-superforms';
   import { resolve } from '$app/paths';
@@ -44,7 +43,7 @@
   {#each data.posts as post (post.slug)}
     <span class="btn-group preset-outlined-surface-200-800 grid grid-cols-4 p-2">
       <a
-        href={resolve(`${admin['Admin Posts'].href}/${post.slug}`)}
+        href={resolve('/admin/posts/[slug]', { slug: post.slug })}
         class="btn preset-tonal-secondary hover:preset-outlined-secondary-500 col-span-3 justify-start truncate"
       >
         {post.title}
