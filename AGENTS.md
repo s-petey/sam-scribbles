@@ -2,13 +2,16 @@
 
 ## Build/Test/Lint Commands
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run check` - Type check with svelte-check
-- `npm run test` - Run all tests with Vitest
-- `npm run test:unit` - Run tests in watch mode
-- `npm run lint` - ESLint + Prettier check
-- `npm run fix` - Auto-fix ESLint + Prettier issues
+- `bun run dev` - Start development server
+- `bun run build` - Build for production
+- `bun run check` - Type check with svelte-check
+- `bun run test` - Run all tests with Vitest
+- `bun run test:watch` - Run tests in watch mode
+- `bun run test:server` - Run server-only tests
+- `bun run test:client` - Run client-only tests
+- `bun run test:ssr` - Run SSR tests
+- `bun run lint` - ESLint + Prettier check
+- `bun run fix` - Auto-fix ESLint + Prettier issues
 
 ## Code Style
 
