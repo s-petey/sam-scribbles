@@ -1,12 +1,16 @@
 import { db } from '$lib/server/db';
-import { type Link, linksToTags, type Post, postsToTags } from '$lib/server/db/schema';
-import { inArray, eq } from 'drizzle-orm';
-import { z } from 'zod';
+import { linksToTags, postsToTags, type Link, type Post } from '$lib/server/db/schema';
 import type { ServerLoadEvent } from '@sveltejs/kit';
+import { inArray } from 'drizzle-orm';
+import { z } from 'zod';
 
 const routeQueryParams = z.object({
   page: z.coerce.number().optional().default(1),
   limit: z.coerce.number().optional().default(25),
+  tags: z
+    .string()
+    .transform((tags) => tags.split(','))
+    .optional(),
 });
 
 type PostSummary = Pick<
@@ -20,27 +24,28 @@ type LinkSummary = Pick<Link, 'shortId' | 'link' | 'createdAt'> & {
   tags: string[];
 };
 
-export const load = async ({ params, url }: ServerLoadEvent) => {
-  const { slug } = params;
-
-  if (typeof slug !== 'string' || slug.length === 0) {
-    throw new Error('Invalid slug parameter');
-  }
-
+export const load = async ({ url }: ServerLoadEvent) => {
   const searchParams = Object.fromEntries(url.searchParams.entries());
-  const { page, limit } = routeQueryParams.parse(searchParams);
+  const { page, limit, tags: selectedTags } = routeQueryParams.parse(searchParams);
+
+  // Get all tags for initial render
+  const rawTags = await db.query.tag.findMany({ orderBy: (tag, { asc }) => asc(tag.name) });
+  const tags = rawTags.map((tag) => tag.name);
 
   let posts: PostSummary[] = [];
   let links: LinkSummary[] = [];
   let totalPosts = 0;
   let totalLinks = 0;
 
-  if (typeof slug === 'string' && slug.length > 0) {
+  if (Array.isArray(selectedTags) && selectedTags.length > 0) {
     const postsQuery = db.query.post.findMany({
-      where: (post, { eq }) =>
+      where: (post) =>
         inArray(
           post.id,
-          db.select({ id: postsToTags.postId }).from(postsToTags).where(eq(postsToTags.tag, slug)),
+          db
+            .select({ id: postsToTags.postId })
+            .from(postsToTags)
+            .where(inArray(postsToTags.tag, selectedTags)),
         ),
       columns: {
         createdAt: true,
@@ -60,11 +65,19 @@ export const load = async ({ params, url }: ServerLoadEvent) => {
     });
 
     const linksQuery = db.query.link.findMany({
-      where: (link, { eq }) =>
+      where: (link) =>
         inArray(
           link.shortId,
-          db.select({ id: linksToTags.linkId }).from(linksToTags).where(eq(linksToTags.tag, slug)),
+          db
+            .select({ id: linksToTags.linkId })
+            .from(linksToTags)
+            .where(inArray(linksToTags.tag, selectedTags)),
         ),
+      columns: {
+        shortId: true,
+        link: true,
+        createdAt: true,
+      },
       with: {
         tags: {
           columns: { tag: true },
@@ -77,11 +90,17 @@ export const load = async ({ params, url }: ServerLoadEvent) => {
 
     // Count total items for pagination
     const totalPostsQuery = db.$count(
-      db.select({ id: postsToTags.postId }).from(postsToTags).where(eq(postsToTags.tag, slug)),
+      db
+        .select({ id: postsToTags.postId })
+        .from(postsToTags)
+        .where(inArray(postsToTags.tag, selectedTags)),
     );
 
     const totalLinksQuery = db.$count(
-      db.select({ id: linksToTags.linkId }).from(linksToTags).where(eq(linksToTags.tag, slug)),
+      db
+        .select({ id: linksToTags.linkId })
+        .from(linksToTags)
+        .where(inArray(linksToTags.tag, selectedTags)),
     );
 
     const [rawPosts, rawLinks, postsCount, linksCount] = await Promise.all([
@@ -115,7 +134,7 @@ export const load = async ({ params, url }: ServerLoadEvent) => {
   const totalPages = Math.ceil((totalPosts + totalLinks) / limit);
 
   return {
-    slug,
+    tags,
     posts,
     links,
     pagination: {

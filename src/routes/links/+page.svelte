@@ -2,10 +2,14 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
+  import LinkWithIcon from '$lib/components/LinkWithIcon.svelte';
+  import { Pagination } from '@skeletonlabs/skeleton-svelte';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
-  import LucideLink from '~icons/lucide/link';
-  import SimpleIconsVimeo from '~icons/simple-icons/vimeo';
-  import SimpleIconsYoutube from '~icons/simple-icons/youtube';
+  import LucideArrowLeft from '~icons/lucide/arrow-left';
+  import LucideArrowRight from '~icons/lucide/arrow-right';
+  import LucideChevronLeft from '~icons/lucide/chevron-left';
+  import LucideChevronRight from '~icons/lucide/chevron-right';
+  import LucideEllipsis from '~icons/lucide/ellipsis';
   import type { PageData } from './$types';
   // import LucideBookOpen from '~icons/lucide/book-open';
 
@@ -17,6 +21,36 @@
   const sortedTags = $derived(
     data.tags.slice().sort((a, b) => (tags.includes(a) ? -1 : 1) - (tags.includes(b) ? -1 : 1)),
   );
+
+  function updateUrl(newPage?: number) {
+    const params = new SvelteURLSearchParams(page.url.searchParams);
+
+    if (tags.length > 0) {
+      params.set('tags', tags.join(','));
+    } else {
+      params.delete('tags');
+    }
+
+    if (searchQuery.trim().length > 0) {
+      params.set('q', searchQuery.trim());
+    } else {
+      params.delete('q');
+    }
+
+    if (newPage && newPage > 1) {
+      params.set('page', newPage.toString());
+    } else {
+      params.delete('page');
+    }
+
+    const queryString = params.toString();
+    const url = queryString ? `?${queryString}` : resolve('/links');
+    goto(url, { keepFocus: true });
+  }
+
+  function goToPage(pageNum: number) {
+    updateUrl(pageNum);
+  }
 </script>
 
 <svelte:head>
@@ -32,29 +66,7 @@
   class="grid grid-cols-1 gap-4 md:grid-cols-7"
   onsubmit={(e) => {
     e.preventDefault();
-
-    let hasParams = false;
-    const params = new SvelteURLSearchParams(page.url.searchParams);
-
-    if (tags.length > 0) {
-      params.set('tags', tags.join(','));
-      hasParams = true;
-    } else {
-      params.delete('tags');
-    }
-
-    if (searchQuery.trim().length > 0) {
-      params.set('q', searchQuery.trim());
-      hasParams = true;
-    } else {
-      params.delete('q');
-    }
-
-    if (hasParams) {
-      goto(`?${params.toString()}`, { keepFocus: true });
-    } else {
-      goto(resolve('/links'), { keepFocus: true });
-    }
+    updateUrl(1);
   }}
 >
   <!-- Search / filter -->
@@ -122,43 +134,62 @@
   </div>
 </form>
 
-<ul class="space-y-2">
-  {#each data.links as link (link.shortId)}
-    <li>
-      <span class="flex items-center gap-2">
-        {#if link.link.includes('youtube.com')}
-          <SimpleIconsYoutube />
-        {:else if link.link.includes('vimeo.com')}
-          <SimpleIconsVimeo />
-        {:else}
-          <LucideLink />
-        {/if}
+<div class="text-secondary-500 mb-4 text-sm">
+  Showing {data.links.length} of {data.pagination.totalLinks} links
+</div>
 
-        <a
-          class="anchor"
-          href={link.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          title="External link"
-        >
-          <span>
-            {link.link}
-          </span>
-        </a>
-        <!-- {#if hasRelatedPost}
-        <a class="anchor" href="link_to_related_post" title="Sam's related post">
-          <LucideBookOpen />
-        </a>
-        {/if} -->
-      </span>
+<div class="table-wrap max-h-96">
+  <table class="table table-auto">
+    <thead>
+      <tr>
+        <th class="whitespace-nowrap">Link</th>
+        <th class="whitespace-nowrap">Tags</th>
+        <th class="whitespace-nowrap">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {#each data.links as link (link.shortId)}
+        <tr class="hover:preset-tonal-primary">
+          <td>
+            <LinkWithIcon {link} />
+          </td>
+          <td>
+            <div class="flex flex-wrap gap-1">
+              {#each link.tags as tag (tag.tag)}
+                <a href={resolve('/tags/[slug]', { slug: tag.tag })} class="cursor-pointer">
+                  <span class="chip preset-outlined-surface-500 text-xs">
+                    {tag.tag}
+                  </span>
+                </a>
+              {/each}
+            </div>
+          </td>
+          <td class="text-sm">
+            {new Date(link.createdAt).toLocaleDateString()}
+          </td>
+        </tr>
+      {/each}
+    </tbody>
+  </table>
+</div>
 
-      <ul class="mt-2 flex flex-wrap gap-2">
-        {#each link.tags as tag (tag.tag)}
-          <li class="chip preset-outlined-surface-500">
-            {tag.tag}
-          </li>
-        {/each}
-      </ul>
-    </li>
-  {/each}
-</ul>
+<!-- Pagination Controls -->
+{#if data.pagination.totalPages > 1}
+  <footer class="mt-6 flex justify-center">
+    <Pagination
+      data={data.links}
+      count={data.pagination.totalLinks}
+      page={data.pagination.page}
+      pageSize={data.pagination.limit}
+      onPageChange={(value) => {
+        goToPage(value.page);
+      }}
+    >
+      {#snippet labelEllipsis()}<LucideEllipsis class="text-base" />{/snippet}
+      {#snippet labelNext()}<LucideArrowRight class="text-base" />{/snippet}
+      {#snippet labelPrevious()}<LucideArrowLeft class="text-base" />{/snippet}
+      {#snippet labelFirst()}<LucideChevronLeft class="text-base" />{/snippet}
+      {#snippet labelLast()}<LucideChevronRight class="text-base" />{/snippet}
+    </Pagination>
+  </footer>
+{/if}
