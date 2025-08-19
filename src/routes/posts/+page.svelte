@@ -7,10 +7,12 @@
 
   let { data } = $props();
 
+  // TODO: FIXME: Double check this logic... (last 31 days)
   function differenceInDays(date: Date) {
     const luxonDate = DateTime.fromJSDate(date);
+    const daysDiff = luxonDate.diffNow('days').days;
 
-    return luxonDate.diffNow('days').days;
+    return daysDiff >= -31 && daysDiff < 0;
   }
 
   let tags = $state<string[]>(page.url.searchParams.get('tags')?.split(',').filter(Boolean) ?? []);
@@ -123,7 +125,7 @@
 </form>
 
 <div class="grid grid-cols-1 gap-4">
-  {#each data.posts as post (post.slug)}
+  {#each data.posts as post, idx (post.slug)}
     <div class="group relative flex h-full w-full">
       <div
         class="rounded-box from-primary-500 to-tertiary-500 group-hover:from-tertiary-500 group-hover:to-primary-500 absolute -inset-0 bg-linear-to-r blur-xs"
@@ -137,13 +139,16 @@
               <h2 class="pt-5 pb-1 text-3xl font-black">
                 {post.title}
               </h2>
-              <div class="mb-4 flex items-center gap-2 text-sm font-bold uppercase">
+              <div
+                class="mb-4 flex items-center gap-2 text-sm font-bold uppercase"
+                data-testid="post_time_{idx}"
+              >
                 <time> {DateTime.fromJSDate(post.createdAt).toLocaleString()}</time>
                 &bull;
                 <span>
                   {Duration.fromObject({ seconds: post.readingTimeSeconds }).rescale().toHuman({})}
                 </span>
-                {#if differenceInDays(post.createdAt) < 31}
+                {#if differenceInDays(post.createdAt)}
                   &bull;
                   <span class="badge preset-filled-secondary-500"> new </span>
                 {/if}

@@ -12,9 +12,11 @@
   } = data;
 
   const dateTime = DateTime.fromJSDate(date);
+
   if (!dateTime.isValid) {
     throw new Error('Invalid date');
   }
+  const daysDiff = dateTime.diffNow('days').days;
 
   const dateIso = dateTime.toISO() ?? '';
 </script>
@@ -64,9 +66,9 @@
         </time>
         <span>&bull;</span>
         <span>{reading_time.text}</span>
-        {#if dateTime.diffNow('days').days < 31}
+        {#if daysDiff >= -31 && daysDiff <= 0}
           <span>&bull;</span>
-          <span class="text-primary-800 font-bold">NEW</span>
+          <span data-testid="new_badge" class="text-primary-800 font-bold">NEW</span>
         {/if}
       </div>
 

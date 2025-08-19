@@ -11,7 +11,7 @@ vi.mock('$lib/server/db', () => ({
       post: {
         findMany: vi.fn().mockResolvedValue([
           {
-            createdAt: new Date(),
+            createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago (recent)
             slug: 'test-post-1',
             title: 'Test Post 1',
             readingTimeSeconds: 120,
@@ -20,7 +20,7 @@ vi.mock('$lib/server/db', () => ({
             tags: [],
           },
           {
-            createdAt: new Date(),
+            createdAt: new Date('2024-01-01'),
             slug: 'test-post-2',
             title: 'Test Post 2',
             readingTimeSeconds: 150,
@@ -75,7 +75,6 @@ describe('/links/+page.svelte', () => {
     );
 
     render(Page, {
-      target: document.body,
       props: {
         // @ts-expect-error Partial data props
         data: props,
@@ -91,5 +90,25 @@ describe('/links/+page.svelte', () => {
     await expect(post2).toBeInTheDocument();
     await expect(tag1).toBeInTheDocument();
     await expect(tag2).toBeInTheDocument();
+  });
+
+  it('shows NEW or not for given post', async () => {
+    const props = await load(
+      // @ts-expect-error Partial data props
+      { url: getFakeUrl('', []) },
+    );
+
+    render(Page, {
+      props: {
+        // @ts-expect-error Partial data props
+        data: props,
+      },
+    });
+
+    const newBadge = page.getByTestId('post_time_0');
+    await expect.element(newBadge).toBeInTheDocument();
+
+    const oldBadge = page.getByTestId('post_time_1').getByText('new');
+    await expect.element(oldBadge).not.toBeInTheDocument();
   });
 });
