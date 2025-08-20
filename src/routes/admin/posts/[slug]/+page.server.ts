@@ -101,13 +101,24 @@ export const load = (async ({ params, url }) => {
   // Set current related post IDs in the form
   relatedPostsForm.data.relatedPostIds = relatedPostIds;
 
+  const combinedPosts = new Set<(typeof availablePosts)[0]>();
+
+  for (const post of availablePosts) {
+    combinedPosts.add(post);
+  }
+
+  for (const post of relatedPostsQuery) {
+    combinedPosts.add(post);
+  }
+
+  const combinedPostsArray = Array.from(combinedPosts);
+
   return {
     slug,
     post: currentPost,
     form,
     relatedPostsForm,
-    relatedPosts: relatedPostsQuery,
-    availablePosts,
+    combinedPosts: combinedPostsArray,
     pagination: {
       page,
       totalPages,

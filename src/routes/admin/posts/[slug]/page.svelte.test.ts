@@ -4,6 +4,7 @@ import { render } from 'vitest-browser-svelte';
 import Page from './+page.svelte';
 import { load } from './+page.server';
 import type { Post } from '$lib/server/db/schema';
+import type { PostMetadata } from '$lib/zodSchema';
 
 // Mock the post import
 vi.mock('../../../../posts/test-post.md', () => ({
@@ -14,9 +15,14 @@ vi.mock('../../../../posts/test-post.md', () => ({
     tags: ['test', 'vitest'],
     preview: 'This is a test post preview',
     previewHtml: '<p>This is a test post preview</p>',
-    reading_time: { text: '5 min read', time: 300000, words: 1000 },
+    reading_time: {
+      text: '5 min read',
+      time: 300000,
+      words: 1000,
+      minutes: 5,
+    },
     isPrivate: false,
-  },
+  } satisfies Partial<PostMetadata>,
 }));
 
 const mockAvailablePosts = [
@@ -32,38 +38,48 @@ const mockAvailablePosts = [
     title: 'Available Post 2',
     readingTimeSeconds: 200,
   },
-];
+] satisfies Partial<Post>[];
 
 const { mockDb } = vi.hoisted(() => {
-  // Mock db.select calls with different return patterns
-  const createSelectChain = (mockResult: unknown, isCount = false) => ({
-    from: vi.fn(() => ({
-      innerJoin: vi.fn(() => ({
-        where: vi.fn().mockResolvedValue(mockResult),
-      })),
-      where: isCount
-        ? vi.fn().mockResolvedValue(mockResult)
-        : vi.fn(() => ({
-            orderBy: vi.fn(() => ({
-              limit: vi.fn(() => ({
-                offset: vi.fn().mockResolvedValue(mockResult),
-              })),
-            })),
-          })),
-    })),
-    where: vi.fn().mockResolvedValue(mockResult),
-  });
-
+  // Mock database that properly handles different query patterns
   const selectMock = vi.fn((fields: unknown) => {
+    const createSelectChain = (mockResult: unknown, isCount = false) => ({
+      from: vi.fn((table: unknown) => {
+        // Detect which table is being queried
+        const isRelatedPostsQuery =
+          table &&
+          typeof table === 'object' &&
+          'name' in table &&
+          table.name === 'postsToRelatedPosts';
+        const isAvailablePostsQuery =
+          table && typeof table === 'object' && 'name' in table && table.name === 'scribbles_post';
+
+        return {
+          innerJoin: vi.fn(() => ({
+            where: vi.fn().mockResolvedValue(isRelatedPostsQuery ? [] : mockResult),
+          })),
+          where: isCount
+            ? vi.fn().mockResolvedValue(mockResult)
+            : vi.fn(() => ({
+                orderBy: vi.fn(() => ({
+                  limit: vi.fn(() => ({
+                    offset: vi
+                      .fn()
+                      .mockResolvedValue(isAvailablePostsQuery ? mockAvailablePosts : mockResult),
+                  })),
+                })),
+              })),
+        };
+      }),
+      where: vi.fn().mockResolvedValue(mockResult),
+    });
+
     // Check if this is the count query (has totalCount field)
     if (fields && typeof fields === 'object' && 'totalCount' in fields) {
       return createSelectChain([{ totalCount: 2 }], true);
     }
-    // Check if this is a related posts query (has specific fields for related posts)
-    if (fields && typeof fields === 'object' && 'id' in fields && 'slug' in fields) {
-      return createSelectChain(mockAvailablePosts);
-    }
-    // Default to available posts
+
+    // Default behavior - will be refined by the from() call
     return createSelectChain(mockAvailablePosts);
   });
 
@@ -78,6 +94,7 @@ const { mockDb } = vi.hoisted(() => {
             createdAt: new Date(),
             updatedAt: new Date(),
             readingTimeSeconds: 300,
+            readingTimeWords: 1000,
             tags: [{ tag: 'test' }, { tag: 'vitest' }],
           } satisfies Partial<Post> & { tags: { tag: string }[] }),
         },
@@ -226,6 +243,14 @@ describe('/admin/posts/[slug]/+page.svelte', () => {
           // @ts-expect-error Partial data props
           meta: { title: props.post?.title ?? '', slug: props.slug ?? '' },
           Content: 'This is a test post content.',
+          // Override the relatedPostsForm to ensure no posts are initially related
+          // @ts-expect-error Partial data props
+          relatedPostsForm: {
+            ...props.relatedPostsForm,
+            data: {
+              relatedPostIds: [],
+            },
+          },
         },
       },
     });

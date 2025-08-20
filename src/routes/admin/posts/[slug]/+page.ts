@@ -9,10 +9,9 @@ export const load: PageLoad = async ({
     form,
     post: dbPost,
     relatedPostsForm,
-    relatedPosts,
     searchQuery,
-    availablePosts,
     pagination,
+    combinedPosts,
   },
 }) => {
   if (!form || !dbPost) {
@@ -29,10 +28,9 @@ export const load: PageLoad = async ({
       form,
       post: dbPost,
       relatedPostsForm,
-      relatedPosts,
       searchQuery,
-      availablePosts,
       pagination,
+      combinedPosts,
     };
     // eslint-disable-next-line  @typescript-eslint/no-unused-vars
   } catch (err) {
