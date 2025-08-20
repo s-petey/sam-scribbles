@@ -24,8 +24,36 @@
     submitting: relatedPostsSubmitting,
     message: relatedPostsMessage,
     reset: relatedPostsReset,
+    isTainted,
+    tainted,
   } = superForm(data.relatedPostsForm, {
     clearOnSubmit: 'errors-and-message',
+  });
+
+  const { derivedRelatedPosts, derivedAvailablePosts } = $derived.by(() => {
+    const availablePosts: typeof data.combinedPosts = [];
+    const relatedPosts: typeof data.combinedPosts = [];
+
+    for (const post of data.combinedPosts) {
+      if (
+        $relatedPostsForm.relatedPostIds.includes(post.id) &&
+        relatedPosts.filter((p) => p.id === post.id).length === 0
+      ) {
+        relatedPosts.push(post);
+      }
+
+      if (
+        !$relatedPostsForm.relatedPostIds.includes(post.id) &&
+        availablePosts.filter((p) => p.id === post.id).length === 0
+      ) {
+        availablePosts.push(post);
+      }
+    }
+
+    return {
+      derivedRelatedPosts: relatedPosts,
+      derivedAvailablePosts: availablePosts,
+    };
   });
 
   function handleSearchChange(event: Event) {
@@ -90,11 +118,11 @@
 
   <form method="post" action="?/updateRelatedPosts" use:relatedPostsEnhance class="space-y-4">
     <!-- Currently Related Posts -->
-    {#if data.relatedPosts.length > 0}
+    {#if derivedRelatedPosts.length > 0}
       <div>
         <h4 class="h5 mb-2">Currently Related:</h4>
         <div class="mb-4 flex flex-wrap gap-2">
-          {#each data.relatedPosts as relatedPost (relatedPost.id)}
+          {#each derivedRelatedPosts as relatedPost (`related-${relatedPost.id}`)}
             <span class="chip preset-filled-secondary-500 flex items-center gap-2">
               {relatedPost.title}
               <button
@@ -131,7 +159,7 @@
     <div>
       <h4 class="h5 mb-2">Available Posts:</h4>
       <div class="mb-4 flex flex-wrap gap-2">
-        {#each data.availablePosts as availablePost (availablePost.id)}
+        {#each derivedAvailablePosts as availablePost (`available-${availablePost.id}`)}
           <button
             type="button"
             class={`chip ${
@@ -170,7 +198,7 @@
     {#if data.pagination.totalPages > 1}
       <div class="flex justify-center">
         <Pagination
-          data={data.availablePosts}
+          data={derivedAvailablePosts}
           count={data.pagination.totalCount}
           page={data.pagination.page}
           pageSize={data.pagination.limit}
@@ -191,7 +219,7 @@
       disabled={$relatedPostsSubmitting}
       aria-disabled={$relatedPostsSubmitting}
       class="btn preset-tonal-primary"
-      class:disabled={$relatedPostsSubmitting}
+      class:disabled={$relatedPostsSubmitting || !isTainted($tainted)}
     >
       Save Related Posts
     </button>
