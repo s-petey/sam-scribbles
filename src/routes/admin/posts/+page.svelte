@@ -6,7 +6,12 @@
 
   let { data } = $props();
 
-  const { message, submitting, enhance } = superForm(data.form, {
+  const {
+    message,
+    submitting,
+    enhance,
+    allErrors: allSyncErrors,
+  } = superForm(data.form, {
     clearOnSubmit: 'errors-and-message',
     resetForm: false,
   });
@@ -30,15 +35,32 @@
       disabled={$submitting}
       aria-disabled={$submitting}
       type="submit"
-      class="btn preset-tonal-primary"
-      class:disabled={$submitting}
+      class={[
+        'btn transition-all',
+        {
+          'btn-disabled': $submitting,
+          'preset-tonal-primary': !$allSyncErrors.length,
+          'preset-tonal-error': $allSyncErrors.length > 0,
+        },
+      ]}
     >
-      <!-- TODO: Fixme to show errors when zod validation happens -->
       Sync Posts
     </button>
   </form>
 
   <div>
+    {#if $allSyncErrors.length}
+      <ul>
+        {#each $allSyncErrors as error (error.path)}
+          <li>
+            {#each error.messages as message (message)}
+              <pre>{message}</pre>
+            {/each}
+          </li>
+        {/each}
+      </ul>
+    {/if}
+
     {#if typeof $message === 'object'}
       <h4 class="h4">Created amount: {$message.created}</h4>
       <h4 class="h4">Updated amount: {$message.updated}</h4>
