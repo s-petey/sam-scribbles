@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { Pagination } from '@skeletonlabs/skeleton-svelte';
+  import { DateTime } from 'luxon';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { superForm } from 'sveltekit-superforms';
   import LucideArrowLeft from '~icons/lucide/arrow-left';
@@ -47,6 +48,13 @@
     searchParams.set('page', newPage.toString());
     goto(`?${searchParams.toString()}`, { keepFocus: true });
   }
+
+  function differenceInDays(date: Date) {
+    const luxonDate = DateTime.fromJSDate(date);
+    const daysDiff = luxonDate.diffNow('days').days;
+
+    return daysDiff >= -31 && daysDiff < 0;
+  }
 </script>
 
 <svelte:head>
@@ -55,7 +63,12 @@
 </svelte:head>
 
 <section class="card preset-outlined-primary-500 p-4">
-  <h2 class="h3">{data.post.title}</h2>
+  <h2 class="h3 flex flex-row items-center gap-2">
+    {data.post.title}
+    {#if differenceInDays(data.post.createdAt)}
+      <span class="badge preset-filled-secondary-500">NEW</span>
+    {/if}
+  </h2>
 
   <p class="text-lg font-bold">
     Reading Time: {Math.round(data.post.readingTimeSeconds / 60)}
