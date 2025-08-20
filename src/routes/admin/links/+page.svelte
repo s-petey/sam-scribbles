@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page as sveltePage } from '$app/state';
+  import LinkWithIcon from '$lib/components/LinkWithIcon.svelte';
   import { Modal, Pagination, TagsInput } from '@skeletonlabs/skeleton-svelte';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { superForm } from 'sveltekit-superforms';
@@ -169,9 +170,7 @@
       {#each data.links as link (link.shortId)}
         <tr class="hover:preset-tonal-primary">
           <td>
-            <a class="anchor" href={link.link} target="_blank" rel="noopener noreferrer">
-              {link.link}
-            </a>
+            <LinkWithIcon {link} />
           </td>
           <td>
             <span>
