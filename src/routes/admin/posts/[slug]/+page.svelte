@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import { Pagination } from '@skeletonlabs/skeleton-svelte';
   import { DateTime } from 'luxon';
+  import type { FormEventHandler } from 'svelte/elements';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { superForm } from 'sveltekit-superforms';
   import LucideArrowLeft from '~icons/lucide/arrow-left';
@@ -28,6 +29,7 @@
     tainted,
   } = superForm(data.relatedPostsForm, {
     clearOnSubmit: 'errors-and-message',
+    invalidateAll: 'pessimistic',
   });
 
   const { derivedRelatedPosts, derivedAvailablePosts } = $derived.by(() => {
@@ -56,11 +58,11 @@
     };
   });
 
-  function handleSearchChange(event: Event) {
-    const target = event.target as HTMLInputElement;
+  const handleSearchChange: FormEventHandler<HTMLInputElement> = (event) => {
+    const target = event.currentTarget;
     const searchParams = new SvelteURLSearchParams(page.url.searchParams);
 
-    if (target.value) {
+    if (target?.value) {
       searchParams.set('q', target.value);
       searchParams.set('page', '1');
     } else {
@@ -69,7 +71,7 @@
     }
 
     goto(`?${searchParams.toString()}`, { keepFocus: true });
-  }
+  };
 
   function handlePageChange(newPage: number) {
     const searchParams = new SvelteURLSearchParams(page.url.searchParams);
@@ -86,7 +88,7 @@
 </script>
 
 <svelte:head>
-  <title>Admin - {data.post.title || 'Post'}</title>
+  <title>Admin - {data.post.title}</title>
   <meta name="description" content="Manage the post details." />
 </svelte:head>
 
@@ -106,7 +108,7 @@
   <p class="text-sm">Updated on: {data.post.updatedAt.toLocaleString()}</p>
 
   <div class="flex flex-wrap items-center justify-start">
-    {#each data.post.tags || [] as tag (tag.tag)}
+    {#each data.post.tags as tag (tag.tag)}
       <span class="chip preset-outlined-secondary-500 m-1">{tag.tag}</span>
     {/each}
   </div>
