@@ -2,6 +2,7 @@
   import SquareX from '~icons/lucide/square-x';
   import { superForm } from 'sveltekit-superforms';
   import { resolve } from '$app/paths';
+  import { DateTime } from 'luxon';
 
   let { data } = $props();
 
@@ -14,6 +15,13 @@
     enhance: deleteEnhance,
     allErrors,
   } = superForm(data.deleteForm);
+
+  function differenceInDays(date: Date) {
+    const luxonDate = DateTime.fromJSDate(date);
+    const daysDiff = luxonDate.diffNow('days').days;
+
+    return daysDiff >= -31 && daysDiff < 0;
+  }
 </script>
 
 <div class="grid grid-cols-2">
@@ -25,6 +33,7 @@
       class="btn preset-tonal-primary"
       class:disabled={$submitting}
     >
+      <!-- TODO: Fixme to show errors when zod validation happens -->
       Sync Posts
     </button>
   </form>
@@ -41,13 +50,20 @@
 
 <form method="post" action="?/delete" class="grid grid-cols-2 gap-2" use:deleteEnhance>
   {#each data.posts as post (post.slug)}
-    <span class="btn-group preset-outlined-surface-200-800 grid grid-cols-4 p-2">
+    {@const isNew = differenceInDays(post.createdAt)}
+    <span class="btn-group preset-outlined-surface-200-800 grid grid-cols-5 p-2">
       <a
         href={resolve('/admin/posts/[slug]', { slug: post.slug })}
-        class="btn preset-tonal-secondary hover:preset-outlined-secondary-500 col-span-3 justify-start truncate"
+        class="btn preset-tonal-secondary hover:preset-outlined-secondary-500 col-span-3 h-full justify-start truncate"
+        class:col-span-4={!isNew}
       >
         {post.title}
       </a>
+
+      {#if isNew}
+        <span class="badge preset-tonal-success col-span-1 h-full">NEW</span>
+      {/if}
+
       <button
         type="submit"
         name="slug"

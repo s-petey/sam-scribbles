@@ -64,6 +64,7 @@ describe('/+page.svelte', () => {
       id: '1',
       title: 'Test Post',
       slug: 'test-post',
+      createdAt: new Date('2025-08-20'),
     };
     findManyPosts.mockResolvedValueOnce([mockPost]);
 
@@ -86,6 +87,7 @@ describe('/+page.svelte', () => {
       id: '1',
       title: 'Test Post',
       slug: 'test-post',
+      createdAt: new Date('2025-08-20'),
     };
 
     findManyPosts.mockResolvedValueOnce([mockPost]);

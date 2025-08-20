@@ -129,6 +129,32 @@ describe('/admin/posts/[slug]/+page.svelte', () => {
     await expect.element(heading).toBeInTheDocument();
   });
 
+  it('renders the new tag', async () => {
+    // @ts-expect-error Partial event object for testing
+    const props = await load({
+      url: getFakeUrl(),
+      params: {
+        slug: 'test-post',
+      },
+    });
+
+    render(Page, {
+      props: {
+        data: {
+          // Add data from `page.ts`
+          ...props,
+          // @ts-expect-error Partial data props
+          meta: { title: props.post?.title ?? '', slug: props.slug ?? '' },
+          Content: 'This is a test post content.',
+        },
+      },
+    });
+
+    const heading = page.getByRole('heading', { level: 2, name: 'Test Post NEW' });
+
+    await expect.element(heading).toBeInTheDocument();
+  });
+
   it('renders the action message', async () => {
     // @ts-expect-error Partial event object for testing
     const props = await load({

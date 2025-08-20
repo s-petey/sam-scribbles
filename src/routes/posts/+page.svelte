@@ -150,7 +150,7 @@
                 </span>
                 {#if differenceInDays(post.createdAt)}
                   &bull;
-                  <span class="badge preset-filled-secondary-500"> new </span>
+                  <span class="badge preset-filled-secondary-500">NEW</span>
                 {/if}
               </div>
 
