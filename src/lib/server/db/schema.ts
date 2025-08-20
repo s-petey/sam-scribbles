@@ -12,6 +12,11 @@ import { SHORT_ID_LENGTH, shortId } from '../../shortener';
 
 const pgTable = pgTableCreator((name) => `scribbles_${name}`);
 
+const createdAt = timestamp().notNull().defaultNow();
+const updatedAt = timestamp()
+  .notNull()
+  .$onUpdate(() => new Date());
+
 export const post = pgTable('post', {
   id: varchar({ length: SHORT_ID_LENGTH }).primaryKey().$default(shortId),
   slug: text().notNull().unique(),
@@ -22,11 +27,8 @@ export const post = pgTable('post', {
   readingTimeSeconds: integer().notNull(),
   readingTimeWords: integer().notNull(),
 
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp().notNull(),
-
-  // TODO: Add relation to tags table / add array of strings?
-  // tags,
+  createdAt,
+  updatedAt,
 });
 
 // TODO: Make the links table, which I can describe
@@ -37,10 +39,8 @@ export const link = pgTable('link', {
   link: text().notNull().unique(),
   private: boolean().notNull().default(false),
 
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const tag = pgTable('tag', { name: text().primaryKey().notNull() });
@@ -90,7 +90,7 @@ export const postsToRelatedPosts = pgTable(
     relatedPostId: varchar({ length: SHORT_ID_LENGTH })
       .notNull()
       .references(() => post.id, { onDelete: 'cascade' }),
-    createdAt: timestamp().notNull().defaultNow(),
+    createdAt,
   },
   (t) => [
     primaryKey({
@@ -109,10 +109,8 @@ export const user = pgTable('user', {
   role: text({ enum: ['admin', 'user', 'creator'] }),
   image: text(),
 
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const session = pgTable('session', {
@@ -125,8 +123,8 @@ export const session = pgTable('session', {
     .references(() => user.id, { onDelete: 'cascade' }),
 
   expiresAt: timestamp().notNull(),
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp().notNull(),
+  createdAt,
+  updatedAt,
 });
 
 export const account = pgTable('account', {
@@ -145,10 +143,8 @@ export const account = pgTable('account', {
   accessTokenExpiresAt: timestamp(),
   refreshTokenExpiresAt: timestamp(),
 
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const verification = pgTable('verification', {
@@ -157,10 +153,8 @@ export const verification = pgTable('verification', {
   value: text().notNull(),
 
   expiresAt: timestamp().notNull(),
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const userLink = pgTable('user_link', {
@@ -177,10 +171,8 @@ export const userLink = pgTable('user_link', {
 
   // TODO: Add tags
 
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const postsToTagsRelations = relations(postsToTags, ({ one }) => ({
