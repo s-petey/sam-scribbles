@@ -1,6 +1,6 @@
 import { db } from '$lib/server/db';
 import { post, postsToRelatedPosts } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import type { PageServerLoad } from './$types';
 
 export const load = (async ({ params, locals }) => {
@@ -40,8 +40,8 @@ export const load = (async ({ params, locals }) => {
     .from(postsToRelatedPosts)
     .innerJoin(post, eq(postsToRelatedPosts.relatedPostId, post.id))
     .where(eq(postsToRelatedPosts.postId, currentPost.id))
-    // TODO: Order by something?
-    .limit(5); // Limit to 5 related posts
+    .orderBy(desc(post.createdAt))
+    .limit(5);
 
   return { slug, relatedPosts };
 }) satisfies PageServerLoad;

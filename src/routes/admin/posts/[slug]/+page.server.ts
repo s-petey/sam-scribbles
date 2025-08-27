@@ -59,7 +59,8 @@ export const load = (async ({ params, url }) => {
     })
     .from(postsToRelatedPosts)
     .innerJoin(post, eq(postsToRelatedPosts.relatedPostId, post.id))
-    .where(eq(postsToRelatedPosts.postId, currentPost.id));
+    .where(eq(postsToRelatedPosts.postId, currentPost.id))
+    .orderBy(desc(post.createdAt));
 
   // Get available posts for selection (excluding current post and already related)
   const relatedPostIds = relatedPostsQuery.map((p) => p.id);

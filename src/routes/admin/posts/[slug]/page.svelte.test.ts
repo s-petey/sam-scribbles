@@ -56,7 +56,9 @@ const { mockDb } = vi.hoisted(() => {
 
         return {
           innerJoin: vi.fn(() => ({
-            where: vi.fn().mockResolvedValue(isRelatedPostsQuery ? [] : mockResult),
+            where: vi.fn(() => ({
+              orderBy: vi.fn().mockResolvedValue(isRelatedPostsQuery ? [] : mockResult),
+            })),
           })),
           where: isCount
             ? vi.fn().mockResolvedValue(mockResult)
