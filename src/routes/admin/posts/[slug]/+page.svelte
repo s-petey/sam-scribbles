@@ -164,11 +164,7 @@
         {#each derivedAvailablePosts as availablePost (`available-${availablePost.id}`)}
           <button
             type="button"
-            class={`chip ${
-              $relatedPostsForm.relatedPostIds.includes(availablePost.id)
-                ? 'preset-outlined-secondary-500'
-                : 'preset-outlined-surface-500'
-            }`}
+            class="chip preset-outlined-surface-500"
             onclick={() => {
               if ($relatedPostsForm.relatedPostIds.includes(availablePost.id)) {
                 $relatedPostsForm.relatedPostIds = $relatedPostsForm.relatedPostIds.filter(
