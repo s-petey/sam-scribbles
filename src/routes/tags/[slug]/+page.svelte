@@ -25,6 +25,7 @@
 
     const queryString = params.toString();
     const url = queryString ? `?${queryString}` : resolve('/tags/[slug]', { slug: data.slug });
+    // eslint-disable-next-line svelte/no-navigation-without-resolve -- we want to keep the current path
     goto(url, { keepFocus: true });
   }
 </script>

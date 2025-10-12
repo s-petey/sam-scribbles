@@ -1,14 +1,14 @@
+import { getAndRefreshSession } from '$lib/auth.server';
 import { db } from '$lib/server/db';
-import { post } from '$lib/server/db/schema';
+import { post, postsToTags, tag } from '$lib/server/db/schema';
 import { postMetadataSchema } from '$lib/zodSchema';
 import { error, type Actions } from '@sveltejs/kit';
+import { and, eq, notInArray } from 'drizzle-orm';
 import { DateTime } from 'luxon';
-import { fail, message, setError, superValidate, type Infer } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { fail, message, setError, superValidate } from 'sveltekit-superforms';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import type { PageServerLoad } from './$types';
-import { getAndRefreshSession } from '$lib/auth.server';
-import { eq } from 'drizzle-orm';
 
 const schema = z.object({});
 
@@ -17,8 +17,8 @@ const deleteSchema = z.object({ slug: z.string().min(1, 'Slug is required') });
 type Message = { updated: number; created: number };
 
 export const load = (async () => {
-  const form = await superValidate<Infer<typeof schema>, Message>(zod(schema));
-  const deleteForm = await superValidate(zod(deleteSchema));
+  const form = await superValidate(zod4(schema));
+  const deleteForm = await superValidate(zod4(deleteSchema));
 
   const posts = await db.query.post.findMany({ columns: { title: true, slug: true } });
 
@@ -34,7 +34,7 @@ export const actions: Actions = {
     if (admin === null || admin.role !== 'admin') {
       error(401, 'Unauthorized');
     }
-    const form = await superValidate(event.request, zod(schema));
+    const form = await superValidate(event.request, zod4(schema));
 
     // TODO: This needs to import `*.md` and `svx`?
     const postsImport = Object.entries(import.meta.glob('../../../../posts/*.md'));
@@ -60,6 +60,11 @@ export const actions: Actions = {
     const postsToCreate = posts.filter(
       (post) => DateTime.fromJSDate(post.date).diffNow('weeks').weeks >= -1,
     );
+
+    const slugToTagMap = new Map<string, string[]>();
+    for (const postData of posts) {
+      slugToTagMap.set(postData.slug, postData.tags || []);
+    }
 
     // TODO: Delete any records in the DB where the post no longer exists!
     // However how do I handle if the record has updated or deleted and
@@ -114,9 +119,38 @@ export const actions: Actions = {
           .returning();
       });
 
-      const insertPromises = insertCreatePromises.concat(updatePromises);
+      const allPromises = insertCreatePromises.concat(updatePromises);
+      const allResults = (await Promise.all(allPromises)).flat();
 
-      return (await Promise.all(insertPromises)).flat();
+      const uniqueTags = new Set(slugToTagMap.values().flatMap((tags) => tags));
+
+      if (uniqueTags.size > 0) {
+        await tx
+          .insert(tag)
+          .values(Array.from(uniqueTags).map((name) => ({ name })))
+          .onConflictDoNothing();
+      }
+
+      for (const postData of allResults) {
+        const tags = slugToTagMap.get(postData.slug) || [];
+
+        if (tags.length > 0) {
+          // Remove tags not in the new list
+          await tx
+            .delete(postsToTags)
+            .where(and(eq(postsToTags.postId, postData.id), notInArray(postsToTags.tag, tags)));
+          // Add new tags
+          await tx
+            .insert(postsToTags)
+            .values(tags.map((tagName) => ({ postId: postData.id, tag: tagName })))
+            .onConflictDoNothing();
+        } else {
+          // If no tags, remove all for this post
+          await tx.delete(postsToTags).where(eq(postsToTags.postId, postData.id));
+        }
+      }
+
+      return allResults.flat();
     });
 
     const returnMessage: Message = { updated: postsToUpdate.length, created: postsToCreate.length };
@@ -133,7 +167,7 @@ export const actions: Actions = {
       error(401, 'Unauthorized');
     }
 
-    const form = await superValidate(event.request, zod(deleteSchema));
+    const form = await superValidate(event.request, zod4(deleteSchema));
 
     if (!form.valid) {
       return fail(400, { form });

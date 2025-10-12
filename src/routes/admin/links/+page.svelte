@@ -34,10 +34,12 @@
     if (q) {
       params.set('q', q);
       params.set('page', '1');
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
       goto(`?${params.toString()}`, { keepFocus: true });
     } else {
       params.delete('q');
       params.delete('page');
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
       goto(`?${params.toString()}`, { keepFocus: true });
     }
   }
@@ -169,6 +171,7 @@
       {#each data.links as link (link.shortId)}
         <tr class="hover:preset-tonal-primary">
           <td>
+            <!-- eslint-disable svelte/no-navigation-without-resolve -- External link -->
             <a class="anchor" href={link.link} target="_blank" rel="noopener noreferrer">
               {link.link}
             </a>
@@ -220,6 +223,7 @@
       const params = new SvelteURLSearchParams(sveltePage.url.searchParams);
 
       params.set('page', value.page.toString());
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
       goto(`?${params.toString()}`, { keepFocus: true });
     }}
   >

@@ -20,8 +20,8 @@
   {/if}
 
   <p>
-    Maybe check out the <a href={core.Posts.href}>posts</a> page? Or go to the
-    <a href={resolve('/')}>home</a> page.
+    Maybe check out the <a href={resolve(core.Posts.href)}>posts</a> page? Or go to the
+    <a href={resolve(core.Home.href)}>home</a> page.
   </p>
 
   <!-- TODO: Something like this... -->

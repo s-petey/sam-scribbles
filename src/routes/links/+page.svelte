@@ -45,6 +45,7 @@
 
     const queryString = params.toString();
     const url = queryString ? `?${queryString}` : resolve('/links');
+    // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same page
     goto(url, { keepFocus: true });
   }
 

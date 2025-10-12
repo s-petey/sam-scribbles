@@ -147,7 +147,16 @@ export const handleLocals: Handle = async ({ event, resolve }) => {
 const handleRouting: Handle = async ({ event, resolve: handleResolve }) => {
   const { session } = event.locals;
 
-  logger.debug({ msg: `Handling routing for: ${event.url.pathname}`, session });
+  logger.debug({
+    msg: `Handling routing for: ${event.request.method} ${event.url.pathname}${event.url.search}`,
+    session: {
+      userId: session?.user?.id,
+      role: session?.user?.role,
+      expiresAt: session?.session?.expiresAt,
+      createdAt: session?.session?.createdAt,
+      userAgent: session?.session?.userAgent,
+    },
+  });
 
   const pathname = event.url.pathname.toLowerCase();
 

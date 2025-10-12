@@ -2,6 +2,7 @@
   import { admin } from '$lib/siteLinks';
   import SquareX from '~icons/lucide/square-x';
   import { superForm } from 'sveltekit-superforms';
+  import { resolve } from '$app/paths';
 
   let { data } = $props();
 
@@ -12,7 +13,7 @@
   const {
     submitting: deleteSubmitting,
     enhance: deleteEnhance,
-    errors,
+    allErrors,
   } = superForm(data.deleteForm);
 </script>
 
@@ -43,7 +44,7 @@
   {#each data.posts as post (post.slug)}
     <span class="btn-group preset-outlined-surface-200-800 grid grid-cols-4 p-2">
       <a
-        href={`${admin['Admin Posts'].href}/${post.slug}`}
+        href={resolve(`${admin['Admin Posts'].href}/${post.slug}`)}
         class="btn preset-tonal-secondary hover:preset-outlined-secondary-500 col-span-3 justify-start truncate"
       >
         {post.title}
@@ -59,7 +60,7 @@
       >
         <SquareX class="text-2xl" />
       </button>
-      {#if $errors?.slug?.includes(post.slug)}
+      {#if $allErrors?.flatMap((error) => error.messages).includes(post.slug)}
         <span class="text-error-500 col-span-4 font-bold">
           There is still a markdown file for this!!!
         </span>

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { DateTime } from 'luxon';
 
   let { data } = $props();
@@ -71,7 +72,7 @@
 
       <div class="flex justify-center gap-2">
         {#each tags as tag (tag)}
-          <a class="anchor" href={`/tags/${tag}`}>
+          <a class="anchor" href={resolve('/tags/[slug]', { slug: tag.toLowerCase() })}>
             <!-- TODO: Replace when route is created -->
             <!-- <a href={resolve('/tags/[tag]', { tag: tag.toLowerCase() })}> -->
             <span

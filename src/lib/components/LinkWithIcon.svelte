@@ -16,6 +16,7 @@
     <LucideLink aria-label="External link" />
   {/if}
 
+  <!-- eslint-disable svelte/no-navigation-without-resolve -- External link -->
   <a
     class="anchor"
     href={link.link}

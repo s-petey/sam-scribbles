@@ -42,7 +42,10 @@
       data={themes.map((theme) => ({ value: theme, label: theme }))}
       value={[currentTheme]}
       defaultValue={[currentTheme]}
-      onValueChange={(e) => (currentTheme = (e.value.at(0) as Theme | undefined) ?? 'catppuccin')}
+      onValueChange={(e) => {
+        const newTheme = e.value.at(0);
+        currentTheme = isValidTheme(newTheme) ? newTheme : 'catppuccin';
+      }}
       placeholder="Select a theme"
       classes="z-10"
     >

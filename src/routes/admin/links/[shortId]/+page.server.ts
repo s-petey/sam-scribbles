@@ -5,7 +5,7 @@ import { link, linksToTags, tag } from '$lib/server/db/schema.js';
 import { error, redirect, type Actions } from '@sveltejs/kit';
 import { and, eq, inArray } from 'drizzle-orm';
 import { fail, message, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import { getAndRefreshSession } from '$lib/auth.server';
 import type { PageServerLoad } from './$types';
@@ -13,9 +13,8 @@ import type { PageServerLoad } from './$types';
 const shortIdSchema = z.string().min(1);
 const linkSchema = z.object({
   link: z
-    .string()
-    .min(1, 'A link is required')
     .url()
+    .min(1, 'A link is required')
     .trim()
     .transform((link) => {
       let newLink = link;
@@ -45,7 +44,7 @@ export const load: PageServerLoad = async ({ params: { shortId } }) => {
   const rawTags = await db.query.tag.findMany({ orderBy: (tag, { asc }) => asc(tag.name) });
 
   const tags = rawTags.map((tag) => tag.name);
-  const form = await superValidate(constructedLink, zod(linkSchema));
+  const form = await superValidate(constructedLink, zod4(linkSchema));
 
   return { form, link: constructedLink, tags };
 };
@@ -60,7 +59,7 @@ export const actions: Actions = {
     }
     logger.debug({ msg: 'Updating link', admin: admin.email });
 
-    const form = await superValidate(event.request, zod(linkSchema));
+    const form = await superValidate(event.request, zod4(linkSchema));
 
     const validatedShortId = shortIdSchema.safeParse(event.params.shortId);
 

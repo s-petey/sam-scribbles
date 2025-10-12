@@ -5,7 +5,7 @@ import { post, postsToTags, tag } from '$lib/server/db/schema';
 import { postMetadataSchema } from '$lib/zodSchema';
 import { error } from '@sveltejs/kit';
 import { fail, message, superValidate, type Infer } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
 import { and, inArray, eq } from 'drizzle-orm';
@@ -15,7 +15,7 @@ const schema = z.object({
 });
 
 export const load = (async ({ params }) => {
-  const form = await superValidate<Infer<typeof schema>, string>(zod(schema));
+  const form = await superValidate<Infer<typeof schema>, string>(zod4(schema));
   const { slug } = params;
 
   if (typeof slug !== 'string' || slug.length <= 0) {
@@ -48,7 +48,7 @@ export const actions: Actions = {
       error(401, 'Unauthorized');
     }
 
-    const form = await superValidate(event.request, zod(schema));
+    const form = await superValidate(event.request, zod4(schema));
 
     logger.debug({ msg: 'Syncing post', data: form.data });
 
