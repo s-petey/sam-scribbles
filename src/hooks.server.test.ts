@@ -17,9 +17,12 @@ vi.mock('@sveltejs/kit', async () => {
 // Mock sequence function to avoid SvelteKit internals
 vi.mock('@sveltejs/kit/hooks', (original) => ({
   ...original,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sequence: (...handlers: any[]) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return async ({ event, resolve }: any) => {
       let accumulatedOpts = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const proxyResolve = async (e: any, o?: any) => {
         if (o) accumulatedOpts = { ...accumulatedOpts, ...o };
         return await resolve(e, accumulatedOpts);
