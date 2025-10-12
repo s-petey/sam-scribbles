@@ -171,6 +171,7 @@
       {#each data.links as link (link.shortId)}
         <tr class="hover:preset-tonal-primary">
           <td>
+            <!-- eslint-disable svelte/no-navigation-without-resolve -- External link -->
             <a class="anchor" href={link.link} target="_blank" rel="noopener noreferrer">
               {link.link}
             </a>

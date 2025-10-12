@@ -99,6 +99,7 @@
         <!-- Social -->
         <nav class="flex flex-row items-center gap-2">
           {#each SiteLinks.socialLinks as link (link.href)}
+            <!-- eslint-disable svelte/no-navigation-without-resolve -- External link -->
             <a class="anchor hover:underline" href={link.href} title={link.label} target="_blank">
               <Avatar name={link.label}>
                 <link.icon />

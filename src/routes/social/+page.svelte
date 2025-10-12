@@ -12,6 +12,7 @@
     <span class="text-primary-500 flex items-center gap-1">
       <link.icon name={link.label} />
 
+      <!-- eslint-disable svelte/no-navigation-without-resolve -- External link -->
       <a
         class="anchor hover:underline"
         href={link.href}
