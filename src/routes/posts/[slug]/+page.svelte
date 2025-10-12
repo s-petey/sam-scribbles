@@ -12,9 +12,11 @@
   } = data;
 
   const dateTime = DateTime.fromJSDate(date);
+
   if (!dateTime.isValid) {
     throw new Error('Invalid date');
   }
+  const daysDiff = dateTime.diffNow('days').days;
 
   const dateIso = dateTime.toISO() ?? '';
 </script>
@@ -64,9 +66,9 @@
         </time>
         <span>&bull;</span>
         <span>{reading_time.text}</span>
-        {#if dateTime.diffNow('days').days < 31}
+        {#if daysDiff >= -31 && daysDiff <= 0}
           <span>&bull;</span>
-          <span class="text-primary-800 font-bold">NEW</span>
+          <span data-testid="new_badge" class="text-primary-800 font-bold">NEW</span>
         {/if}
       </div>
 
@@ -98,6 +100,28 @@
   <!-- <div class="mb-5 mt-10 flex w-full flex-col" bind:this={end_of_copy}>
 		<div class="divider divider-secondary"></div>
 	</div> -->
+
+  <!-- Related Posts Section -->
+  {#if data.relatedPosts && data.relatedPosts.length > 0}
+    <div class="mt-10 mb-5">
+      <h2 class="h3 mb-4 text-center">Related Posts</h2>
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {#each data.relatedPosts as relatedPost (relatedPost.id)}
+          <a
+            href={resolve('/posts/[slug]', { slug: relatedPost.slug })}
+            class="card preset-outlined-surface-500 hover:preset-outlined-primary-500 p-4 transition-colors"
+          >
+            <h3 class="h4 mb-2 line-clamp-2">{relatedPost.title}</h3>
+            <p class="mb-2 line-clamp-3 text-sm opacity-75">{relatedPost.preview}</p>
+            <div class="flex items-center justify-between text-xs opacity-60">
+              <span>{Math.round(relatedPost.readingTimeSeconds / 60)} min read</span>
+              <span>{relatedPost.readingTimeWords} words</span>
+            </div>
+          </a>
+        {/each}
+      </div>
+    </div>
+  {/if}
 
   <!-- <Reactions data={count} path={current_path} /> -->
 
