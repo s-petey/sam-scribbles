@@ -1,14 +1,14 @@
 import { getAndRefreshSession } from '$lib/auth.server';
 import { logger } from '$lib/logger';
 import { db } from '$lib/server/db';
-import { post, postsToTags, tag, postsToRelatedPosts } from '$lib/server/db/schema';
+import { post, postsToRelatedPosts, postsToTags, tag } from '$lib/server/db/schema';
 import { postMetadataSchema } from '$lib/zodSchema';
 import { error } from '@sveltejs/kit';
-import { fail, message, superValidate, type Infer } from 'sveltekit-superforms';
+import { and, count, desc, eq, ilike, inArray, notInArray, or } from 'drizzle-orm';
+import { fail, message, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
-import { and, inArray, eq, ilike, or, desc, count, notInArray } from 'drizzle-orm';
 
 const schema = z.object({
   slug: z.string().min(1, 'Slug is required'),

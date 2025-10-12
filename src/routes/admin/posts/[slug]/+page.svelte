@@ -70,12 +70,14 @@
       searchParams.delete('page');
     }
 
+    // eslint-disable-next-line svelte/no-navigation-without-resolve -- Same directory
     goto(`?${searchParams.toString()}`, { keepFocus: true });
   };
 
   function handlePageChange(newPage: number) {
     const searchParams = new SvelteURLSearchParams(page.url.searchParams);
     searchParams.set('page', newPage.toString());
+    // eslint-disable-next-line svelte/no-navigation-without-resolve -- Same directory
     goto(`?${searchParams.toString()}`, { keepFocus: true });
   }
 
