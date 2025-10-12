@@ -34,10 +34,12 @@
     if (q) {
       params.set('q', q);
       params.set('page', '1');
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
       goto(`?${params.toString()}`, { keepFocus: true });
     } else {
       params.delete('q');
       params.delete('page');
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
       goto(`?${params.toString()}`, { keepFocus: true });
     }
   }
@@ -220,6 +222,7 @@
       const params = new SvelteURLSearchParams(sveltePage.url.searchParams);
 
       params.set('page', value.page.toString());
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
       goto(`?${params.toString()}`, { keepFocus: true });
     }}
   >

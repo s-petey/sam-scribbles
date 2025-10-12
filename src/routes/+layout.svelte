@@ -7,6 +7,7 @@
   import { Avatar } from '@skeletonlabs/skeleton-svelte';
   import LucideMenu from '~icons/lucide/menu';
   import LucideX from '~icons/lucide/x';
+  import { resolve } from '$app/paths';
 
   let { children, data } = $props();
   let expanded = $state(false);
@@ -70,7 +71,7 @@
           <!-- TODO: Have an icon for this instead and a title? -->
           <a
             class="from-primary-500 to-tertiary-500 hidden bg-linear-to-b bg-clip-text font-extrabold text-transparent lg:inline-block"
-            href={SiteLinks.core.Home.href}
+            href={resolve(SiteLinks.core.Home.href)}
             title={SiteLinks.core.Home.label}
           >
             <!-- TODO: Update this will be the full site not only sam-scribbles... -->
@@ -129,7 +130,7 @@
           onclick={() => {
             if (expanded) expanded = !expanded;
           }}
-          href={link.href}
+          href={resolve(link.href)}
           title={link.label}
         >
           {link.label}
@@ -139,7 +140,7 @@
       {#if data.user !== null && data.user.role === 'admin'}
         {#each SiteLinks.adminLinks as link (link.href)}
           <a
-            href={link.href}
+            href={resolve(link.href)}
             title={link.label}
             class="anchor"
             onclick={() => {
@@ -238,14 +239,14 @@
   <div class="grid grid-cols-1 justify-items-center md:grid-cols-2 md:justify-items-start">
     <span class="mb-1 font-bold uppercase lg:col-span-2">Site Links</span>
     {#each SiteLinks.coreLinks as link (link.href)}
-      <a href={link.href} title={link.label} class="w-fit hover:opacity-50">
+      <a href={resolve(link.href)} title={link.label} class="w-fit hover:opacity-50">
         {link.label}
       </a>
     {/each}
 
     {#if data.user !== null && data.user.role === 'admin'}
       {#each SiteLinks.adminLinks as link (link.href)}
-        <a href={link.href} title={link.label} class="w-fit hover:opacity-50">
+        <a href={resolve(link.href)} title={link.label} class="w-fit hover:opacity-50">
           {link.label}
         </a>
       {/each}

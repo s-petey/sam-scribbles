@@ -6,7 +6,7 @@ import { user as dbUser, type User } from '$lib/server/db/schema';
 import { admin } from '$lib/siteLinks';
 import { redirect } from '@sveltejs/kit';
 import { fail, superValidate, setError } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import type { Actions, RequestEvent } from './$types';
 import { APIError } from 'better-auth/api';
@@ -14,17 +14,14 @@ import type { betterAuth } from 'better-auth';
 import { eq } from 'drizzle-orm';
 import { setServerCookies } from '$lib/auth.server';
 
-const INVALID_EMAIL_OR_PASSWORD = 'INVALID_EMAIL_OR_PASSWORD' satisfies ReturnType<
+const INVALID_EMAIL_OR_PASSWORD = 'Invalid email or password' satisfies ReturnType<
   typeof betterAuth
 >['$ERROR_CODES']['INVALID_EMAIL_OR_PASSWORD'];
 
 const signInSchema = z.object({
-  email: z
-    .string({ required_error: 'Email is required' })
-    .min(1, 'Email is required')
-    .email('Invalid email'),
+  email: z.email('Invalid email').trim().min(1, 'Email is required'),
   password: z
-    .string({ required_error: 'Password is required' })
+    .string()
     .min(1, 'Password is required')
     .min(8, 'Password must be more than 8 characters')
     .max(32, 'Password must be less than 32 characters'),
@@ -32,7 +29,7 @@ const signInSchema = z.object({
 });
 
 export const load = async () => {
-  const form = await superValidate(zod(signInSchema));
+  const form = await superValidate(zod4(signInSchema));
 
   logger.info('Attempt to access login page');
 
@@ -43,7 +40,7 @@ export const load = async () => {
 
 export const actions: Actions = {
   default: async (event) => {
-    const form = await superValidate(event, zod(signInSchema));
+    const form = await superValidate(event, zod4(signInSchema));
 
     if (!form.valid) {
       logger.error(`Attempted with email: ${form.data.email}`);

@@ -51,6 +51,7 @@
     }
 
     if (hasParams) {
+      // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
       goto(`?${params.toString()}`, { keepFocus: true });
     } else {
       goto(resolve('/posts'), { keepFocus: true });

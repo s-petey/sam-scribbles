@@ -3,7 +3,7 @@ import { link, linksToTags, tag } from '$lib/server/db/schema';
 import { error, redirect } from '@sveltejs/kit';
 import { eq, like } from 'drizzle-orm';
 import { fail, message, setError, superValidate } from 'sveltekit-superforms';
-import { zod } from 'sveltekit-superforms/adapters';
+import { zod4 } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
 import type { Actions, PageServerLoad } from './$types';
 import { routeQueryParams } from './queryParams';
@@ -12,10 +12,9 @@ import { getAndRefreshSession } from '$lib/auth.server';
 
 const linkSchema = z.object({
   link: z
-    .string()
-    .min(1, 'A link is required')
     .url()
     .trim()
+    .min(1, 'A link is required')
     .transform((link) => {
       let newLink = link;
       if (newLink.endsWith('/')) {
@@ -34,7 +33,7 @@ const linkSchema = z.object({
 export const load = (async ({ url }) => {
   const searchParams = Object.fromEntries(url.searchParams.entries());
   const { q, page, limit } = routeQueryParams.parse(searchParams);
-  const form = await superValidate(zod(linkSchema));
+  const form = await superValidate(zod4(linkSchema));
 
   const rawTags = await db.query.tag.findMany({ orderBy: (tag, { asc }) => asc(tag.name) });
 
@@ -83,7 +82,9 @@ export const actions: Actions = {
 
     logger.debug({ msg: 'Creating link', admin: admin.email });
 
-    const form = await superValidate(event.request, zod(linkSchema));
+    const form = await superValidate(event.request, zod4(linkSchema));
+
+    logger.debug({ msg: 'Form data', data: form.data, valid: form.valid });
 
     if (!form.valid) {
       return fail(400, { form });
@@ -136,7 +137,7 @@ export const actions: Actions = {
     }
 
     logger.debug({ msg: 'Deleting link', admin: admin.email });
-    const form = await superValidate(event.request, zod(shortIdSchema));
+    const form = await superValidate(event.request, zod4(shortIdSchema));
 
     if (!form.valid) {
       return fail(500, { message: 'Missing shortId somehow' });
