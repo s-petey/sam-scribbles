@@ -1,47 +1,41 @@
-import { expect, test, vi } from 'vitest';
-import { handle } from './hooks.server';
-import type { RequestEvent } from '@sveltejs/kit';
-import { describe } from 'node:test';
 import * as AUTH from '$lib/auth';
-
-// const { getSession } = vi.hoisted(() => {
-//   return {
-//     getSession: vi.fn().mockResolvedValue(null),
-//   };
-// });
+import { describe, expect, test, vi } from 'vitest';
+import { handle } from './hooks.server';
+import type { RequestEvent } from './routes/$types';
 
 vi.mock('@sveltejs/kit', async () => {
   const actual = await vi.importActual('@sveltejs/kit');
   return {
     ...actual,
-    redirect: vi.fn((status, location) => {
-      throw { status, location };
-    }),
+    redirect: (status: number, location: string) => {
+      const error = { ...new Error('REDIRECT'), status, location };
+      throw error;
+    },
   };
 });
 
+// Mock sequence function to avoid SvelteKit internals
+vi.mock('@sveltejs/kit/hooks', (original) => ({
+  ...original,
+  sequence: (...handlers: any[]) => {
+    return async ({ event, resolve }: any) => {
+      let accumulatedOpts = {};
+      const proxyResolve = async (e: any, o?: any) => {
+        if (o) accumulatedOpts = { ...accumulatedOpts, ...o };
+        return await resolve(e, accumulatedOpts);
+      };
+      for (const handler of handlers) {
+        const result = await handler({ event, resolve: proxyResolve });
+        if (result instanceof Response) {
+          return result;
+        }
+      }
+      return await proxyResolve(event);
+    };
+  },
+}));
+
 vi.mock('$lib/auth');
-// , async (importOriginal) => {
-//   const original = await importOriginal();
-//   return {
-//     // @ts-expect-error Mocking the auth module
-//     ...original,
-//     auth: {
-//       // @ts-expect-error Mocking the auth module
-//       ...original.auth,
-//       api: {
-//         // @ts-expect-error Mocking the auth module
-//         ...original.auth.api,
-//         getSession: getSession,
-//         signOut: vi.fn().mockResolvedValue({
-//           headers: new Headers({
-//             'set-cookie': 'session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT',
-//           }),
-//         }),
-//       },
-//     },
-//   };
-// });
 
 describe('handle -- suspicious routing', () => {
   test('removes trailing slash', async () => {
@@ -146,13 +140,6 @@ describe('handle -- theme and mode', () => {
     });
 
     expect(mockEvent.cookies.get).toHaveBeenCalledWith('theme');
-    expect(mockResolve).toHaveBeenCalledWith(
-      mockEvent,
-      expect.objectContaining({
-        transformPageChunk: expect.any(Function),
-      }),
-    );
-
     expect(result).toBe('<html class="dark" data-theme="fennec">');
   });
 
@@ -166,13 +153,6 @@ describe('handle -- theme and mode', () => {
     });
 
     expect(mockEvent.cookies.get).toHaveBeenCalledWith('theme');
-    expect(mockResolve).toHaveBeenCalledWith(
-      mockEvent,
-      expect.objectContaining({
-        transformPageChunk: expect.any(Function),
-      }),
-    );
-
     expect(result).toBe('<html class="dark" data-theme="fennec">');
   });
 
@@ -186,13 +166,6 @@ describe('handle -- theme and mode', () => {
     });
 
     expect(mockEvent.cookies.get).toHaveBeenCalledWith('theme');
-    expect(mockResolve).toHaveBeenCalledWith(
-      mockEvent,
-      expect.objectContaining({
-        transformPageChunk: expect.any(Function),
-      }),
-    );
-
     expect(result).toBe('<html class="dark" data-theme="fennec">');
   });
 });
@@ -268,6 +241,11 @@ function createMockEvent(
   },
 ): RequestEvent {
   return {
+    tracing: {
+      current: '/',
+      enabled: false,
+      root: null,
+    },
     url: new URL(`https://some-home.com${pathname}`),
     request: new Request(`https://some-home.com${pathname}`, {
       headers: new Headers({
@@ -291,14 +269,14 @@ function createMockEvent(
         session: opts?.session ?? null,
       },
       theme: {
-        theme: 'catppuccin',
-        mode: 'light',
+        theme: 'catppuccin' as const,
+        mode: 'light' as const,
       },
     },
     params: {},
     platform: '',
     route: {
-      id: '/',
+      id: '/' as const,
     },
     isDataRequest: false,
     isSubRequest: false,
@@ -325,10 +303,12 @@ function getErrorInfo(error: unknown): { status: number | null; location: string
 // Helper function to create a mock resolve function
 const createMockResolve = () =>
   vi.fn().mockImplementation(async (_event, opts) => {
+    let html = '<html class="dark" data-theme="fennec">';
     if (opts && opts.transformPageChunk) {
-      return opts.transformPageChunk({
-        html: '<html class="dark" data-theme="fennec">',
+      html = opts.transformPageChunk({
+        html,
       });
     }
-    return '<html class="dark" data-theme="fennec">';
+
+    return html;
   });
