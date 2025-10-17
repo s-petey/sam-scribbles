@@ -84,6 +84,26 @@ export const postsToTags = pgTable(
   ],
 );
 
+export const postsToRelatedPosts = pgTable(
+  'posts_to_related_posts',
+  {
+    postId: varchar({ length: SHORT_ID_LENGTH })
+      .notNull()
+      .references(() => post.id, { onDelete: 'cascade' }),
+    relatedPostId: varchar({ length: SHORT_ID_LENGTH })
+      .notNull()
+      .references(() => post.id, { onDelete: 'cascade' }),
+
+    createdAt,
+  },
+  (t) => [
+    primaryKey({
+      name: 'postIdRelatedPostIdIndex',
+      columns: [t.postId, t.relatedPostId],
+    }),
+  ],
+);
+
 // TODO: Add users -- currently there will only be me (admin)
 export const user = pgTable('user', {
   id: text().primaryKey(),
@@ -179,7 +199,24 @@ export const tagRelations = relations(tag, ({ many }) => ({
   posts: many(postsToTags),
 }));
 
-export const postRelations = relations(post, ({ many }) => ({ tags: many(postsToTags) }));
+export const postsToRelatedPostsRelations = relations(postsToRelatedPosts, ({ one }) => ({
+  post: one(post, {
+    relationName: 'relatedToPosts',
+    fields: [postsToRelatedPosts.postId],
+    references: [post.id],
+  }),
+  relatedPost: one(post, {
+    relationName: 'relatedFromPosts',
+    fields: [postsToRelatedPosts.relatedPostId],
+    references: [post.id],
+  }),
+}));
+
+export const postRelations = relations(post, ({ many }) => ({
+  tags: many(postsToTags),
+  relatedToPosts: many(postsToRelatedPosts, { relationName: 'relatedToPosts' }),
+  relatedFromPosts: many(postsToRelatedPosts, { relationName: 'relatedFromPosts' }),
+}));
 
 export const userRelations = relations(user, ({ many }) => ({ userToLinks: many(userLink) }));
 

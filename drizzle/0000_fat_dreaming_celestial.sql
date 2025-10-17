@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS "scribbles_link" (
+CREATE TABLE "scribbles_link" (
 	"shortId" varchar(10) PRIMARY KEY NOT NULL,
 	"link" text NOT NULL,
 	"private" boolean DEFAULT false NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS "scribbles_link" (
 	CONSTRAINT "scribbles_link_link_unique" UNIQUE("link")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "scribbles_post" (
+CREATE TABLE "scribbles_post" (
 	"id" varchar(10) PRIMARY KEY NOT NULL,
 	"slug" text NOT NULL,
 	"title" text NOT NULL,
@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS "scribbles_post" (
 	CONSTRAINT "scribbles_post_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "scribbles_user" (
+CREATE TABLE "scribbles_user" (
 	"id" varchar(10) PRIMARY KEY NOT NULL,
 	"username" text NOT NULL,
 	"email" text NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS "scribbles_user" (
 	CONSTRAINT "scribbles_user_username_unique" UNIQUE("username")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "scribbles_user_link" (
+CREATE TABLE "scribbles_user_link" (
 	"userId" varchar(10) NOT NULL,
 	"linkId" varchar(10) NOT NULL,
 	"status" text DEFAULT 'unread' NOT NULL,

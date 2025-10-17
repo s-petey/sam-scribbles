@@ -1,12 +1,17 @@
 <script lang="ts">
-  import { admin } from '$lib/siteLinks';
   import SquareX from '~icons/lucide/square-x';
   import { superForm } from 'sveltekit-superforms';
   import { resolve } from '$app/paths';
+  import { DateTime } from 'luxon';
 
   let { data } = $props();
 
-  const { message, submitting, enhance } = superForm(data.form, {
+  const {
+    message,
+    submitting,
+    enhance,
+    allErrors: allSyncErrors,
+  } = superForm(data.form, {
     clearOnSubmit: 'errors-and-message',
     resetForm: false,
   });
@@ -15,6 +20,13 @@
     enhance: deleteEnhance,
     allErrors,
   } = superForm(data.deleteForm);
+
+  function differenceInDays(date: Date) {
+    const luxonDate = DateTime.fromJSDate(date);
+    const daysDiff = luxonDate.diffNow('days').days;
+
+    return daysDiff >= -31 && daysDiff < 0;
+  }
 </script>
 
 <div class="grid grid-cols-2">
@@ -23,14 +35,32 @@
       disabled={$submitting}
       aria-disabled={$submitting}
       type="submit"
-      class="btn preset-tonal-primary"
-      class:disabled={$submitting}
+      class={[
+        'btn transition-all',
+        {
+          'btn-disabled': $submitting,
+          'preset-tonal-primary': !$allSyncErrors.length,
+          'preset-tonal-error': $allSyncErrors.length > 0,
+        },
+      ]}
     >
       Sync Posts
     </button>
   </form>
 
   <div>
+    {#if $allSyncErrors.length}
+      <ul>
+        {#each $allSyncErrors as error (error.path)}
+          <li>
+            {#each error.messages as message (message)}
+              <pre>{message}</pre>
+            {/each}
+          </li>
+        {/each}
+      </ul>
+    {/if}
+
     {#if typeof $message === 'object'}
       <h4 class="h4">Created amount: {$message.created}</h4>
       <h4 class="h4">Updated amount: {$message.updated}</h4>
@@ -42,13 +72,20 @@
 
 <form method="post" action="?/delete" class="grid grid-cols-2 gap-2" use:deleteEnhance>
   {#each data.posts as post (post.slug)}
-    <span class="btn-group preset-outlined-surface-200-800 grid grid-cols-4 p-2">
+    {@const isNew = differenceInDays(post.createdAt)}
+    <span class="btn-group preset-outlined-surface-200-800 grid grid-cols-5 p-2">
       <a
-        href={resolve(`${admin['Admin Posts'].href}/${post.slug}`)}
-        class="btn preset-tonal-secondary hover:preset-outlined-secondary-500 col-span-3 justify-start truncate"
+        href={resolve('/admin/posts/[slug]', { slug: post.slug })}
+        class="btn preset-tonal-secondary hover:preset-outlined-secondary-500 col-span-3 h-full justify-start truncate"
+        class:col-span-4={!isNew}
       >
         {post.title}
       </a>
+
+      {#if isNew}
+        <span class="badge preset-tonal-success col-span-1 h-full">NEW</span>
+      {/if}
+
       <button
         type="submit"
         name="slug"

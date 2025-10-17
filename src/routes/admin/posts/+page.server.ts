@@ -1,7 +1,7 @@
 import { getAndRefreshSession } from '$lib/auth.server';
 import { db } from '$lib/server/db';
 import { post, postsToTags, tag } from '$lib/server/db/schema';
-import { postMetadataSchema } from '$lib/zodSchema';
+import { postMetadataSchema, type PostMetadata } from '$lib/zodSchema';
 import { error, type Actions } from '@sveltejs/kit';
 import { and, eq, notInArray } from 'drizzle-orm';
 import { DateTime } from 'luxon';
@@ -20,7 +20,9 @@ export const load = (async () => {
   const form = await superValidate(zod4(schema));
   const deleteForm = await superValidate(zod4(deleteSchema));
 
-  const posts = await db.query.post.findMany({ columns: { title: true, slug: true } });
+  const posts = await db.query.post.findMany({
+    columns: { title: true, slug: true, createdAt: true },
+  });
 
   return { form, posts, deleteForm };
 }) satisfies PageServerLoad;
@@ -38,17 +40,24 @@ export const actions: Actions = {
 
     // TODO: This needs to import `*.md` and `svx`?
     const postsImport = Object.entries(import.meta.glob('../../../../posts/*.md'));
-    const posts = await Promise.all(
-      postsImport.map(async ([path, resolver]) => {
-        // TODO: See if I can get better TS here...
-        // @ts-expect-error We don't know that metadata exists in TS world!
-        const { metadata } = await resolver();
-        const parsedMetadata = postMetadataSchema.parse(metadata);
-        const slug = path.split('/').pop()?.slice(0, -3) ?? '';
+    const posts: (PostMetadata & { slug: string })[] = [];
 
-        return { ...parsedMetadata, slug };
-      }),
-    );
+    for (const [path, resolver] of postsImport) {
+      // TODO: See if I can get better TS here...
+      // @ts-expect-error We don't know that metadata exists in TS world!
+      const { metadata } = await resolver();
+      const maybeMeta = postMetadataSchema.safeParse(metadata);
+      if (maybeMeta.success === false) {
+        return setError(form, '', [
+          `${path.split('/').pop()?.slice(0, -3) ?? ''}.md has errors`,
+          JSON.stringify(maybeMeta.error.format()),
+        ]);
+      }
+      const { data: parsedMetadata } = maybeMeta;
+      const slug = path.split('/').pop()?.slice(0, -3) ?? '';
+
+      posts.push({ ...parsedMetadata, slug });
+    }
 
     // TODO: This doesn't catch if the post has never been created ...
     // Only update posts from the last week
