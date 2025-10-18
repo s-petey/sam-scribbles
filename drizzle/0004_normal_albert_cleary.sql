@@ -1,4 +1,4 @@
-CREATE TABLE "scribbles_posts_to_related_posts" (
+CREATE TABLE IF NOT EXISTS "scribbles_posts_to_related_posts" (
 	"postId" varchar(10) NOT NULL,
 	"relatedPostId" varchar(10) NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,

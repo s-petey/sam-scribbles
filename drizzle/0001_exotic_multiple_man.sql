@@ -1,16 +1,16 @@
-CREATE TABLE "scribbles_links_to_tags" (
+CREATE TABLE IF NOT EXISTS "scribbles_links_to_tags" (
 	"linkId" varchar(10) NOT NULL,
 	"tag" text NOT NULL,
 	CONSTRAINT "scribbles_links_to_tags_linkId_tag_pk" PRIMARY KEY("linkId","tag")
 );
 --> statement-breakpoint
-CREATE TABLE "scribbles_posts_to_tags" (
+CREATE TABLE IF NOT EXISTS "scribbles_posts_to_tags" (
 	"postId" varchar(10) NOT NULL,
 	"tag" text NOT NULL,
 	CONSTRAINT "scribbles_posts_to_tags_postId_tag_pk" PRIMARY KEY("postId","tag")
 );
 --> statement-breakpoint
-CREATE TABLE "scribbles_tags" (
+CREATE TABLE IF NOT EXISTS "scribbles_tags" (
 	"name" text PRIMARY KEY NOT NULL
 );
 --> statement-breakpoint
