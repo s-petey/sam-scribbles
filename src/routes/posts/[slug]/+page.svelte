@@ -1,6 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
-  import { DateTime } from 'luxon';
+  import { isNew, isRecentlyUpdated } from '$lib/time';
+  import { DateTime } from 'effect';
 
   let { data } = $props();
 
@@ -11,34 +12,7 @@
     meta: { isPrivate, date, title, reading_time, tags, updated },
   } = data;
 
-  const dateTime = DateTime.fromJSDate(date);
-  if (!dateTime.isValid) {
-    throw new Error('Invalid date');
-  }
-
-  const dateIso = dateTime.toISO() ?? '';
-
-  function isNew(compareDate: DateTime) {
-    const daysDiff = compareDate.diffNow('days').days;
-
-    return daysDiff >= -31 && daysDiff < 0;
-  }
-
-  function isRecentUpdate(compareDate: Date | undefined) {
-    if (!compareDate) {
-      return false;
-    }
-
-    const luxonCompare = DateTime.fromJSDate(compareDate);
-
-    if (!luxonCompare.isValid) {
-      return false;
-    }
-
-    const monthsDiff = luxonCompare.diffNow('months').months;
-
-    return monthsDiff >= -4 && monthsDiff < 0;
-  }
+  const dateIso = DateTime.formatIso(DateTime.unsafeMake(date));
 </script>
 
 <svelte:head>
@@ -82,11 +56,11 @@
     <div class="mt-4 mb-3 uppercase">
       <div class="flex justify-center gap-1">
         <time datetime={dateIso}>
-          {dateTime.toLocaleString()}
+          {DateTime.unsafeMake(date).toLocaleString()}
         </time>
         <span>&bull;</span>
         <span>{reading_time.text}</span>
-        {#if isNew(dateTime)}
+        {#if isNew(date)}
           <span>&bull;</span>
           <span class="text-primary-800 font-bold">NEW</span>
         {/if}
@@ -108,7 +82,7 @@
     </div>
 
     <!-- TODO: Should this fall back to date? date || updated -->
-    {#if isRecentUpdate(updated)}
+    {#if isRecentlyUpdated(updated)}
       <p class="text-tertiary-800-200 flex w-full flex-col items-center font-normal italic">
         Recently updated!
       </p>

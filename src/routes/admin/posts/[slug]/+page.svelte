@@ -1,8 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
+  import { isNew } from '$lib/time';
   import { Pagination } from '@skeletonlabs/skeleton-svelte';
-  import { DateTime } from 'luxon';
+  import { DateTime } from 'effect';
   import type { FormEventHandler } from 'svelte/elements';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { superForm } from 'sveltekit-superforms';
@@ -81,13 +82,6 @@
     // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
     goto(`?${searchParams.toString()}`, { keepFocus: true });
   }
-
-  function differenceInDays(date: Date) {
-    const luxonDate = DateTime.fromJSDate(date);
-    const daysDiff = luxonDate.diffNow('days').days;
-
-    return daysDiff >= -31 && daysDiff < 0;
-  }
 </script>
 
 <svelte:head>
@@ -98,7 +92,7 @@
 <section class="card preset-outlined-primary-500 p-4">
   <h2 class="h3 flex flex-row items-center gap-2">
     {data.post.title}
-    {#if differenceInDays(data.post.createdAt)}
+    {#if isNew(data.post.createdAt)}
       <span class="badge preset-filled-secondary-500">NEW</span>
     {/if}
   </h2>
@@ -107,8 +101,12 @@
     Reading Time: {Math.round(data.post.readingTimeSeconds / 60)}
   </p>
   <p class="text-lg font-bold">Word count: {data.post.readingTimeWords}</p>
-  <p class="text-sm">Created on: {data.post.createdAt.toLocaleString()}</p>
-  <p class="text-sm">Updated on: {data.post.updatedAt.toLocaleString()}</p>
+  <p class="text-sm">
+    Created on: {DateTime.unsafeMake(data.post.createdAt).toLocaleString()}
+  </p>
+  <p class="text-sm">
+    Updated on: {DateTime.unsafeMake(data.post.updatedAt).toLocaleString()}
+  </p>
 
   <div class="flex flex-wrap items-center justify-start">
     {#each data.post.tags as tag (tag.tag)}
