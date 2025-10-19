@@ -17,6 +17,28 @@
   }
 
   const dateIso = dateTime.toISO() ?? '';
+
+  function isNew(compareDate: DateTime) {
+    const daysDiff = compareDate.diffNow('days').days;
+
+    return daysDiff >= -31 && daysDiff < 0;
+  }
+
+  function isRecentUpdate(compareDate: Date | undefined) {
+    if (!compareDate) {
+      return false;
+    }
+
+    const luxonCompare = DateTime.fromJSDate(compareDate);
+
+    if (!luxonCompare.isValid) {
+      return false;
+    }
+
+    const monthsDiff = luxonCompare.diffNow('months').months;
+
+    return monthsDiff >= -4 && monthsDiff < 0;
+  }
 </script>
 
 <svelte:head>
@@ -64,7 +86,7 @@
         </time>
         <span>&bull;</span>
         <span>{reading_time.text}</span>
-        {#if dateTime.diffNow('days').days < 31}
+        {#if isNew(dateTime)}
           <span>&bull;</span>
           <span class="text-primary-800 font-bold">NEW</span>
         {/if}
@@ -86,7 +108,7 @@
     </div>
 
     <!-- TODO: Should this fall back to date? date || updated -->
-    {#if updated !== undefined && DateTime.fromJSDate(updated).diffNow('months').years <= 4}
+    {#if isRecentUpdate(updated)}
       <p class="text-tertiary-800-200 flex w-full flex-col items-center font-normal italic">
         Recently updated!
       </p>
@@ -125,6 +147,23 @@
 	</div> -->
 
   <!-- <PopularPosts /> -->
-
-  <!-- <RelatedPosts {related_posts} /> -->
 </article>
+
+<!-- TODO: Add a page for the timeline view (when they were linked, or order they were created) for related posts -->
+{#if (data.relatedPosts?.length || 0) > 0}
+  <div class="m-4">
+    <h3 class="mb-8 text-xl">Related posts...</h3>
+
+    <div class="relative grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {#each data.relatedPosts as post (post.slug)}
+        <a data-sveltekit-reload href={resolve(`/posts/${post.slug}`)} class="h-full">
+          <aside class="card preset-outlined-secondary-500 p-2">
+            <h3 class="w-full truncate text-xl">
+              {post.title}
+            </h3>
+          </aside>
+        </a>
+      {/each}
+    </div>
+  </div>
+{/if}
