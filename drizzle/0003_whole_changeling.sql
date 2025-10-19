@@ -1,4 +1,4 @@
-CREATE TABLE "scribbles_account" (
+CREATE TABLE IF NOT EXISTS "scribbles_account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"accountId" text NOT NULL,
 	"providerId" text NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE "scribbles_account" (
 	"updatedAt" timestamp NOT NULL
 );
 --> statement-breakpoint
-CREATE TABLE "scribbles_session" (
+CREATE TABLE IF NOT EXISTS "scribbles_session" (
 	"id" text PRIMARY KEY NOT NULL,
 	"token" text NOT NULL,
 	"ipAddress" text,
@@ -26,7 +26,7 @@ CREATE TABLE "scribbles_session" (
 	CONSTRAINT "scribbles_session_token_unique" UNIQUE("token")
 );
 --> statement-breakpoint
-CREATE TABLE "scribbles_verification" (
+CREATE TABLE IF NOT EXISTS "scribbles_verification" (
 	"id" text PRIMARY KEY NOT NULL,
 	"identifier" text NOT NULL,
 	"value" text NOT NULL,

@@ -85,30 +85,38 @@
   </div>
 
   <div class="col-span-2">
-    <label class="flex items-center space-x-2" for="tags">Available Tags:</label>
-    <input type="hidden" name="tags" bind:value={$form.tags} {...$constraints.tags} />
+    <label
+      class="label border-secondary-300-700 flex items-center rounded-lg border p-2 md:col-span-4"
+    >
+      <div>
+        <span class="label-text">Available Tags:</span>
 
-    <div class="flex gap-2">
-      {#each data.tags as tag (tag)}
-        <button
-          class={`chip ${
-            ($form.tags ?? []).includes(tag)
-              ? 'preset-outlined-secondary-500'
-              : 'preset-outlined-surface-500'
-          }`}
-          type="button"
-          onclick={() => {
-            if ($form.tags?.includes(tag)) {
-              $form.tags = $form.tags.filter((t) => t !== tag);
-            } else {
-              $form.tags = [...($form.tags ?? []), tag];
-            }
-          }}
-        >
-          {tag}
-        </button>
-      {/each}
-    </div>
+        <div class="flex items-center">
+          <div class="flex flex-wrap gap-2">
+            {#each data.tags as tag (tag)}
+              <button
+                class={`chip ${
+                  ($form.tags ?? []).includes(tag)
+                    ? 'preset-outlined-secondary-500'
+                    : 'preset-outlined-surface-500'
+                }`}
+                type="button"
+                onclick={() => {
+                  if ($form.tags?.includes(tag)) {
+                    $form.tags = $form.tags.filter((t) => t !== tag);
+                  } else {
+                    $form.tags = [...($form.tags ?? []), tag];
+                  }
+                }}
+              >
+                {tag}
+              </button>
+            {/each}
+          </div>
+        </div>
+      </div>
+    </label>
+    <input type="hidden" name="tags" bind:value={$form.tags} {...$constraints.tags} />
 
     {#if $errors.tags}
       <span class="invalid">{$errors.tags}</span>

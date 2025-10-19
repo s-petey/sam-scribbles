@@ -12,6 +12,11 @@ import { SHORT_ID_LENGTH, shortId } from '../../shortener';
 
 const pgTable = pgTableCreator((name) => `scribbles_${name}`);
 
+const createdAt = timestamp().notNull().defaultNow();
+const updatedAt = timestamp()
+  .notNull()
+  .$onUpdate(() => new Date());
+
 export const post = pgTable('post', {
   id: varchar({ length: SHORT_ID_LENGTH }).primaryKey().$default(shortId),
   slug: text().notNull().unique(),
@@ -22,8 +27,8 @@ export const post = pgTable('post', {
   readingTimeSeconds: integer().notNull(),
   readingTimeWords: integer().notNull(),
 
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp().notNull(),
+  createdAt,
+  updatedAt,
 
   // TODO: Add relation to tags table / add array of strings?
   // tags,
@@ -37,10 +42,8 @@ export const link = pgTable('link', {
   link: text().notNull().unique(),
   private: boolean().notNull().default(false),
 
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const tag = pgTable('tag', { name: text().primaryKey().notNull() });
@@ -81,6 +84,26 @@ export const postsToTags = pgTable(
   ],
 );
 
+export const postsToRelatedPosts = pgTable(
+  'posts_to_related_posts',
+  {
+    postId: varchar({ length: SHORT_ID_LENGTH })
+      .notNull()
+      .references(() => post.id, { onDelete: 'cascade' }),
+    relatedPostId: varchar({ length: SHORT_ID_LENGTH })
+      .notNull()
+      .references(() => post.id, { onDelete: 'cascade' }),
+
+    createdAt,
+  },
+  (t) => [
+    primaryKey({
+      name: 'postIdRelatedPostIdIndex',
+      columns: [t.postId, t.relatedPostId],
+    }),
+  ],
+);
+
 // TODO: Add users -- currently there will only be me (admin)
 export const user = pgTable('user', {
   id: text().primaryKey(),
@@ -90,10 +113,8 @@ export const user = pgTable('user', {
   role: text({ enum: ['admin', 'user', 'creator'] }),
   image: text(),
 
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const session = pgTable('session', {
@@ -106,8 +127,8 @@ export const session = pgTable('session', {
     .references(() => user.id, { onDelete: 'cascade' }),
 
   expiresAt: timestamp().notNull(),
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp().notNull(),
+  createdAt,
+  updatedAt,
 });
 
 export const account = pgTable('account', {
@@ -126,10 +147,8 @@ export const account = pgTable('account', {
   accessTokenExpiresAt: timestamp(),
   refreshTokenExpiresAt: timestamp(),
 
-  createdAt: timestamp().notNull(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const verification = pgTable('verification', {
@@ -138,10 +157,8 @@ export const verification = pgTable('verification', {
   value: text().notNull(),
 
   expiresAt: timestamp().notNull(),
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const userLink = pgTable('user_link', {
@@ -158,10 +175,8 @@ export const userLink = pgTable('user_link', {
 
   // TODO: Add tags
 
-  createdAt: timestamp().notNull().defaultNow(),
-  updatedAt: timestamp()
-    .notNull()
-    .$onUpdate(() => new Date()),
+  createdAt,
+  updatedAt,
 });
 
 export const postsToTagsRelations = relations(postsToTags, ({ one }) => ({
@@ -184,7 +199,24 @@ export const tagRelations = relations(tag, ({ many }) => ({
   posts: many(postsToTags),
 }));
 
-export const postRelations = relations(post, ({ many }) => ({ tags: many(postsToTags) }));
+export const postsToRelatedPostsRelations = relations(postsToRelatedPosts, ({ one }) => ({
+  post: one(post, {
+    relationName: 'relatedToPosts',
+    fields: [postsToRelatedPosts.postId],
+    references: [post.id],
+  }),
+  relatedPost: one(post, {
+    relationName: 'relatedFromPosts',
+    fields: [postsToRelatedPosts.relatedPostId],
+    references: [post.id],
+  }),
+}));
+
+export const postRelations = relations(post, ({ many }) => ({
+  tags: many(postsToTags),
+  relatedToPosts: many(postsToRelatedPosts, { relationName: 'relatedToPosts' }),
+  relatedFromPosts: many(postsToRelatedPosts, { relationName: 'relatedFromPosts' }),
+}));
 
 export const userRelations = relations(user, ({ many }) => ({ userToLinks: many(userLink) }));
 

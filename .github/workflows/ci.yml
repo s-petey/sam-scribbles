@@ -1,0 +1,139 @@
+name: 🔍 CI (Tests, Lint & Types)
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  ALLOWED_EMAILS: ${{ secrets.ALLOWED_EMAILS }}
+  NODE_ENV: ${{ secrets.NODE_ENV }}
+  LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+  BASELIME_API_KEY: ${{ secrets.BASELIME_API_KEY }}
+
+jobs:
+  setup:
+    name: 🏗️ Setup Dependencies
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        bun-version: [1.2.18]
+    outputs:
+      playwright-version: ${{ steps.playwright-version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Bun ${{ matrix.bun-version }}
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.bun-version }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        id: deps-cache
+        with:
+          path: |
+            node_modules
+            ~/.bun/install/cache
+          key: deps-${{ runner.os }}-bun-${{ matrix.bun-version }}-${{ hashFiles('package.json', 'bun.lock') }}
+          restore-keys: |
+            deps-${{ runner.os }}-bun-${{ matrix.bun-version }}-
+
+      - name: Install dependencies
+        if: steps.deps-cache.outputs.cache-hit != 'true'
+        run: bun install --frozen-lockfile
+
+      - name: Get Playwright version
+        id: playwright-version
+        run: echo "version=$(bunx playwright --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps
+
+      - name: Sync SvelteKit
+        run: bun run sync
+
+  lint-and-types:
+    name: ⚔️ Check (Lint & Types)
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      matrix:
+        bun-version: [1.2.18]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Bun ${{ matrix.bun-version }}
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.bun-version }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.bun/install/cache
+          key: deps-${{ runner.os }}-bun-${{ matrix.bun-version }}-${{ hashFiles('package.json', 'bun.lock') }}
+
+      - name: Sync SvelteKit
+        run: bun run sync
+
+      - name: Run lint
+        run: bun run lint
+
+      - name: Run svelte-check
+        run: bun run check
+
+  unit-tests:
+    name: 🧪 Unit Tests
+    runs-on: ubuntu-latest
+    needs: setup
+    strategy:
+      matrix:
+        bun-version: [1.2.18]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Bun ${{ matrix.bun-version }}
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: ${{ matrix.bun-version }}
+
+      - name: Restore dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.bun/install/cache
+          key: deps-${{ runner.os }}-bun-${{ matrix.bun-version }}-${{ hashFiles('package.json', 'bun.lock') }}
+
+      - name: Restore Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ needs.setup.outputs.playwright-version }}
+
+      - name: Sync SvelteKit
+        run: bun run sync
+
+      - name: Run tests
+        run: bun run test
