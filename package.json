@@ -23,7 +23,7 @@
     "lint": "eslint ./src && prettier --check ./src",
     "fix": "eslint ./ --fix && prettier --write ./src",
     "format": "prettier --write .",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "devDependencies": {
     "@iconify/json": "^2.2.394",
