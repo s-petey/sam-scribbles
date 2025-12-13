@@ -1,6 +1,6 @@
 # use the official Bun image
 # see all versions at https://hub.docker.com/r/oven/bun/tags
-FROM oven/bun:1.2.18 AS base
+FROM oven/bun:1.3.4 AS base
 ARG NODE_ENV=production
 ARG DATABASE_URL
 ARG BETTER_AUTH_SECRET
