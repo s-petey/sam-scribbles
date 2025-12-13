@@ -18,8 +18,8 @@
       },
       "devDependencies": {
         "@iconify/json": "^2.2.394",
-        "@skeletonlabs/skeleton": "^4.0.0",
-        "@skeletonlabs/skeleton-svelte": "^4.0.0",
+        "@skeletonlabs/skeleton": "^4.8.0",
+        "@skeletonlabs/skeleton-svelte": "^4.8.0",
         "@sveltejs/adapter-node": "^5.3.3",
         "@sveltejs/kit": "^2.46.4",
         "@sveltejs/vite-plugin-svelte": "^6.2.1",
