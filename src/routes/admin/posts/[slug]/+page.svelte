@@ -197,18 +197,47 @@
     {#if data.pagination.totalPages > 1}
       <div class="flex justify-center">
         <Pagination
-          data={derivedAvailablePosts}
           count={data.pagination.totalCount}
           page={data.pagination.page}
           pageSize={data.pagination.limit}
           onPageChange={(value) => handlePageChange(value.page)}
         >
+          <Pagination.FirstTrigger type="button">
+            <LucideChevronLeft class="text-base" />
+          </Pagination.FirstTrigger>
+          <Pagination.PrevTrigger type="button">
+            <LucideArrowLeft class="text-base" />
+          </Pagination.PrevTrigger>
+          <Pagination.Context>
+            {#snippet children(pagination)}
+              {#each pagination().pages as page, index (page)}
+                {#if page.type === 'page'}
+                  <Pagination.Item {...page}>
+                    {page.value}
+                  </Pagination.Item>
+                {:else}
+                  <Pagination.Ellipsis {index}>
+                    <LucideEllipsis class="text-base" />
+                  </Pagination.Ellipsis>
+                {/if}
+              {/each}
+            {/snippet}
+          </Pagination.Context>
+          <Pagination.NextTrigger type="button">
+            <LucideArrowRight class="text-base" />
+          </Pagination.NextTrigger>
+          <Pagination.LastTrigger type="button">
+            <LucideChevronRight class="text-base" />
+          </Pagination.LastTrigger>
+        </Pagination>
+
+        <!-- <Pagination data={derivedAvailablePosts}>
           {#snippet labelEllipsis()}<LucideEllipsis class="text-base" />{/snippet}
           {#snippet labelNext()}<LucideArrowRight class="text-base" />{/snippet}
           {#snippet labelPrevious()}<LucideArrowLeft class="text-base" />{/snippet}
           {#snippet labelFirst()}<LucideChevronLeft class="text-base" />{/snippet}
           {#snippet labelLast()}<LucideChevronRight class="text-base" />{/snippet}
-        </Pagination>
+        </Pagination> -->
       </div>
     {/if}
 

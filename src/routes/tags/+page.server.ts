@@ -5,6 +5,7 @@ import { inArray } from 'drizzle-orm';
 import { z } from 'zod';
 
 const routeQueryParams = z.object({
+  // FIXME: On this page and the admin / child page it fails for the offset...
   page: z.coerce.number().optional().default(1),
   limit: z.coerce.number().optional().default(25),
   tags: z

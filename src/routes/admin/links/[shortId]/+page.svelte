@@ -50,11 +50,25 @@
       $form.tags = e.value;
     }}
     value={$form.tags}
-    placeholder="Tags"
   >
-    {#snippet buttonDelete()}
-      <DeleteIcon class="text-base" />
-    {/snippet}
+    <TagsInput.Control>
+      <TagsInput.Context>
+        {#snippet children(tagsInput)}
+          {#each tagsInput().value as value, index (index)}
+            <TagsInput.Item {value} {index}>
+              <TagsInput.ItemPreview>
+                <TagsInput.ItemText>{value}</TagsInput.ItemText>
+                <TagsInput.ItemDeleteTrigger>
+                  <DeleteIcon class="text-base" />
+                </TagsInput.ItemDeleteTrigger>
+              </TagsInput.ItemPreview>
+              <TagsInput.ItemInput />
+            </TagsInput.Item>
+          {/each}
+        {/snippet}
+      </TagsInput.Context>
+      <TagsInput.Input placeholder="Tags" />
+    </TagsInput.Control>
   </TagsInput>
 
   <div class="col-span-2">
