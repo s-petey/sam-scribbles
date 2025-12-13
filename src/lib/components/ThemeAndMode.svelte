@@ -10,9 +10,14 @@
   let { currentTheme, currentThemeMode }: { currentTheme: Theme; currentThemeMode: ThemeMode } =
     $props();
 
-  let theme = $derived<{ theme: Theme; mode: ThemeMode }>({
+  let theme = $state<{ theme: Theme; mode: ThemeMode }>({
     theme: currentTheme,
     mode: currentThemeMode,
+  });
+
+  $effect(() => {
+    theme.theme = currentTheme;
+    theme.mode = currentThemeMode;
   });
 
   // Set theme client-side
@@ -46,16 +51,15 @@
     use:enhance={setTheme}
     class="flex gap-2"
     bind:this={form}
-    action="/?/setTheme&theme={currentTheme}&redirectTo={page.url.pathname}"
+    action="/?/setTheme&theme={theme.theme}&redirectTo={page.url.pathname}"
   >
     <Combobox
-      value={[currentTheme]}
-      defaultValue={[currentTheme]}
+      value={[theme.theme]}
+      defaultValue={[theme.theme]}
       onValueChange={(e) => {
         const newTheme = e.value.at(0);
-        console.log('newTheme', newTheme);
-        currentTheme = isValidTheme(newTheme) ? newTheme : 'catppuccin';
-        form.action = `/?/setTheme&theme=${currentTheme}&redirectTo=${page.url.pathname}`;
+        theme.theme = isValidTheme(newTheme) ? newTheme : 'catppuccin';
+        form.action = `/?/setTheme&theme=${theme.theme}&redirectTo=${page.url.pathname}`;
         form.requestSubmit();
       }}
       onInputValueChange={(e) => {
@@ -75,7 +79,7 @@
     >
       <Combobox.Label />
       <Combobox.Control>
-        <Combobox.Input value={[currentTheme]} />
+        <Combobox.Input value={[theme.theme]} />
         <Combobox.Trigger />
       </Combobox.Control>
       <Portal>

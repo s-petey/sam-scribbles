@@ -1,4 +1,5 @@
-import { page } from '@vitest/browser/context';
+// TODO: Fix this is replaced with // vitest/browser
+import { page } from 'vitest/browser';
 import { flushSync } from 'svelte';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';

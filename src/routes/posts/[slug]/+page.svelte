@@ -12,6 +12,7 @@
     meta: { isPrivate, date, title, reading_time, tags, updated },
   } = data;
 
+  // TODO: Should I add a "serializer" for the "date" to always be DateTime?
   const dateIso = DateTime.formatIso(DateTime.unsafeMake(date));
 </script>
 

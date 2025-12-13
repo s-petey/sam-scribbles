@@ -1,7 +1,7 @@
 import { describe, test, expect } from 'vitest';
 import LinkWithIcon from './LinkWithIcon.svelte';
 import { render } from 'vitest-browser-svelte';
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 
 describe('LinkWithIcon.svelte', () => {
   test('renders YouTube icon for youtube.com links', async () => {

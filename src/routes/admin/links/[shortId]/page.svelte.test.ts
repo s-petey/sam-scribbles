@@ -1,4 +1,4 @@
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from './+page.svelte';
@@ -29,6 +29,13 @@ vi.mock('$lib/server/db', () => ({
       },
     },
   },
+}));
+
+vi.mock('$lib/auth.server', () => ({
+  getAndRefreshSession: vi.fn().mockResolvedValue({
+    user: { id: '1', name: 'Test User', role: 'admin' },
+    session: { id: '1' },
+  }),
 }));
 
 describe('/+page.svelte', () => {

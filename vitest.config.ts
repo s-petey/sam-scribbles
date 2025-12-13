@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import { playwright } from '@vitest/browser-playwright';
 
 export default defineConfig({
   test: {
@@ -9,12 +10,11 @@ export default defineConfig({
         extends: './vite.config.ts',
         test: {
           name: 'client',
-          environment: 'browser',
           // Timeout for browser tests - prevent hanging on element lookups
           testTimeout: process.env.CI === 'true' ? 4000 : 2000,
           browser: {
             enabled: true,
-            provider: 'playwright',
+            provider: playwright(),
             // Multiple browser instances for better performance
             // Uses single Vite server with shared caching
             instances: [

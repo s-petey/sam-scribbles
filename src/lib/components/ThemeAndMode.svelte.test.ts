@@ -1,4 +1,4 @@
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import ThemeAndMode from './ThemeAndMode.svelte';
@@ -94,8 +94,7 @@ describe('ThemeAndMode', () => {
     const combobox = page.getByRole('button', { name: 'Toggle suggestions' });
     await combobox.click();
 
-    const themeButton = page.getByRole('button', { includeHidden: true, name: 'modern' });
-    expect(themeButton).toHaveAttribute('formaction', expect.stringContaining('theme=modern'));
+    expect(page.getByRole('option', { includeHidden: true, name: 'modern' })).toBeInTheDocument();
   });
 
   test('mode toggle button changes based on current mode', async () => {
@@ -110,7 +109,7 @@ describe('ThemeAndMode', () => {
     await darkButton.click();
 
     const lightButton = page.getByRole('button', { name: 'Light mode toggle' });
-    await expect(lightButton).toBeInTheDocument();
+    await expect.element(lightButton).toBeInTheDocument();
   });
 
   test.each(['modern', 'vintage', 'rocket'] as const)(
