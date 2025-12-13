@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 // @ts-check
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { seed } from 'drizzle-seed';
@@ -27,10 +28,15 @@ const RANDOM_PROGRAMMING_TAGS = [
 ];
 
 const {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- picking value off...
   user: _user,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- picking value off...
   account: _account,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- picking value off...
   userLink: _userLink,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- picking value off...
   session: _session,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- picking value off...
   verification: _verification,
   ...partialSchema
 } = schema;
