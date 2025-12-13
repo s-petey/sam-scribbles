@@ -14,6 +14,8 @@ const schema = z.object({});
 
 const deleteSchema = z.object({ slug: z.string().min(1, 'Slug is required') });
 
+const SEVEN_DAYS = Duration.days(7);
+
 type Message = { updated: number; created: number };
 
 export const load = (async () => {
@@ -62,16 +64,14 @@ export const actions: Actions = {
 
       posts.push(postData);
 
-      // Only update / create posts from the last week
-      const sevenDays = Duration.days(7);
-
       // TODO: This doesn't catch if the post has never been created ...
       if (parsedMetadata.updated !== undefined) {
         const dateMillis = Duration.millis(parsedMetadata.updated.getTime());
         const nowMillis = Duration.millis(Date.now());
         const difference = Duration.subtract(nowMillis, dateMillis);
 
-        if (Duration.lessThanOrEqualTo(difference, sevenDays)) {
+        // Only update / create posts from the last week
+        if (Duration.lessThanOrEqualTo(difference, SEVEN_DAYS)) {
           postsToUpdate.push(postData);
         }
       }
@@ -80,7 +80,8 @@ export const actions: Actions = {
       const nowMillis = Duration.millis(Date.now());
       const createdDifference = Duration.subtract(nowMillis, createdDateMillis);
 
-      if (Duration.lessThanOrEqualTo(createdDifference, sevenDays)) {
+      // Only update / create posts from the last week
+      if (Duration.lessThanOrEqualTo(createdDifference, SEVEN_DAYS)) {
         postsToCreate.push(postData);
       }
     }

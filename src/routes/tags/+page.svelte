@@ -220,15 +220,6 @@
           <LucideChevronRight class="text-base" />
         </Pagination.LastTrigger>
       </Pagination>
-      <!-- <Pagination
-        data={[...data.posts, ...data.links]}
-      >
-        {#snippet labelEllipsis()}<LucideEllipsis class="text-base" />{/snippet}
-        {#snippet labelNext()}<LucideArrowRight class="text-base" />{/snippet}
-        {#snippet labelPrevious()}<LucideArrowLeft class="text-base" />{/snippet}
-        {#snippet labelFirst()}<LucideChevronLeft class="text-base" />{/snippet}
-        {#snippet labelLast()}<LucideChevronRight class="text-base" />{/snippet}
-      </Pagination> -->
     </footer>
   {/if}
 {/if}
