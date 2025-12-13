@@ -19,7 +19,11 @@
   let { data } = $props();
   let selectedId = $state<string | null>(null);
 
-  const { form, enhance, constraints, errors, reset, submitting } = superForm(data.form);
+  const { form, enhance, constraints, errors, reset, submitting } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.form,
+  );
 
   function handleQueryChange(
     event: SubmitEvent & {

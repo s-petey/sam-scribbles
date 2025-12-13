@@ -11,7 +11,11 @@
     $props();
 
   let theme = $state<{ theme: Theme; mode: ThemeMode }>({
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
     theme: currentTheme,
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
     mode: currentThemeMode,
   });
 

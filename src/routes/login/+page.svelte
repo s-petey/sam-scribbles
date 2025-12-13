@@ -3,7 +3,11 @@
 
   const { data } = $props();
 
-  const { form, enhance, errors, constraints } = superForm(data.form);
+  const { form, enhance, errors, constraints } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.form,
+  );
 </script>
 
 <svelte:head>

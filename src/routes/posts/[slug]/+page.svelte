@@ -10,6 +10,8 @@
   const {
     Content,
     meta: { isPrivate, date, title, reading_time, tags, updated },
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
   } = data;
 
   // TODO: Should I add a "serializer" for the "date" to always be DateTime?

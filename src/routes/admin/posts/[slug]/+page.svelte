@@ -16,9 +16,14 @@
 
   let { data } = $props();
 
-  const { enhance, submitting, message, reset } = superForm(data.form, {
-    clearOnSubmit: 'errors-and-message',
-  });
+  const { enhance, submitting, message, reset } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.form,
+    {
+      clearOnSubmit: 'errors-and-message',
+    },
+  );
 
   const {
     form: relatedPostsForm,
@@ -28,10 +33,15 @@
     reset: relatedPostsReset,
     isTainted,
     tainted,
-  } = superForm(data.relatedPostsForm, {
-    clearOnSubmit: 'errors-and-message',
-    invalidateAll: 'pessimistic',
-  });
+  } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.relatedPostsForm,
+    {
+      clearOnSubmit: 'errors-and-message',
+      invalidateAll: 'pessimistic',
+    },
+  );
 
   const { derivedRelatedPosts, derivedAvailablePosts } = $derived.by(() => {
     const availablePosts: typeof data.combinedPosts = [];

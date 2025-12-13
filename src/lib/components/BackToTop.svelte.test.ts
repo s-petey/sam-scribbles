@@ -7,7 +7,7 @@ import BackToTop from './BackToTop.svelte';
 
 describe('BackToTop', () => {
   let originalScrollTo: typeof window.scrollTo;
-  let mockScrollTo: ReturnType<typeof vi.fn>;
+  let mockScrollTo: typeof window.scrollTo;
 
   beforeEach(() => {
     // Mock window.scrollTo

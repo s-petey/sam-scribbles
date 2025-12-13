@@ -11,15 +11,24 @@
     submitting,
     enhance,
     allErrors: allSyncErrors,
-  } = superForm(data.form, {
-    clearOnSubmit: 'errors-and-message',
-    resetForm: false,
-  });
+  } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.form,
+    {
+      clearOnSubmit: 'errors-and-message',
+      resetForm: false,
+    },
+  );
   const {
     submitting: deleteSubmitting,
     enhance: deleteEnhance,
     allErrors,
-  } = superForm(data.deleteForm);
+  } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.deleteForm,
+  );
 </script>
 
 <div class="grid grid-cols-2">

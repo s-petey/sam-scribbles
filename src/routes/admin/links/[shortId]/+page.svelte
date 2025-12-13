@@ -5,10 +5,15 @@
 
   let { data } = $props();
 
-  const { form, enhance, constraints, errors, submitting } = superForm(data.form, {
-    // Prevent the tags from being de-selected
-    resetForm: false,
-  });
+  const { form, enhance, constraints, errors, submitting } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.form,
+    {
+      // Prevent the tags from being de-selected
+      resetForm: false,
+    },
+  );
 </script>
 
 <form use:enhance method="post" action="?/update" class="grid grid-cols-2 items-center gap-4">

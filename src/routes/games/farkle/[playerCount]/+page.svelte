@@ -6,9 +6,21 @@
 
   let { data }: { data: PageData } = $props();
 
-  let scores = $state<Record<number, Record<number, number>>>(data.scores);
-  let rows = $state(data.startingRows);
-  let names = $state(data.names);
+  let scores = $state<Record<number, Record<number, number>>>(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.scores,
+  );
+  let rows = $state(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.startingRows,
+  );
+  let names = $state(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.names,
+  );
   let openState = $state(false);
 
   let pendingSavingGame = false;
