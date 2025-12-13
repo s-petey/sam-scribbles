@@ -10,7 +10,7 @@
   let { currentTheme, currentThemeMode }: { currentTheme: Theme; currentThemeMode: ThemeMode } =
     $props();
 
-  let theme = $state<{ theme: Theme; mode: ThemeMode }>({
+  let theme = $derived<{ theme: Theme; mode: ThemeMode }>({
     theme: currentTheme,
     mode: currentThemeMode,
   });

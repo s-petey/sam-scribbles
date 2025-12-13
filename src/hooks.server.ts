@@ -32,7 +32,10 @@ const handleAnnoyances: Handle = async ({ event, resolve }) => {
   const clientIp =
     event.request.headers.get('x-forwarded-for')?.split(',').at(0) ||
     event.request.headers.get('x-real-ip') ||
-    event.getClientAddress();
+    ('getClientAddress' in event &&
+      typeof event.getClientAddress === 'function' &&
+      event.getClientAddress()) ||
+    'unknown';
 
   if (rejectedFileExtensions.some((ext) => pathname.endsWith(ext))) {
     logger.debug({
