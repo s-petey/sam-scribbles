@@ -4,7 +4,7 @@ import { post, postsToTags, tag } from '$lib/server/db/schema';
 import { postMetadataSchema, type PostMetadata } from '$lib/zodSchema';
 import { error, type Actions } from '@sveltejs/kit';
 import { and, eq, notInArray } from 'drizzle-orm';
-import { DateTime } from 'luxon';
+import { Duration } from 'effect';
 import { fail, message, setError, superValidate } from 'sveltekit-superforms';
 import { zod4 } from 'sveltekit-superforms/adapters';
 import { z } from 'zod';
@@ -13,6 +13,8 @@ import type { PageServerLoad } from './$types';
 const schema = z.object({});
 
 const deleteSchema = z.object({ slug: z.string().min(1, 'Slug is required') });
+
+const SEVEN_DAYS = Duration.days(7);
 
 type Message = { updated: number; created: number };
 
@@ -41,6 +43,8 @@ export const actions: Actions = {
     // TODO: This needs to import `*.md` and `svx`?
     const postsImport = Object.entries(import.meta.glob('../../../../posts/*.md'));
     const posts: (PostMetadata & { slug: string })[] = [];
+    const postsToUpdate: (PostMetadata & { slug: string })[] = [];
+    const postsToCreate: (PostMetadata & { slug: string })[] = [];
 
     for (const [path, resolver] of postsImport) {
       // TODO: See if I can get better TS here...
@@ -56,19 +60,31 @@ export const actions: Actions = {
       const { data: parsedMetadata } = maybeMeta;
       const slug = path.split('/').pop()?.slice(0, -3) ?? '';
 
-      posts.push({ ...parsedMetadata, slug });
-    }
+      const postData = { ...parsedMetadata, slug };
 
-    // TODO: This doesn't catch if the post has never been created ...
-    // Only update posts from the last week
-    const postsToUpdate = posts.filter(
-      (post) =>
-        post.updated !== undefined &&
-        DateTime.fromJSDate(post.updated).diffNow('weeks').weeks >= -1,
-    );
-    const postsToCreate = posts.filter(
-      (post) => DateTime.fromJSDate(post.date).diffNow('weeks').weeks >= -1,
-    );
+      posts.push(postData);
+
+      // TODO: This doesn't catch if the post has never been created ...
+      if (parsedMetadata.updated !== undefined) {
+        const dateMillis = Duration.millis(parsedMetadata.updated.getTime());
+        const nowMillis = Duration.millis(Date.now());
+        const difference = Duration.subtract(nowMillis, dateMillis);
+
+        // Only update / create posts from the last week
+        if (Duration.lessThanOrEqualTo(difference, SEVEN_DAYS)) {
+          postsToUpdate.push(postData);
+        }
+      }
+
+      const createdDateMillis = Duration.millis(parsedMetadata.date.getTime());
+      const nowMillis = Duration.millis(Date.now());
+      const createdDifference = Duration.subtract(nowMillis, createdDateMillis);
+
+      // Only update / create posts from the last week
+      if (Duration.lessThanOrEqualTo(createdDifference, SEVEN_DAYS)) {
+        postsToCreate.push(postData);
+      }
+    }
 
     const slugToTagMap = new Map<string, string[]>();
     for (const postData of posts) {

@@ -2,16 +2,10 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
-  import { DateTime, Duration } from 'luxon';
+  import { hourMinuteSecondFromDuration, isNew } from '$lib/time';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
 
   let { data } = $props();
-
-  function differenceInDays(date: Date) {
-    const luxonDate = DateTime.fromJSDate(date);
-
-    return luxonDate.diffNow('days').days;
-  }
 
   let tags = $state<string[]>(page.url.searchParams.get('tags')?.split(',').filter(Boolean) ?? []);
   let searchQuery = $state(page.url.searchParams.get('q') || '');
@@ -138,12 +132,12 @@
                 {post.title}
               </h2>
               <div class="mb-4 flex items-center gap-2 text-sm font-bold uppercase">
-                <time> {DateTime.fromJSDate(post.createdAt).toLocaleString()}</time>
+                <time> {post.createdAt.toLocaleString()}</time>
                 &bull;
                 <span>
-                  {Duration.fromObject({ seconds: post.readingTimeSeconds }).rescale().toHuman({})}
+                  {hourMinuteSecondFromDuration(post.readingTimeSeconds)}
                 </span>
-                {#if differenceInDays(post.createdAt) < 31}
+                {#if isNew(post.createdAt)}
                   &bull;
                   <span class="badge preset-filled-secondary-500"> new </span>
                 {/if}

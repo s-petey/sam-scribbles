@@ -19,41 +19,42 @@
   import SimpleFlutter from '~icons/simple-icons/flutter';
   import SimpleIconsReactRouter from '~icons/simple-icons/reactrouter';
   import SimpleIconsSupabase from '~icons/simple-icons/supabase';
+  import { Portal, Tooltip } from '@skeletonlabs/skeleton-svelte';
 
   const iconGroup = [
     {
       title: 'Favorites',
       icons: [
-        SimpleTypescript,
-        SimpleSvelte,
-        SimpleHtml5,
-        SimpleCss3,
-        SimpleDocker,
-        SimpleGithub,
-        SimplePostgresql,
-        SimpleIconsSupabase,
+        { name: 'TypeScript', Icon: SimpleTypescript },
+        { name: 'Svelte', Icon: SimpleSvelte },
+        { name: 'HTML5', Icon: SimpleHtml5 },
+        { name: 'CSS3', Icon: SimpleCss3 },
+        { name: 'Docker', Icon: SimpleDocker },
+        { name: 'GitHub', Icon: SimpleGithub },
+        { name: 'PostgreSQL', Icon: SimplePostgresql },
+        { name: 'Supabase', Icon: SimpleIconsSupabase },
       ],
     },
     {
       title: 'Working with',
       icons: [
-        SimpleReact,
-        SimpleReactQueryIcon,
-        SimpleFigma,
-        SimpleFirebase,
-        SimpleNode,
-        SimpleIconsReactRouter,
+        { name: 'React', Icon: SimpleReact },
+        { name: 'React Query', Icon: SimpleReactQueryIcon },
+        { name: 'Figma', Icon: SimpleFigma },
+        { name: 'Firebase', Icon: SimpleFirebase },
+        { name: 'Node.js', Icon: SimpleNode },
+        { name: 'React Router', Icon: SimpleIconsReactRouter },
       ],
     },
     {
       title: 'Previous flames',
       icons: [
-        SimpleMysqlIcon,
-        SimpleSqlite,
-        SimplePlaywright,
-        SimpleAngular,
-        SimpleJava,
-        SimpleFlutter,
+        { name: 'MySQL', Icon: SimpleMysqlIcon },
+        { name: 'SQLite', Icon: SimpleSqlite },
+        { name: 'Playwright', Icon: SimplePlaywright },
+        { name: 'Angular', Icon: SimpleAngular },
+        { name: 'Java', Icon: SimpleJava },
+        { name: 'Flutter', Icon: SimpleFlutter },
       ],
     },
   ];
@@ -66,8 +67,23 @@
     <section class="grid grid-cols-3 items-center justify-items-center gap-2 md:grid-cols-4">
       <h3 class="h3 col-span-3 font-bold md:col-span-4">{group.title}</h3>
 
-      {#each group.icons as Icon, idx (idx)}
-        <Icon aria-hidden="true" class="text-primary-800-200 text-[2em]" />
+      {#each group.icons as { name, Icon }, idx (idx)}
+        <Tooltip>
+          <Tooltip.Trigger>
+            <Icon
+              aria-label={group.title + ' icon ' + (idx + 1)}
+              aria-hidden="true"
+              class="text-primary-800-200 text-[2em]"
+            />
+          </Tooltip.Trigger>
+          <Portal>
+            <Tooltip.Positioner>
+              <Tooltip.Content class="card preset-filled-surface-950-50 p-2">
+                {name}
+              </Tooltip.Content>
+            </Tooltip.Positioner>
+          </Portal>
+        </Tooltip>
       {/each}
     </section>
   {/each}

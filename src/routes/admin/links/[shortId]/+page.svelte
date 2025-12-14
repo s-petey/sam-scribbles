@@ -5,10 +5,15 @@
 
   let { data } = $props();
 
-  const { form, enhance, constraints, errors, submitting } = superForm(data.form, {
-    // Prevent the tags from being de-selected
-    resetForm: false,
-  });
+  const { form, enhance, constraints, errors, submitting } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.form,
+    {
+      // Prevent the tags from being de-selected
+      resetForm: false,
+    },
+  );
 </script>
 
 <form use:enhance method="post" action="?/update" class="grid grid-cols-2 items-center gap-4">
@@ -50,11 +55,25 @@
       $form.tags = e.value;
     }}
     value={$form.tags}
-    placeholder="Tags"
   >
-    {#snippet buttonDelete()}
-      <DeleteIcon class="text-base" />
-    {/snippet}
+    <TagsInput.Control>
+      <TagsInput.Context>
+        {#snippet children(tagsInput)}
+          {#each tagsInput().value as value, index (index)}
+            <TagsInput.Item {value} {index}>
+              <TagsInput.ItemPreview>
+                <TagsInput.ItemText>{value}</TagsInput.ItemText>
+                <TagsInput.ItemDeleteTrigger>
+                  <DeleteIcon class="text-base" />
+                </TagsInput.ItemDeleteTrigger>
+              </TagsInput.ItemPreview>
+              <TagsInput.ItemInput />
+            </TagsInput.Item>
+          {/each}
+        {/snippet}
+      </TagsInput.Context>
+      <TagsInput.Input placeholder="Tags" />
+    </TagsInput.Control>
   </TagsInput>
 
   <div class="col-span-2">

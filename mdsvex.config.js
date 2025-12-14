@@ -74,8 +74,7 @@ function posts() {
         words: words,
       },
 
-      // remove timezone from parsed date
-      date: file.data.fm.date ? new Date(file.data.fm.date).toLocaleDateString() : undefined,
+      date: file.data.fm.date ? new Date(file.data.fm.date).toISOString() : undefined,
     };
   };
 }

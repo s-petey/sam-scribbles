@@ -32,7 +32,10 @@ const handleAnnoyances: Handle = async ({ event, resolve }) => {
   const clientIp =
     event.request.headers.get('x-forwarded-for')?.split(',').at(0) ||
     event.request.headers.get('x-real-ip') ||
-    event.getClientAddress();
+    ('getClientAddress' in event &&
+      typeof event.getClientAddress === 'function' &&
+      event.getClientAddress()) ||
+    'unknown';
 
   if (rejectedFileExtensions.some((ext) => pathname.endsWith(ext))) {
     logger.debug({
@@ -179,7 +182,10 @@ const handleRouting: Handle = async ({ event, resolve: handleResolve }) => {
 
   // Here we need to check if the user has access
   // to the given route(s).
-  if (adminLinks.some((link) => pathname.endsWith(link.href)) && session?.user?.role !== 'admin') {
+  if (
+    adminLinks.some((link) => pathname === link.href || pathname.startsWith(`${link.href}/`)) &&
+    session?.user?.role !== 'admin'
+  ) {
     logger.info('User is not an admin, redirecting to home...');
     return redirect(303, core.Home.href);
   }

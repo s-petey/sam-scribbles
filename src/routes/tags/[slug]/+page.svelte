@@ -114,7 +114,6 @@
 {#if data.pagination.totalPages > 1}
   <footer class="mt-6 flex justify-center">
     <Pagination
-      data={[...data.posts, ...data.links]}
       count={data.pagination.totalPosts + data.pagination.totalLinks}
       page={data.pagination.page}
       pageSize={data.pagination.limit}
@@ -122,11 +121,32 @@
         goToPage(value.page);
       }}
     >
-      {#snippet labelEllipsis()}<LucideEllipsis class="text-base" />{/snippet}
-      {#snippet labelNext()}<LucideArrowRight class="text-base" />{/snippet}
-      {#snippet labelPrevious()}<LucideArrowLeft class="text-base" />{/snippet}
-      {#snippet labelFirst()}<LucideChevronLeft class="text-base" />{/snippet}
-      {#snippet labelLast()}<LucideChevronRight class="text-base" />{/snippet}
+      <Pagination.FirstTrigger>
+        <LucideChevronLeft class="text-base" />
+      </Pagination.FirstTrigger>
+      <Pagination.PrevTrigger>
+        <LucideArrowLeft class="text-base" />
+      </Pagination.PrevTrigger>
+      <Pagination.Context>
+        {#snippet children(pagination)}
+          {#each pagination().pages as page, index (page)}
+            {#if page.type === 'page'}
+              <Pagination.Item {...page}>
+                {page.value}
+              </Pagination.Item>
+            {:else}
+              <Pagination.Ellipsis {index}><LucideEllipsis class="text-base" /></Pagination.Ellipsis
+              >
+            {/if}
+          {/each}
+        {/snippet}
+      </Pagination.Context>
+      <Pagination.NextTrigger>
+        <LucideArrowRight class="text-base" />
+      </Pagination.NextTrigger>
+      <Pagination.LastTrigger>
+        <LucideChevronRight class="text-base" />
+      </Pagination.LastTrigger>
     </Pagination>
   </footer>
 {/if}

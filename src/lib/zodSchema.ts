@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
+export const isoDatetimeToDate = z.codec(z.iso.datetime(), z.date(), {
+  decode: (isoString) => new Date(isoString),
+  encode: (date) => date.toISOString(),
+});
+
 export const postMetadataSchema = z.object({
-  date: z.coerce.date(),
-  updated: z.coerce.date().optional(),
+  date: isoDatetimeToDate,
+  updated: isoDatetimeToDate.optional(),
   title: z.string().min(1),
   tags: z.array(z.string()),
   isPrivate: z.boolean(),

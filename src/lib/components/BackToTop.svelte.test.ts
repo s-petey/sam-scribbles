@@ -1,4 +1,4 @@
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import { flushSync } from 'svelte';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -6,7 +6,7 @@ import BackToTop from './BackToTop.svelte';
 
 describe('BackToTop', () => {
   let originalScrollTo: typeof window.scrollTo;
-  let mockScrollTo: ReturnType<typeof vi.fn>;
+  let mockScrollTo: typeof window.scrollTo;
 
   beforeEach(() => {
     // Mock window.scrollTo

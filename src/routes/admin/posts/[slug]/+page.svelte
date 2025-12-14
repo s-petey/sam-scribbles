@@ -1,8 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
+  import { isNew } from '$lib/time';
   import { Pagination } from '@skeletonlabs/skeleton-svelte';
-  import { DateTime } from 'luxon';
   import type { FormEventHandler } from 'svelte/elements';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { superForm } from 'sveltekit-superforms';
@@ -15,9 +15,14 @@
 
   let { data } = $props();
 
-  const { enhance, submitting, message, reset } = superForm(data.form, {
-    clearOnSubmit: 'errors-and-message',
-  });
+  const { enhance, submitting, message, reset } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.form,
+    {
+      clearOnSubmit: 'errors-and-message',
+    },
+  );
 
   const {
     form: relatedPostsForm,
@@ -27,10 +32,15 @@
     reset: relatedPostsReset,
     isTainted,
     tainted,
-  } = superForm(data.relatedPostsForm, {
-    clearOnSubmit: 'errors-and-message',
-    invalidateAll: 'pessimistic',
-  });
+  } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.relatedPostsForm,
+    {
+      clearOnSubmit: 'errors-and-message',
+      invalidateAll: 'pessimistic',
+    },
+  );
 
   const { derivedRelatedPosts, derivedAvailablePosts } = $derived.by(() => {
     const availablePosts: typeof data.combinedPosts = [];
@@ -81,13 +91,6 @@
     // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
     goto(`?${searchParams.toString()}`, { keepFocus: true });
   }
-
-  function differenceInDays(date: Date) {
-    const luxonDate = DateTime.fromJSDate(date);
-    const daysDiff = luxonDate.diffNow('days').days;
-
-    return daysDiff >= -31 && daysDiff < 0;
-  }
 </script>
 
 <svelte:head>
@@ -98,7 +101,7 @@
 <section class="card preset-outlined-primary-500 p-4">
   <h2 class="h3 flex flex-row items-center gap-2">
     {data.post.title}
-    {#if differenceInDays(data.post.createdAt)}
+    {#if isNew(data.post.createdAt)}
       <span class="badge preset-filled-secondary-500">NEW</span>
     {/if}
   </h2>
@@ -107,8 +110,12 @@
     Reading Time: {Math.round(data.post.readingTimeSeconds / 60)}
   </p>
   <p class="text-lg font-bold">Word count: {data.post.readingTimeWords}</p>
-  <p class="text-sm">Created on: {data.post.createdAt.toLocaleString()}</p>
-  <p class="text-sm">Updated on: {data.post.updatedAt.toLocaleString()}</p>
+  <p class="text-sm">
+    Created on: {data.post.createdAt.toLocaleString()}
+  </p>
+  <p class="text-sm">
+    Updated on: {data.post.updatedAt.toLocaleString()}
+  </p>
 
   <div class="flex flex-wrap items-center justify-start">
     {#each data.post.tags as tag (tag.tag)}
@@ -199,17 +206,38 @@
     {#if data.pagination.totalPages > 1}
       <div class="flex justify-center">
         <Pagination
-          data={derivedAvailablePosts}
           count={data.pagination.totalCount}
           page={data.pagination.page}
           pageSize={data.pagination.limit}
           onPageChange={(value) => handlePageChange(value.page)}
         >
-          {#snippet labelEllipsis()}<LucideEllipsis class="text-base" />{/snippet}
-          {#snippet labelNext()}<LucideArrowRight class="text-base" />{/snippet}
-          {#snippet labelPrevious()}<LucideArrowLeft class="text-base" />{/snippet}
-          {#snippet labelFirst()}<LucideChevronLeft class="text-base" />{/snippet}
-          {#snippet labelLast()}<LucideChevronRight class="text-base" />{/snippet}
+          <Pagination.FirstTrigger type="button">
+            <LucideChevronLeft class="text-base" />
+          </Pagination.FirstTrigger>
+          <Pagination.PrevTrigger type="button">
+            <LucideArrowLeft class="text-base" />
+          </Pagination.PrevTrigger>
+          <Pagination.Context>
+            {#snippet children(pagination)}
+              {#each pagination().pages as page, index (page)}
+                {#if page.type === 'page'}
+                  <Pagination.Item {...page}>
+                    {page.value}
+                  </Pagination.Item>
+                {:else}
+                  <Pagination.Ellipsis {index}>
+                    <LucideEllipsis class="text-base" />
+                  </Pagination.Ellipsis>
+                {/if}
+              {/each}
+            {/snippet}
+          </Pagination.Context>
+          <Pagination.NextTrigger type="button">
+            <LucideArrowRight class="text-base" />
+          </Pagination.NextTrigger>
+          <Pagination.LastTrigger type="button">
+            <LucideChevronRight class="text-base" />
+          </Pagination.LastTrigger>
         </Pagination>
       </div>
     {/if}

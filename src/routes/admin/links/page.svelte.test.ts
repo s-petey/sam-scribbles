@@ -1,4 +1,4 @@
-import { page } from '@vitest/browser/context';
+import { page } from 'vitest/browser';
 import { describe, expect, it, vi } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import Page from './+page.svelte';
@@ -7,6 +7,13 @@ import { load } from './+page.server';
 const { findManyTags, findManyLinks } = vi.hoisted(() => ({
   findManyTags: vi.fn().mockResolvedValue([]),
   findManyLinks: vi.fn().mockResolvedValue([]),
+}));
+
+vi.mock('$lib/auth.server', () => ({
+  getAndRefreshSession: vi.fn().mockResolvedValue({
+    user: { id: '1', name: 'Test User', role: 'admin' },
+    session: { id: '1' },
+  }),
 }));
 
 // Mocking the database and session

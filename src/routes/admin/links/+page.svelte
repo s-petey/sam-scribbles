@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { resolve } from '$app/paths';
   import { page as sveltePage } from '$app/state';
-  import { Modal, Pagination, TagsInput } from '@skeletonlabs/skeleton-svelte';
+  import { Dialog, Pagination, Portal, TagsInput } from '@skeletonlabs/skeleton-svelte';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { superForm } from 'sveltekit-superforms';
   import LucideArrowLeft from '~icons/lucide/arrow-left';
@@ -19,7 +19,11 @@
   let { data } = $props();
   let selectedId = $state<string | null>(null);
 
-  const { form, enhance, constraints, errors, reset, submitting } = superForm(data.form);
+  const { form, enhance, constraints, errors, reset, submitting } = superForm(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.form,
+  );
 
   function handleQueryChange(
     event: SubmitEvent & {
@@ -84,39 +88,37 @@
     {/if}
   </div>
 
-  <div class="col-span-2">
-    <label
-      class="label border-secondary-300-700 flex items-center rounded-lg border p-2 md:col-span-4"
-    >
-      <div>
+  <div class="border-secondary-300-700 col-span-2 flex rounded-lg border p-2 md:col-span-4">
+    <div class=" items-center">
+      <label class="label" for="tags">
         <span class="label-text">Available Tags:</span>
+      </label>
 
-        <div class="flex items-center">
-          <div class="flex flex-wrap gap-2">
-            {#each data.tags as tag (tag)}
-              <button
-                class={`chip ${
-                  ($form.tags ?? []).includes(tag)
-                    ? 'preset-outlined-secondary-500'
-                    : 'preset-outlined-surface-500'
-                }`}
-                type="button"
-                onclick={() => {
-                  if ($form.tags?.includes(tag)) {
-                    $form.tags = $form.tags.filter((t) => t !== tag);
-                  } else {
-                    $form.tags = [...($form.tags ?? []), tag];
-                  }
-                }}
-              >
-                {tag}
-              </button>
-            {/each}
-          </div>
+      <div class="flex items-center">
+        <div class="flex flex-wrap gap-2">
+          {#each data.tags as tag (tag)}
+            <button
+              class={`chip ${
+                ($form.tags ?? []).includes(tag)
+                  ? 'preset-outlined-secondary-500'
+                  : 'preset-outlined-surface-500'
+              }`}
+              type="button"
+              onclick={() => {
+                if ($form.tags?.includes(tag)) {
+                  $form.tags = $form.tags.filter((t) => t !== tag);
+                } else {
+                  $form.tags = [...($form.tags ?? []), tag];
+                }
+              }}
+            >
+              {tag}
+            </button>
+          {/each}
         </div>
       </div>
-    </label>
-    <input type="hidden" name="tags" bind:value={$form.tags} {...$constraints.tags} />
+    </div>
+    <input type="hidden" id="tags" name="tags" bind:value={$form.tags} {...$constraints.tags} />
 
     {#if $errors.tags}
       <span class="invalid">{$errors.tags}</span>
@@ -129,11 +131,25 @@
         $form.tags = e.value;
       }}
       value={$form.tags}
-      placeholder="Tags"
     >
-      {#snippet buttonDelete()}
-        <LucideCircleX class="text-base" />
-      {/snippet}
+      <TagsInput.Control>
+        <TagsInput.Context>
+          {#snippet children(tagsInput)}
+            {#each tagsInput().value as value, index (index)}
+              <TagsInput.Item {value} {index}>
+                <TagsInput.ItemPreview>
+                  <TagsInput.ItemText>{value}</TagsInput.ItemText>
+                  <TagsInput.ItemDeleteTrigger>
+                    <LucideCircleX class="text-base" />
+                  </TagsInput.ItemDeleteTrigger>
+                </TagsInput.ItemPreview>
+                <TagsInput.ItemInput />
+              </TagsInput.Item>
+            {/each}
+          {/snippet}
+        </TagsInput.Context>
+        <TagsInput.Input placeholder="Tags" />
+      </TagsInput.Control>
     </TagsInput>
   </div>
 
@@ -223,48 +239,72 @@
 
 <footer class="flex justify-between">
   <Pagination
-    data={data.links}
     count={data.pagination.linkCount}
     page={data.pagination.page}
     pageSize={data.pagination.limit}
     onPageChange={(value) => {
       const params = new SvelteURLSearchParams(sveltePage.url.searchParams);
-
       params.set('page', value.page.toString());
       // eslint-disable-next-line svelte/no-navigation-without-resolve -- Routing to same path
       goto(`?${params.toString()}`, { keepFocus: true });
     }}
   >
-    {#snippet labelEllipsis()}<LucideEllipsis class="text-base" />{/snippet}
-    {#snippet labelNext()}<LucideArrowRight class="text-base" />{/snippet}
-    {#snippet labelPrevious()}<LucideArrowLeft class="text-base" />{/snippet}
-    {#snippet labelFirst()}<LucideChevronLeft class="text-base" />{/snippet}
-    {#snippet labelLast()}<LucideChevronRight class="text-base" />{/snippet}
+    <Pagination.FirstTrigger>
+      <LucideChevronLeft class="text-base" />
+    </Pagination.FirstTrigger>
+    <Pagination.PrevTrigger>
+      <LucideArrowLeft class="text-base" />
+    </Pagination.PrevTrigger>
+    <Pagination.Context>
+      {#snippet children(pagination)}
+        {#each pagination().pages as page, index (page)}
+          {#if page.type === 'page'}
+            <Pagination.Item {...page}>
+              {page.value}
+            </Pagination.Item>
+          {:else}
+            <Pagination.Ellipsis {index}>
+              <LucideEllipsis class="text-base" />
+            </Pagination.Ellipsis>
+          {/if}
+        {/each}
+      {/snippet}
+    </Pagination.Context>
+    <Pagination.NextTrigger>
+      <LucideArrowRight class="text-base" />
+    </Pagination.NextTrigger>
+    <Pagination.LastTrigger>
+      <LucideChevronRight class="text-base" />
+    </Pagination.LastTrigger>
   </Pagination>
 </footer>
 
-<Modal
-  open={selectedId !== null}
-  onOpenChange={() => (selectedId = null)}
-  triggerBase="btn preset-tonal"
-  contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-  backdropClasses="backdrop-blur-xs"
->
-  {#snippet content()}
-    <header class="flex justify-between">
-      <h2 class="h2 text-error-500">Delete Link</h2>
-    </header>
-    <article>
-      <p class="opacity-60">Are you sure you'd like to delete this link?</p>
-    </article>
-    <footer class="flex justify-end gap-4">
-      <form action="?/delete" method="POST">
-        <input type="hidden" name="shortId" value={selectedId} />
-        <button type="button" class="btn preset-tonal" onclick={() => (selectedId = null)}>
-          Cancel
-        </button>
-        <button type="submit" class="btn preset-filled-error-500 font-bold">Confirm</button>
-      </form>
-    </footer>
-  {/snippet}
-</Modal>
+<Dialog open={selectedId !== null} onOpenChange={() => (selectedId = null)}>
+  <Portal>
+    <Dialog.Backdrop class="bg-surface-50-950/50 fixed inset-0 z-50 backdrop-blur-xs" />
+    <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <Dialog.Content
+        class={[
+          'card bg-surface-100-900 max-w-(--breakpoint-sm) space-y-4 p-4 shadow-xl',
+          'translate-y-[100px] opacity-0 transition transition-discrete data-[state=open]:translate-y-0 data-[state=open]:opacity-100 starting:data-[state=open]:translate-y-[100px] starting:data-[state=open]:opacity-0',
+        ]}
+      >
+        <header class="flex justify-between">
+          <h2 class="h2 text-error-500">Delete Link</h2>
+        </header>
+        <article>
+          <p class="opacity-60">Are you sure you'd like to delete this link?</p>
+        </article>
+        <footer class="flex justify-end gap-4">
+          <form action="?/delete" method="POST">
+            <input type="hidden" name="shortId" value={selectedId} />
+            <button type="button" class="btn preset-tonal" onclick={() => (selectedId = null)}>
+              Cancel
+            </button>
+            <button type="submit" class="btn preset-filled-error-500 font-bold">Confirm</button>
+          </form>
+        </footer>
+      </Dialog.Content>
+    </Dialog.Positioner>
+  </Portal>
+</Dialog>

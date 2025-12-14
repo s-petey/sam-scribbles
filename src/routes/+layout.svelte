@@ -1,13 +1,12 @@
 <script lang="ts">
   import '../app.css';
 
+  import { resolve } from '$app/paths';
   import BackToTop from '$lib/components/BackToTop.svelte';
   import ThemeAndMode from '$lib/components/ThemeAndMode.svelte';
   import * as SiteLinks from '$lib/siteLinks';
-  import { Avatar } from '@skeletonlabs/skeleton-svelte';
   import LucideMenu from '~icons/lucide/menu';
   import LucideX from '~icons/lucide/x';
-  import { resolve } from '$app/paths';
 
   let { children, data } = $props();
   let expanded = $state(false);
@@ -100,10 +99,13 @@
         <nav class="flex flex-row items-center gap-2">
           {#each SiteLinks.socialLinks as link (link.href)}
             <!-- eslint-disable svelte/no-navigation-without-resolve -- External link -->
-            <a class="anchor hover:underline" href={link.href} title={link.label} target="_blank">
-              <Avatar name={link.label}>
-                <link.icon />
-              </Avatar>
+            <a
+              class="anchor hover:preset-tonal rounded-full p-4"
+              href={link.href}
+              title={link.label}
+              target="_blank"
+            >
+              <link.icon />
             </a>
           {/each}
 

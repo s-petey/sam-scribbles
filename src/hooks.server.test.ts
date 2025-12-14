@@ -232,6 +232,30 @@ describe('handle -- routing rules', () => {
       expect(location).toBe('/');
     }
   });
+
+  test.each(['/admin/posts/some-slug', '/admin/links/some-slug'])(
+    'redirects non-admin user from admin sub-routes',
+    async (pathname) => {
+      vi.mocked(AUTH.auth.api.getSession).mockResolvedValue({
+        // @ts-expect-error Partially matching user
+        user: { role: 'user' },
+        // @ts-expect-error Partially matching session
+        session: { expiresAt: new Date(Date.now() + 1000) },
+      });
+
+      const mockEvent = createMockEvent(pathname);
+      const mockResolve = createMockResolve();
+
+      try {
+        await handle({ event: mockEvent, resolve: mockResolve });
+        expect.fail('Expected redirect to be thrown');
+      } catch (error) {
+        const { status, location } = getErrorInfo(error);
+        expect(status).toBe(303);
+        expect(location).toBe('/');
+      }
+    },
+  );
 });
 
 // --- Test helpers ---

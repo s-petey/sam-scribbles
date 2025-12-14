@@ -5,14 +5,23 @@
   import { isValidMode, isValidTheme, themes, type Theme, type ThemeMode } from './themes';
   import LucideMoon from '~icons/lucide/moon';
   import LucideSun from '~icons/lucide/sun';
-  import { Combobox } from '@skeletonlabs/skeleton-svelte';
+  import { Combobox, Portal } from '@skeletonlabs/skeleton-svelte';
 
   let { currentTheme, currentThemeMode }: { currentTheme: Theme; currentThemeMode: ThemeMode } =
     $props();
 
   let theme = $state<{ theme: Theme; mode: ThemeMode }>({
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
     theme: currentTheme,
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
     mode: currentThemeMode,
+  });
+
+  $effect(() => {
+    theme.theme = currentTheme;
+    theme.mode = currentThemeMode;
   });
 
   // Set theme client-side
@@ -34,29 +43,62 @@
       update({ reset: false });
     };
   };
+
+  let form: HTMLFormElement;
+
+  let filteredThemes: Theme[] = $state(themes.map((theme) => theme));
 </script>
 
 <div class="flex items-center justify-end gap-2">
-  <form method="POST" use:enhance={setTheme} class="flex gap-2">
+  <form
+    method="POST"
+    use:enhance={setTheme}
+    class="flex gap-2"
+    bind:this={form}
+    action="/?/setTheme&theme={theme.theme}&redirectTo={page.url.pathname}"
+  >
     <Combobox
-      data={themes.map((theme) => ({ value: theme, label: theme }))}
-      value={[currentTheme]}
-      defaultValue={[currentTheme]}
+      value={[theme.theme]}
+      defaultValue={[theme.theme]}
       onValueChange={(e) => {
         const newTheme = e.value.at(0);
-        currentTheme = isValidTheme(newTheme) ? newTheme : 'catppuccin';
+        theme.theme = isValidTheme(newTheme) ? newTheme : 'catppuccin';
+        form.action = `/?/setTheme&theme=${theme.theme}&redirectTo=${page.url.pathname}`;
+        form.requestSubmit();
+      }}
+      onInputValueChange={(e) => {
+        const inputValue = e.inputValue;
+
+        const matchingThemes: Theme[] = [];
+
+        for (const theme of themes) {
+          if (theme.toLowerCase().includes(inputValue.toLowerCase())) {
+            matchingThemes.push(theme);
+          }
+        }
+
+        filteredThemes = matchingThemes;
       }}
       placeholder="Select a theme"
-      classes="z-10"
     >
-      {#snippet item(item)}
-        <button
-          class="flex w-full justify-between space-x-2"
-          formaction="/?/setTheme&theme={item.label}&redirectTo={page.url.pathname}"
-        >
-          {item.label}
-        </button>
-      {/snippet}
+      <Combobox.Label />
+      <Combobox.Control>
+        <Combobox.Input value={[theme.theme]} />
+        <Combobox.Trigger />
+      </Combobox.Control>
+      <Portal>
+        <Combobox.Positioner>
+          <Combobox.Content>
+            {#each filteredThemes as item (item)}
+              <Combobox.Item {item}>
+                <Combobox.ItemText>
+                  {item}
+                </Combobox.ItemText>
+              </Combobox.Item>
+            {/each}
+          </Combobox.Content>
+        </Combobox.Positioner>
+      </Portal>
     </Combobox>
 
     {#if theme.mode === 'dark'}

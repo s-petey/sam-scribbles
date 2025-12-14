@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { gamesLinks } from '$lib/siteLinks';
 </script>
 
@@ -13,7 +14,7 @@
   <ul class="grid grid-cols-3 gap-2">
     {#each gamesLinks as { href, label } (href)}
       <li>
-        <a class="anchor capitalize" {href}>{label}</a>
+        <a class="anchor capitalize" href={resolve(href)}>{label}</a>
       </li>
     {/each}
   </ul>

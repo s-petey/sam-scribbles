@@ -1,14 +1,26 @@
 <script lang="ts">
-  import { Modal } from '@skeletonlabs/skeleton-svelte';
+  import { Dialog, Portal } from '@skeletonlabs/skeleton-svelte';
   import Scoring from '../Scoring.svelte';
   import type { PageData } from './$types';
   import { db, type FarkleGame } from './farkleDb';
 
   let { data }: { data: PageData } = $props();
 
-  let scores = $state<Record<number, Record<number, number>>>(data.scores);
-  let rows = $state(data.startingRows);
-  let names = $state(data.names);
+  let scores = $state<Record<number, Record<number, number>>>(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.scores,
+  );
+  let rows = $state(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.startingRows,
+  );
+  let names = $state(
+    // eslint-disable-next-line svelte/no-unused-svelte-ignore
+    // svelte-ignore state_referenced_locally
+    data.names,
+  );
   let openState = $state(false);
 
   let pendingSavingGame = false;
@@ -203,24 +215,27 @@
     Reset Game
   </button>
 
-  <Modal
-    open={openState}
-    onOpenChange={({ open }) => (openState = open)}
-    triggerBase="btn preset-filled-secondary-400-600"
-    contentBase="card bg-surface-100-900 p-4 space-y-4 shadow-xl max-w-(--breakpoint-sm)"
-  >
-    {#snippet trigger()}
-      Scoring Rules
-    {/snippet}
+  <Dialog open={openState} onOpenChange={({ open }) => (openState = open)}>
+    <Dialog.Trigger class="btn preset-filled-secondary-400-600">Scoring Rules</Dialog.Trigger>
 
-    {#snippet content()}
-      <Scoring />
+    <Portal>
+      <Dialog.Backdrop class="bg-surface-50-950/50 fixed inset-0 z-50" />
+      <Dialog.Positioner class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <Dialog.Content
+          class={[
+            'card bg-surface-100-900 max-w-(--breakpoint-sm) space-y-4 p-4 shadow-xl',
+            'translate-y-[100px] opacity-0 transition transition-discrete data-[state=open]:translate-y-0 data-[state=open]:opacity-100 starting:data-[state=open]:translate-y-[100px] starting:data-[state=open]:opacity-0',
+          ]}
+        >
+          <Scoring />
 
-      <footer class="flex justify-end gap-4">
-        <button type="button" class="btn preset-tonal" onclick={() => (openState = false)}>
-          Close
-        </button>
-      </footer>
-    {/snippet}
-  </Modal>
+          <footer class="flex justify-end gap-4">
+            <button type="button" class="btn preset-tonal" onclick={() => (openState = false)}>
+              Close
+            </button>
+          </footer>
+        </Dialog.Content>
+      </Dialog.Positioner>
+    </Portal>
+  </Dialog>
 </div>
