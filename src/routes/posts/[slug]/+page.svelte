@@ -1,7 +1,6 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { isNew, isRecentlyUpdated } from '$lib/time';
-  import { DateTime } from 'effect';
 
   let { data } = $props();
 
@@ -13,9 +12,6 @@
     // eslint-disable-next-line svelte/no-unused-svelte-ignore
     // svelte-ignore state_referenced_locally
   } = data;
-
-  // TODO: Should I add a "serializer" for the "date" to always be DateTime?
-  const dateIso = DateTime.formatIso(DateTime.unsafeMake(date));
 </script>
 
 <svelte:head>
@@ -58,8 +54,8 @@
 
     <div class="mt-4 mb-3 uppercase">
       <div class="flex justify-center gap-1">
-        <time datetime={dateIso}>
-          {DateTime.unsafeMake(date).toLocaleString()}
+        <time datetime={date.toISOString()}>
+          {date.toLocaleDateString()}
         </time>
         <span>&bull;</span>
         <span>{reading_time.text}</span>

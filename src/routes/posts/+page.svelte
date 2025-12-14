@@ -3,7 +3,6 @@
   import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { hourMinuteSecondFromDuration, isNew } from '$lib/time';
-  import { DateTime } from 'effect';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
 
   let { data } = $props();
@@ -133,7 +132,7 @@
                 {post.title}
               </h2>
               <div class="mb-4 flex items-center gap-2 text-sm font-bold uppercase">
-                <time> {DateTime.unsafeMake(post.createdAt).toLocaleString()}</time>
+                <time> {post.createdAt.toLocaleString()}</time>
                 &bull;
                 <span>
                   {hourMinuteSecondFromDuration(post.readingTimeSeconds)}

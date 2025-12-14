@@ -3,7 +3,6 @@
   import { page } from '$app/state';
   import { isNew } from '$lib/time';
   import { Pagination } from '@skeletonlabs/skeleton-svelte';
-  import { DateTime } from 'effect';
   import type { FormEventHandler } from 'svelte/elements';
   import { SvelteURLSearchParams } from 'svelte/reactivity';
   import { superForm } from 'sveltekit-superforms';
@@ -112,10 +111,10 @@
   </p>
   <p class="text-lg font-bold">Word count: {data.post.readingTimeWords}</p>
   <p class="text-sm">
-    Created on: {DateTime.unsafeMake(data.post.createdAt).toLocaleString()}
+    Created on: {data.post.createdAt.toLocaleString()}
   </p>
   <p class="text-sm">
-    Updated on: {DateTime.unsafeMake(data.post.updatedAt).toLocaleString()}
+    Updated on: {data.post.updatedAt.toLocaleString()}
   </p>
 
   <div class="flex flex-wrap items-center justify-start">
