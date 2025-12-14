@@ -1,4 +1,3 @@
-// TODO: Fix this is replaced with // vitest/browser
 import { page } from 'vitest/browser';
 import { flushSync } from 'svelte';
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
