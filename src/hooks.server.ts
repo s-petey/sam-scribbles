@@ -182,7 +182,10 @@ const handleRouting: Handle = async ({ event, resolve: handleResolve }) => {
 
   // Here we need to check if the user has access
   // to the given route(s).
-  if (adminLinks.some((link) => pathname.endsWith(link.href)) && session?.user?.role !== 'admin') {
+  if (
+    adminLinks.some((link) => pathname === link.href || pathname.startsWith(`${link.href}/`)) &&
+    session?.user?.role !== 'admin'
+  ) {
     logger.info('User is not an admin, redirecting to home...');
     return redirect(303, core.Home.href);
   }
